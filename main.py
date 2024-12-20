@@ -5,7 +5,7 @@ import wandb
 
 from experiments.eval import plot_eval
 from experiments.optimize import optimize_parameters
-from fip_cellpose.utils import set_all_seeds
+from cellpose_adapt.utils import set_all_seeds
 
 
 if __name__ == "__main__":

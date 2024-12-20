@@ -6,7 +6,7 @@ This project is part of the FIP project appl-fm and provides tools for visualizi
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/mario-koddenbrock/fip-cellpose.git
+   git clone https://github.com/mario-koddenbrock/cellpose-adapt.git
    cd cellpose-viz
    ```
 
@@ -35,7 +35,7 @@ The `main.py` script processes images, evaluates the model, and visualizes resul
 
 #### Example:
 ```sh
-python fip_cellpose/main.py --image_path path/to/image.tif --param_file path/to/params.yaml --output_dir Segmentation --show_gt --show_prediction --show_viewer
+python cellpose_adapt/main.py --image_path path/to/image.tif --param_file path/to/params.yaml --output_dir Segmentation --show_gt --show_prediction --show_viewer
 ```
 
 ### Visualize Best Scores
@@ -49,7 +49,7 @@ The `viz.py` script visualizes the best score for each image and type as a group
 
 #### Example:
 ```sh
-python fip_cellpose/viz.py --file_path results.csv --metric jaccard --output_file best_scores_barplot.png
+python cellpose_adapt/viz.py --file_path results.csv --metric jaccard --output_file best_scores_barplot.png
 ```
 
 ## License

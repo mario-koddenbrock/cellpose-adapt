@@ -1,7 +1,7 @@
 import os
 
 from experiments.results import print_best_config_per_image
-from fip_cellpose import viz
+from cellpose_adapt import viz
 
 
 def plot_eval(result_path="data/P013T/results.csv"):

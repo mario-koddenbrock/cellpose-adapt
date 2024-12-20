@@ -1,10 +1,10 @@
 import wandb
 
 from experiments.results import ResultHandler
-from fip_cellpose.config import ensure_default_parameter, CellposeConfig
-from fip_cellpose.core import EvaluationError
-from fip_cellpose.main import evaluate_model
-from fip_cellpose.viz import show_napari
+from cellpose_adapt.config import ensure_default_parameter, CellposeConfig
+from cellpose_adapt.core import EvaluationError
+from cellpose_adapt.main import evaluate_model
+from cellpose_adapt.viz import show_napari
 
 
 def optimize_parameters(

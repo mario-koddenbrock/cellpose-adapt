@@ -14,7 +14,7 @@ The MIA (Microbial Image Analysis) package is designed for evaluating and classi
 ### Initialize Evaluators
 
 ```python   
-from fip_cellpose.utils import initialize_evaluators
+from cellpose_adapt.utils import initialize_evaluators
 
 config = {'evaluator1': 'config1', 'evaluator2': 'config2'}
 device = 'cpu'
@@ -24,7 +24,7 @@ evaluators = initialize_evaluators(device, config)
 ### Evaluate Image
 
 ```python   
-from fip_cellpose.utils import evaluate_dataset
+from cellpose_adapt.utils import evaluate_dataset
 
 evaluators = {'evaluator1': 'config1'}
 dataset_name = 'dataset'
@@ -40,7 +40,7 @@ print(results)
 ### Get Class Files
 
 ```python   
-from fip_cellpose.utils import get_class_files
+from cellpose_adapt.utils import get_class_files
 
 dataset_path = 'path/to/dataset'
 class_name = 'class1'
