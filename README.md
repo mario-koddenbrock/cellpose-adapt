@@ -1,4 +1,4 @@
-# Cellpose Visualization and Evaluation
+# CellposeAdapt: Tailoring Models to Unique Data
 
 This project is part of the FIP project appl-fm and provides tools for visualizing and evaluating cell segmentation results using the Cellpose model. It includes scripts for processing images, evaluating model performance, and visualizing results with Napari.
 
