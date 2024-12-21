@@ -20,4 +20,4 @@ conda activate microscopy_image_analysis
 which python
 
 # Run the evaluation script
-python cellpose_optimization.py
+python main.py
