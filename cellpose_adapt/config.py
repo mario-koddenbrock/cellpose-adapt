@@ -29,7 +29,7 @@ def ensure_default_parameter(params):
         "invert": [False],
         "normalize": [True],
         "normalization_min": [1],
-        "normalization_max": [99],
+        "normalization_max": [99.5],
         "diameter": [30],
         "do_3D": [True],
         "flow_threshold": [0.1],
