@@ -8,12 +8,12 @@ from prettytable import PrettyTable
 
 
 class ResultHandler:
-    def __init__(self, result_file, log_wandb=False, keep_existing=False):
+    def __init__(self, result_file, log_wandb=False, append_result=False):
         self.result_path = result_file
         self.log_wandb = log_wandb
 
-        # if not keep_existing and os.path.exists(result_path):
-        #     os.remove(result_path)
+        if not append_result and os.path.exists(result_file):
+            os.remove(result_file)
 
 
     def log_result(self, results, evaluation_params):
