@@ -1,3 +1,5 @@
+import os
+
 import wandb
 
 from experiments.results import ResultHandler
@@ -13,10 +15,16 @@ def optimize_parameters(
         result_file: str = "",
         cache_dir: str = ".cache",
         show_viewer: bool = False,
-        log_wandb: bool = False,
+        log_wandb: bool = True,
+        append_result: bool = False,
 ):
 
-    result_handler = ResultHandler(result_file, log_wandb)
+    if log_wandb:
+        image_name = os.path.basename(image_path).replace(".tif", "")
+        result_name = os.path.basename(result_file).replace(".csv", "")
+        wandb.init(project="organoid_segmentation", name=f"{image_name}_{result_name}")
+
+    result_handler = ResultHandler(result_file, log_wandb, append_result)
 
     param_options = ensure_default_parameter(param_options)
 
@@ -78,5 +86,5 @@ def optimize_parameters(
                                                                                     print(f"Found good parameters for {type} on {image_path}")
                                                                                     return
 
-                                                                                if log_wandb:
-                                                                                    wandb.finish()
+    if log_wandb:
+        wandb.finish()
