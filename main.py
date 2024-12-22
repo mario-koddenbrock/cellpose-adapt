@@ -39,7 +39,7 @@ def main():
     image_paths = [image_path for folder in subfolders if os.path.isdir(folder) for image_path in
                    glob.glob(os.path.join(folder, "images_cropped_isotropic", "*.tif"))]
 
-    image_paths = [image_paths[5]]
+    # image_paths = [image_paths[5]]
 
     # Define the result files
     result_file_models = os.path.join(main_folder, "results_models.csv")
@@ -51,6 +51,7 @@ def main():
     result_file_stitch_threshold = os.path.join(main_folder, "results_stitch_threshold.csv")
     result_file_tile_overlap = os.path.join(main_folder, "results_tile_overlap.csv")
 
+    # TODO check if all images are on the server
     for image_idx, image_path in enumerate(image_paths):
 
         # TODO check for other models like "bact_omni"
