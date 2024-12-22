@@ -7,17 +7,8 @@ import pandas as pd
 from matplotlib import pyplot as plt
 from tqdm import tqdm
 
-try:
-    from napari_animation import Animation
-except ImportError:
-    Animation = None
-
-
-# TODO only import if available
-
 # import matplotlib
 # matplotlib.use('TkAgg')
-
 
 def extract_cellpose_video(viewer, output_dir, video_filename, num_z_slices, mode='2D', rotation_steps=72):
     """
@@ -40,7 +31,9 @@ def extract_cellpose_video(viewer, output_dir, video_filename, num_z_slices, mod
             Number of steps (frames) for the 3D rotation animation. Defaults to 36.
     """
 
-    if Animation is None:
+    try:
+        from napari_animation import Animation
+    except ImportError:
         print("Warning: napari_animation module is not available. Video extraction is not possible.")
         return
 
