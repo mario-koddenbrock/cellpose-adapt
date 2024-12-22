@@ -5,8 +5,13 @@ import napari
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
-from napari_animation import Animation
 from tqdm import tqdm
+
+try:
+    from napari_animation import Animation
+except ImportError:
+    Animation = None
+
 
 # TODO only import if available
 
@@ -34,6 +39,11 @@ def extract_cellpose_video(viewer, output_dir, video_filename, num_z_slices, mod
         rotation_steps: int
             Number of steps (frames) for the 3D rotation animation. Defaults to 36.
     """
+
+    if Animation is None:
+        print("Warning: napari_animation module is not available. Video extraction is not possible.")
+        return
+
     video_path = os.path.join(output_dir, video_filename)
 
     # Set FPS based on mode
