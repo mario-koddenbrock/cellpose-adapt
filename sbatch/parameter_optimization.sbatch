@@ -8,8 +8,8 @@
 #SBATCH --time=48:00:00            # Time limit (24 hours)
 #SBATCH --mem=128G                  # Total memory for the job
 #SBATCH --qos=normal
-#SBATCH --output=cellpose_out_%j.log
-#SBATCH --error=cellpose_err_%j.log
+#SBATCH --output=logs/cellpose_out_%j.log
+#SBATCH --error=logs/cellpose_err_%j.log
 
 
 # Log SLURM environment variables
