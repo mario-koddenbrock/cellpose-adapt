@@ -24,7 +24,8 @@ echo "SLURM Partition: $SLURM_JOB_PARTITION"
 # Log the current date and hostname
 echo "Job started on $(hostname) at $(date)"
 
-
+# Ensure that the logs directory exists
+mkdir -p logs
 
 # Load necessary modules and activate conda environment
 source ~/.bashrc
