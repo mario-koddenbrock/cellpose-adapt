@@ -1,3 +1,4 @@
+import multiprocessing
 from multiprocessing import Pool
 from cellpose_adapt.utils import set_all_seeds
 from experiments.optimize import optimize_parameters
@@ -91,6 +92,9 @@ def main():
     subfolders = glob.glob(os.path.join(main_folder, "*"))
     image_paths = [image_path for folder in subfolders if os.path.isdir(folder) for image_path in
                    glob.glob(os.path.join(folder, "images_cropped_isotropic", "*.tif"))]
+
+    # Set the 'spawn' start method for multiprocessing
+    multiprocessing.set_start_method('spawn', force=True)
 
     with Pool(processes=64) as pool:
         pool.starmap(process_image, [(idx, path, main_folder) for idx, path in enumerate(image_paths)])
