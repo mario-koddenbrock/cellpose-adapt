@@ -15,7 +15,7 @@ def optimize_parameters(
         result_file: str = "",
         cache_dir: str = ".cache",
         show_viewer: bool = False,
-        log_wandb: bool = True,
+        log_wandb: bool = False,
         append_result: bool = False,
 ):
 
