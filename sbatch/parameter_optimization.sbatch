@@ -3,7 +3,7 @@
 #SBATCH --job-name=cellpose
 #SBATCH --gres=gpu:4               # Request 4 GPUs
 #SBATCH --nodes=2
-#SBATCH --ntasks=4                 # Number of tasks (1 task that uses multiple GPUs)
+#SBATCH --ntasks=1                 # Number of tasks (1 task that uses multiple GPUs)
 #SBATCH --cpus-per-task=64         # Adjust CPUs per task based on the total available cores
 #SBATCH --time=48:00:00            # Time limit (24 hours)
 #SBATCH --mem=128G                  # Total memory for the job
