@@ -181,11 +181,15 @@ def plot_aggregated_metric_variation(file_path, metric='jaccard', boxplot=False,
         metric (str): The column name of the metric to evaluate (default is 'jaccard').
         boxplot (bool): If True, display boxplots instead of error bars (default is False).
     """
+
+    if not isinstance(file_path, list):
+        file_path = [file_path]
+
     # Load data
-    df = pd.read_csv(file_path)
+    df = pd.concat([pd.read_csv(f) for f in file_path])
 
     # Create output directory in the same folder as the input file
-    output_dir = os.path.dirname(file_path)
+    output_dir = os.path.dirname(file_path[0])
 
     # Identify varying parameters (excluding fixed columns and specified metrics)
     excluded_columns = ['image_name', 'type', metric, 'duration', 'are', 'precision', 'recall', 'f1', 'jaccard', 'jaccard_cellpose', 'jaccard']
@@ -257,8 +261,12 @@ def plot_best_scores_barplot(file_path, metric='jaccard', output_file='best_scor
         metric (str): The column name of the metric to visualize (default is 'jaccard').
         output_file (str): Path to save the bar plot (default is 'best_scores_barplot.png').
     """
-    # Load data
-    df = pd.read_csv(file_path)
+
+    if not isinstance(file_path, list):
+        file_path = [file_path]
+
+        # Load data
+    df = pd.concat([pd.read_csv(f) for f in file_path])
 
     # Ensure the metric column exists
     if metric not in df.columns:
