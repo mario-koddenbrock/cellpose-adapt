@@ -30,12 +30,14 @@ import os
 
 options = [
     {"name": "model_name", "params": ["cyto2_cp3", "cyto", "cyto2", "cyto3", "nuclei", "tissuenet_cp3", "livecell_cp3", "yeast_PhC_cp3", "yeast_BF_cp3", "bact_phase_cp3", "bact_fluor_cp3", "deepbacs_cp3"]},
-    {"name": "normalization_min", "params": [0, 0.5, 1, 2, 3, 5, 7, 10]},
+    {"name": "channel_segment", "params": [0, 1, 2, 3]},
+    {"name": "channel_nuclei", "params": [0, 1, 2, 3]},
+    {"name": "normalization_min", "params": [0, 1, 5, 10, 20, 30, 50]},
     {"name": "normalization_max", "params": [90, 93, 95, 97, 98, 99, 99.5, 100]},
-    {"name": "diameter", "params": [5, 10, 12, 17, 30, 40, 50, 70, 100]},
-    {"name": "flow_threshold", "params": [0.01, 0.05, 0.1, 0.2, 0.3, 0.5, 0.7]},
-    {"name": "cellprob_threshold", "params": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5]},
-    {"name": "min_size", "params": [5, 10, 15, 20, 25, 30, 35, 40, 45, 50]},
+    {"name": "diameter", "params": [1, 5, 10, 12, 17, 30, 40, 50, 70, 100, 200, 500]},
+    # {"name": "flow_threshold", "params": [0.01, 0.05, 0.1, 0.2, 0.3, 0.5, 0.7]},
+    {"name": "cellprob_threshold", "params": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 0.9, 1]},
+    {"name": "min_size", "params": [5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 200]},
     {"name": "stitch_threshold", "params": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5]},
     {"name": "tile_overlap", "params": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5]},
 ]
@@ -45,7 +47,7 @@ def get_result_files(main_folder):
         "models": os.path.join(main_folder, "results_models.csv"),
         "normalize": os.path.join(main_folder, "results_normalize.csv"),
         "diameter": os.path.join(main_folder, "results_diameter.csv"),
-        "flow_threshold": os.path.join(main_folder, "results_flow_threshold.csv"),
+        # "flow_threshold": os.path.join(main_folder, "results_flow_threshold.csv"),
         "cellprob_threshold": os.path.join(main_folder, "results_cellprob_threshold.csv"),
         "min_size": os.path.join(main_folder, "results_min_size.csv"),
         "stitch_threshold": os.path.join(main_folder, "results_stitch_threshold.csv"),
@@ -60,7 +62,7 @@ key_mapping = {
     "normalization_min": "normalize",
     "normalization_max": "normalize",
     "diameter": "diameter",
-    "flow_threshold": "flow_threshold",
+    # "flow_threshold": "flow_threshold",
     "cellprob_threshold": "cellprob_threshold",
     "min_size": "min_size",
     "stitch_threshold": "stitch_threshold",
@@ -79,11 +81,16 @@ def process_image(image_idx, image_path, main_folder):
         if result_file_key is None:
             raise KeyError(f"No result file mapping found for option: {opt['name']}")
 
+        if opt["name"] == "stitch_threshold":
+            param_options = {opt["name"]: opt["params"], "do_3D": [False]}
+        else:
+            param_options = {opt["name"]: opt["params"]}
+
         optimize_parameters(
-            {opt["name"]: opt["params"]},
+            param_options,
             image_path,
             result_files[result_file_key],
-            append_result=image_idx > 0
+            append_result=image_idx > 0,
         )
 
 
