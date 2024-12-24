@@ -28,11 +28,11 @@ def ensure_default_parameter(params):
         "channel_axis": [None],
         "invert": [False],
         "normalize": [True],
-        "normalization_min": [1],
-        "normalization_max": [99.5],
+        "normalization_min": [0],
+        "normalization_max": [1],
         "diameter": [30],
         "do_3D": [True],
-        "flow_threshold": [0.1],
+        "flow_threshold": [0.1],  # apparently, this is not used in 3D
         "cellprob_threshold": [0.0],
         "interp": [False],
         "min_size": [15],
@@ -40,7 +40,7 @@ def ensure_default_parameter(params):
         "niter": [100],
         "stitch_threshold": [0.0],
         "tile_overlap": [0.1],
-        "type": ["Nuclei"],
+        "type": ["Nuclei", "Membranes"],
     }
 
     diameter_not_set = "diameter" not in params
