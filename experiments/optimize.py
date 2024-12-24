@@ -8,6 +8,7 @@ from cellpose_adapt.core import EvaluationError
 from cellpose_adapt.main import evaluate_model
 from cellpose_adapt.viz import show_napari
 
+from concurrent.futures import ProcessPoolExecutor
 
 def optimize_parameters(
         param_options: dict,
@@ -28,63 +29,64 @@ def optimize_parameters(
 
     param_options = ensure_default_parameter(param_options)
 
-    for model_name in param_options["model_name"]:
-        for channel_segment in param_options["channel_segment"]:
-            for channel_nuclei in param_options["channel_nuclei"]:
-                for channel_axis in param_options["channel_axis"]:
-                    for invert in param_options["invert"]:
-                        for normalize in param_options["normalize"]:
-                            for normalization_min in param_options["normalization_min"]:
-                                for normalization_max in param_options["normalization_max"]:
-                                    for diameter in param_options["diameter"]:
-                                        for do_3D in param_options["do_3D"]:
-                                            for flow_threshold in param_options["flow_threshold"]:
-                                                for cellprob_threshold in param_options["cellprob_threshold"]:
-                                                    for interp in param_options["interp"]:
-                                                        for min_size in param_options["min_size"]:
-                                                            for max_size_fraction in param_options["max_size_fraction"]:
-                                                                for niter in param_options["niter"]:
-                                                                    for stitch_threshold in param_options["stitch_threshold"]:
-                                                                        for tile_overlap in param_options["tile_overlap"]:
-                                                                            for type in param_options["type"]:
+    def evaluate_params(params):
+        results = evaluate_model(image_path, params, cache_dir)
+        if results == EvaluationError.GROUND_TRUTH_NOT_AVAILABLE:
+            return None
+        elif not isinstance(results, dict):
+            return None
+        result_handler.log_result(results, params)
+        if show_viewer:
+            show_napari(results, params)
+        if results["jaccard"] > 0.95:
+            print(f"Found good parameters for {params.type} on {image_path}")
+            return params
 
-                                                                                params = CellposeConfig(
-                                                                                    model_name=model_name,
-                                                                                    channel_segment=channel_segment,
-                                                                                    channel_nuclei=channel_nuclei,
-                                                                                    channel_axis=channel_axis,
-                                                                                    invert=invert,
-                                                                                    normalize=normalize,
-                                                                                    normalization_min=normalization_min,
-                                                                                    normalization_max=normalization_max,
-                                                                                    diameter=diameter,
-                                                                                    do_3D=do_3D,
-                                                                                    flow_threshold=flow_threshold,
-                                                                                    cellprob_threshold=cellprob_threshold,
-                                                                                    interp=interp,
-                                                                                    min_size=min_size,
-                                                                                    max_size_fraction=max_size_fraction,
-                                                                                    niter=niter,
-                                                                                    stitch_threshold=stitch_threshold,
-                                                                                    tile_overlap=tile_overlap,
-                                                                                    type=type,
-                                                                                )
+    param_combinations = [
+        CellposeConfig(
+            model_name=model_name,
+            channel_segment=channel_segment,
+            channel_nuclei=channel_nuclei,
+            channel_axis=channel_axis,
+            invert=invert,
+            normalize=normalize,
+            normalization_min=normalization_min,
+            normalization_max=normalization_max,
+            diameter=diameter,
+            do_3D=do_3D,
+            flow_threshold=flow_threshold,
+            cellprob_threshold=cellprob_threshold,
+            interp=interp,
+            min_size=min_size,
+            max_size_fraction=max_size_fraction,
+            niter=niter,
+            stitch_threshold=stitch_threshold,
+            tile_overlap=tile_overlap,
+            type=type,
+        )
+        for model_name in param_options["model_name"]
+        for channel_segment in param_options["channel_segment"]
+        for channel_nuclei in param_options["channel_nuclei"]
+        for channel_axis in param_options["channel_axis"]
+        for invert in param_options["invert"]
+        for normalize in param_options["normalize"]
+        for normalization_min in param_options["normalization_min"]
+        for normalization_max in param_options["normalization_max"]
+        for diameter in param_options["diameter"]
+        for do_3D in param_options["do_3D"]
+        for flow_threshold in param_options["flow_threshold"]
+        for cellprob_threshold in param_options["cellprob_threshold"]
+        for interp in param_options["interp"]
+        for min_size in param_options["min_size"]
+        for max_size_fraction in param_options["max_size_fraction"]
+        for niter in param_options["niter"]
+        for stitch_threshold in param_options["stitch_threshold"]
+        for tile_overlap in param_options["tile_overlap"]
+        for type in param_options["type"]
+    ]
 
-                                                                                results = evaluate_model(image_path, params, cache_dir)
-
-                                                                                if results == EvaluationError.GROUND_TRUTH_NOT_AVAILABLE:
-                                                                                    break
-                                                                                elif not isinstance(results, dict):
-                                                                                    continue
-
-                                                                                result_handler.log_result(results, params)
-
-                                                                                if show_viewer:
-                                                                                    show_napari(results, params)
-
-                                                                                if results["jaccard"] > 0.95:
-                                                                                    print(f"Found good parameters for {type} on {image_path}")
-                                                                                    return
+    with ProcessPoolExecutor() as executor:
+        results = list(executor.map(evaluate_params, param_combinations))
 
     if log_wandb:
         wandb.finish()
