@@ -82,9 +82,110 @@ def optimize_parameters(
                                                                                 if show_viewer:
                                                                                     show_napari(results, params)
 
-                                                                                if results["jaccard"] > 0.95:
-                                                                                    print(f"Found good parameters for {type} on {image_path}")
-                                                                                    return
+                                                                                # if results["jaccard"] > 0.95:
+                                                                                #     print(f"Found good parameters for {type} on {image_path}")
+                                                                                #     return
 
     if log_wandb:
         wandb.finish()
+
+
+
+
+
+
+
+
+
+#
+# import os
+# import itertools
+# import wandb
+# from concurrent.futures import ProcessPoolExecutor
+# from experiments.results import ResultHandler
+# from cellpose_adapt.config import ensure_default_parameter, CellposeConfig
+# from cellpose_adapt.core import EvaluationError
+# from cellpose_adapt.main import evaluate_model
+# from cellpose_adapt.viz import show_napari
+#
+#
+# def evaluate_params(image_path, result_file, cache_dir, show_viewer, log_wandb, append_result, param_combination):
+#     """Evaluates a single combination of parameters."""
+#     params = CellposeConfig(**param_combination)
+#     result_handler = ResultHandler(result_file, log_wandb, append_result)
+#
+#     try:
+#         results = evaluate_model(image_path, params, cache_dir)
+#         if results == EvaluationError.GROUND_TRUTH_NOT_AVAILABLE:
+#             return None
+#         elif not isinstance(results, dict):
+#             return None
+#
+#         result_handler.log_result(results, params)
+#
+#         if show_viewer:
+#             show_napari(results, params)
+#
+#         # if results.get("jaccard", 0) > 0.95:
+#         #     print(f"Found good parameters: {param_combination}")
+#         #     return param_combination
+#
+#     except Exception as e:
+#         print(f"Error with parameters {param_combination}: {e}")
+#
+#     return None
+#
+#
+# def generate_param_combinations(param_options):
+#     """Generates all combinations of parameters."""
+#     keys = param_options.keys()
+#     combinations = list(itertools.product(*param_options.values()))
+#     return [dict(zip(keys, combo)) for combo in combinations]
+#
+#
+# def optimize_parameters(
+#         param_options: dict,
+#         image_path: str = "",
+#         result_file: str = "",
+#         cache_dir: str = ".cache",
+#         show_viewer: bool = False,
+#         log_wandb: bool = False,
+#         append_result: bool = False,
+#         max_workers: int = 0,  # Number of parallel processes
+# ):
+#
+#     if max_workers == 0:
+#         max_workers = os.cpu_count()
+#
+#     if log_wandb:
+#         image_name = os.path.basename(image_path).replace(".tif", "")
+#         result_name = os.path.basename(result_file).replace(".csv", "")
+#         wandb.init(project="organoid_segmentation", name=f"{image_name}_{result_name}")
+#
+#     param_options = ensure_default_parameter(param_options)
+#     param_combinations = generate_param_combinations(param_options)
+#
+#     # Parallel execution
+#     with ProcessPoolExecutor(max_workers=max_workers) as executor:
+#         futures = [
+#             executor.submit(
+#                 evaluate_params,
+#                 image_path,
+#                 result_file,
+#                 cache_dir,
+#                 show_viewer,
+#                 log_wandb,
+#                 append_result,
+#                 combination,
+#             )
+#             for combination in param_combinations
+#         ]
+#
+#         # for future in futures:
+#         #     result = future.result()
+#         #     if result is not None:
+#         #         print(f"Optimal parameters found: {result}")
+#         #         break  # Stop further evaluations if optimal parameters are found
+#
+#     if log_wandb:
+#         wandb.finish()
