@@ -2,14 +2,13 @@
 
 #SBATCH --job-name=cellpose
 #SBATCH --gres=gpu:4               # Request 4 GPUs
-#SBATCH --nodes=2
+#SBATCH --nodes=1
 #SBATCH --ntasks=1                 # Number of tasks (1 task that uses multiple GPUs)
-#SBATCH --cpus-per-task=64         # Adjust CPUs per task based on the total available cores
-#SBATCH --time=48:00:00            # Time limit (24 hours)
-#SBATCH --mem=128G                  # Total memory for the job
+#SBATCH --cpus-per-task=128         # Adjust CPUs per task based on the total available cores
+#SBATCH --mem=512G                  # Total memory for the job
 #SBATCH --qos=normal
-#SBATCH --output=cellpose_out_%j.log
-#SBATCH --error=cellpose_err_%j.log
+#SBATCH --output=%j_cellpose_out.log
+#SBATCH --error=%j_cellpose_err.log
 
 # Log SLURM environment variables
 echo "SLURM Job ID: $SLURM_JOB_ID"
