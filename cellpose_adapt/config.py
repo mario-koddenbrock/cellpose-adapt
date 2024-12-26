@@ -20,6 +20,9 @@ import yaml
 # backbone_list # TODO
 # anisotropic_list # TODO
 
+available_model_list = ["cyto2_cp3", "cyto", "cyto2", "cyto3", "nuclei", "tissuenet_cp3", "livecell_cp3",
+                           "yeast_PhC_cp3", "yeast_BF_cp3", "bact_phase_cp3", "bact_fluor_cp3", "deepbacs_cp3"]
+
 def ensure_default_parameter(params):
     default_params = {
         "model_name": ["cyto3"],
