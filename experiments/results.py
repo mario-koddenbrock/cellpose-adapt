@@ -12,6 +12,9 @@ class ResultHandler:
         self.result_path = result_file
         self.log_wandb = log_wandb
 
+        if not os.path.exists(os.path.dirname(result_file)):
+            os.makedirs(os.path.dirname(result_file))
+
         if not append_result and os.path.exists(result_file):
             os.remove(result_file)
 

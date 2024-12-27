@@ -23,7 +23,7 @@ def plot_eval(result_path="data/P013T/results.csv"):
 
 
 if __name__ == "__main__":
-    main_folder = "../data/P013T/"
+    main_folder = "../results/P013T/"
 
     # get all the subfolder
     result_path = os.path.join(main_folder, "results.csv")
@@ -32,8 +32,8 @@ if __name__ == "__main__":
 
     # Define the result files
     result_file_models = os.path.join(main_folder, "results_models.csv")
-    result_file_normalize = os.path.join(main_folder, "results_normalize.csv")
     result_file_channel = os.path.join(main_folder, "results_channel.csv")
+    result_file_normalize = os.path.join(main_folder, "results_normalize.csv")
     result_file_diameter = os.path.join(main_folder, "results_diameter.csv")
     result_file_cellprob_threshold = os.path.join(main_folder, "results_cellprob_threshold.csv")
     result_file_min_size = os.path.join(main_folder, "results_min_size.csv")
