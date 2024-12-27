@@ -10,25 +10,35 @@ cache = TTLCache(maxsize=100, ttl=300)
 
 
 @cached(cache)
-def load_image_with_gt(image_path, type):
-    image_name = os.path.basename(image_path).replace(".tif", "")
-    # Read image with cellpose.io
-    image_orig = io.imread(image_path)
-    ground_truth = get_cellpose_ground_truth(image_path, image_name, type)
-    return ground_truth, image_orig
+def load_image_with_gt(image_path, ground_truth_path):
 
-
-def get_cellpose_ground_truth(image_path, image_name, type="Nuclei"):
-
-    ground_truth_path = image_path.replace("images_cropped_isotropic", f"labelmaps/{type}")
-    ground_truth_path = ground_truth_path.replace(".tif", f"_{type.lower()}-labels.tif")
+    if os.path.exists(image_path):
+        image = io.imread(image_path)
+    else:
+        print(f"Image not found: {image_path}. Skipping.")
+        image = None
 
     if os.path.exists(ground_truth_path):
         ground_truth = io.imread(ground_truth_path)
     else:
-        print(f"Ground truth not found for {image_name}. Skipping.")
+        print(f"Ground truth not found: {ground_truth_path}. Skipping.")
         ground_truth = None
-    return ground_truth
+
+    return image, ground_truth
+
+
+# def get_cellpose_ground_truth(image_path, image_name, type="Nuclei"):
+#
+#     ground_truth_path = image_path.replace("images_cropped_isotropic", f"labelmaps/{type}")
+#     ground_truth_path = ground_truth_path.replace(".tif", f"_{type.lower()}-labels.tif")
+#
+#     if os.path.exists(ground_truth_path):
+#         ground_truth = io.imread(ground_truth_path)
+#     else:
+#         print(f"Ground truth not found for {image_name}. Skipping.")
+#         ground_truth = None
+#     return ground_truth
+
 
 def read_yaml(yaml_file: str = "") -> CellposeConfig:
     """

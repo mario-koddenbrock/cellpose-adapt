@@ -33,27 +33,27 @@ if __name__ == "__main__":
     # Define the result files
     result_file_models = os.path.join(main_folder, "results_models.csv")
     result_file_normalize = os.path.join(main_folder, "results_normalize.csv")
+    result_file_channel = os.path.join(main_folder, "results_channel.csv")
     result_file_diameter = os.path.join(main_folder, "results_diameter.csv")
-    result_file_flow_threshold = os.path.join(main_folder, "results_flow_threshold.csv")
     result_file_cellprob_threshold = os.path.join(main_folder, "results_cellprob_threshold.csv")
     result_file_min_size = os.path.join(main_folder, "results_min_size.csv")
     result_file_stitch_threshold = os.path.join(main_folder, "results_stitch_threshold.csv")
     result_file_tile_overlap = os.path.join(main_folder, "results_tile_overlap.csv")
 
-    # plot_eval(result_file_models)
-    # plot_eval(result_file_normalize)
-    # plot_eval(result_file_diameter)
-    # plot_eval(result_file_flow_threshold)
-    # plot_eval(result_file_cellprob_threshold)
-    # plot_eval(result_file_min_size)
-    # plot_eval(result_file_stitch_threshold)
-    # plot_eval(result_file_tile_overlap)
+    plot_eval(result_file_models)
+    plot_eval(result_file_normalize)
+    plot_eval(result_file_channel)
+    plot_eval(result_file_diameter)
+    plot_eval(result_file_cellprob_threshold)
+    plot_eval(result_file_min_size)
+    plot_eval(result_file_stitch_threshold)
+    plot_eval(result_file_tile_overlap)
 
     all_results = [
         result_file_models,
         result_file_normalize,
+        result_file_channel,
         result_file_diameter,
-        result_file_flow_threshold,
         result_file_cellprob_threshold,
         result_file_min_size,
         result_file_stitch_threshold,

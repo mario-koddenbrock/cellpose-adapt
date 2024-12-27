@@ -1,4 +1,3 @@
-import os
 import time
 from enum import Enum
 
@@ -8,33 +7,13 @@ from cellpose.metrics import aggregated_jaccard_index
 from cellpose.models import CellposeModel
 from skimage.metrics import adapted_rand_error
 
-from .file_io import load_image_with_gt
 from .hash import save_to_cache, compute_hash, load_from_cache
 from .metrics import jaccard
 from .utils import check_set_gpu
 
 
-def evaluate_model(image_path, params, cache_dir=".cache", compute_masks=True):
+def evaluate_model(key, image, ground_truth, params, cache_dir=".cache", compute_masks=True):
     t0 = time.time()
-
-    image_name = os.path.basename(image_path).replace(".tif", "")
-    device = check_set_gpu()  # get available torch device (CPU, GPU or MPS)
-    ground_truth, image_orig = load_image_with_gt(image_path, params.type)
-
-    if ground_truth is None:
-        return EvaluationError.GROUND_TRUTH_NOT_AVAILABLE
-
-    print(f"Processing {image_name} ({device})")
-
-    if params.type == "Nuclei":
-        channel_idx = 0
-    elif params.type == "Membranes":
-        channel_idx = 1
-    else:
-        raise ValueError(f"Invalid type: {params.type}")
-
-    # Get the right channel
-    image = image_orig[:, channel_idx, :, :] if image_orig.ndim == 4 else image_orig
 
     # get intensity percentile for normalization
     q1, q3 = np.percentile(image, [params.normalization_min, params.normalization_max])
@@ -57,6 +36,23 @@ def evaluate_model(image_path, params, cache_dir=".cache", compute_masks=True):
 
             # return EvaluationError.EVALUATION_ERROR
 
+            results = {
+                "image": image,
+                "image_name": key,
+                "ground_truth": ground_truth,
+                "masks": None,
+                "are": 42,
+                "precision": 43,
+                "recall": 44,
+                "f1": 45,
+                "jaccard": 46,
+                "jaccard_cellpose": 47,
+                "duration": 100,
+            }
+
+            return results
+
+            device = check_set_gpu()
             model = CellposeModel(device=device, gpu=False, model_type=params.model_name,
                                     diam_mean=params.diameter, nchan=2,
                                     backbone="default")
@@ -135,7 +131,7 @@ def evaluate_model(image_path, params, cache_dir=".cache", compute_masks=True):
 
     results = {
         "image": image,
-        "image_name": image_name,
+        "image_name": key,
         "ground_truth": ground_truth,
         "masks": masks,
         "are": are,
@@ -155,5 +151,6 @@ def evaluate_model(image_path, params, cache_dir=".cache", compute_masks=True):
 
 class EvaluationError(Enum):
     GROUND_TRUTH_NOT_AVAILABLE = "Ground truth not available"
+    IMAGE_NOT_AVAILABLE = "Image not available"
     EVALUATION_ERROR = "Evaluation error"
     EMPTY_MASKS = "Empty masks"

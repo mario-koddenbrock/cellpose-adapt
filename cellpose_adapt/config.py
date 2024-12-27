@@ -43,7 +43,6 @@ def ensure_default_parameter(params):
         "niter": [100],
         "stitch_threshold": [0.0],
         "tile_overlap": [0.1],
-        "type": ["Nuclei", "Membranes"],
     }
 
     diameter_not_set = "diameter" not in params

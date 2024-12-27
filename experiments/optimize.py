@@ -1,7 +1,10 @@
 import os
 
 import wandb
+from sympy.physics.vector.printing import params
 
+from cellpose_adapt.file_io import load_image_with_gt
+from cellpose_adapt.utils import check_set_gpu
 from experiments.results import ResultHandler
 from cellpose_adapt.config import ensure_default_parameter, CellposeConfig
 from cellpose_adapt.core import EvaluationError
@@ -10,8 +13,8 @@ from cellpose_adapt.viz import show_napari
 
 
 def optimize_parameters(
-        param_options: dict,
-        image_path: str = "",
+        params: dict,
+        data: list,
         result_file: str = "",
         cache_dir: str = ".cache",
         show_viewer: bool = False,
@@ -19,36 +22,66 @@ def optimize_parameters(
         append_result: bool = False,
 ):
 
-    if log_wandb:
+
+    for image_idx, (image_path, ground_truth_path) in enumerate(data):
+
+        if log_wandb:
+            image_name = os.path.basename(image_path).replace(".tif", "")
+            result_name = os.path.basename(result_file).replace(".csv", "")
+            wandb.init(project="organoid_segmentation", name=f"{image_name}_{result_name}")
+
+        if "nuclei" in ground_truth_path.lower():
+            params["type"] = "Nuclei"
+        elif "membrane" in ground_truth_path.lower():
+            params["type"] = "Membranes"
+        else:
+            raise ValueError(f"Invalid ground truth: {ground_truth_path}")
+
+        result_handler = ResultHandler(result_file, log_wandb, append_result)
+        append_result = True
+        params = ensure_default_parameter(params)
+
         image_name = os.path.basename(image_path).replace(".tif", "")
-        result_name = os.path.basename(result_file).replace(".csv", "")
-        wandb.init(project="organoid_segmentation", name=f"{image_name}_{result_name}")
+        image_orig, ground_truth = load_image_with_gt(image_path, ground_truth_path)
 
-    result_handler = ResultHandler(result_file, log_wandb, append_result)
+        if image_orig is None:
+            return EvaluationError.IMAGE_NOT_AVAILABLE
 
-    param_options = ensure_default_parameter(param_options)
+        if ground_truth is None:
+            return EvaluationError.GROUND_TRUTH_NOT_AVAILABLE
 
-    for model_name in param_options["model_name"]:
-        for channel_segment in param_options["channel_segment"]:
-            for channel_nuclei in param_options["channel_nuclei"]:
-                for channel_axis in param_options["channel_axis"]:
-                    for invert in param_options["invert"]:
-                        for normalize in param_options["normalize"]:
-                            for normalization_min in param_options["normalization_min"]:
-                                for normalization_max in param_options["normalization_max"]:
-                                    for diameter in param_options["diameter"]:
-                                        for do_3D in param_options["do_3D"]:
-                                            for flow_threshold in param_options["flow_threshold"]:
-                                                for cellprob_threshold in param_options["cellprob_threshold"]:
-                                                    for interp in param_options["interp"]:
-                                                        for min_size in param_options["min_size"]:
-                                                            for max_size_fraction in param_options["max_size_fraction"]:
-                                                                for niter in param_options["niter"]:
-                                                                    for stitch_threshold in param_options["stitch_threshold"]:
-                                                                        for tile_overlap in param_options["tile_overlap"]:
-                                                                            for type in param_options["type"]:
+        print(f"Processing {image_name}")
 
-                                                                                params = CellposeConfig(
+        if params["type"] == "Nuclei":
+            channel_idx = 0
+        elif params["type"] == "Membranes":
+            channel_idx = 1
+        else:
+            raise ValueError(f"Invalid type: {params.type}")
+
+        # Get the right channel
+        image = image_orig[:, channel_idx, :, :] if image_orig.ndim == 4 else image_orig
+
+        for model_name in params["model_name"]:
+            for channel_segment in params["channel_segment"]:
+                for channel_nuclei in params["channel_nuclei"]:
+                    for channel_axis in params["channel_axis"]:
+                        for invert in params["invert"]:
+                            for normalize in params["normalize"]:
+                                for normalization_min in params["normalization_min"]:
+                                    for normalization_max in params["normalization_max"]:
+                                        for diameter in params["diameter"]:
+                                            for do_3D in params["do_3D"]:
+                                                for flow_threshold in params["flow_threshold"]:
+                                                    for cellprob_threshold in params["cellprob_threshold"]:
+                                                        for interp in params["interp"]:
+                                                            for min_size in params["min_size"]:
+                                                                for max_size_fraction in params["max_size_fraction"]:
+                                                                    for niter in params["niter"]:
+                                                                        for stitch_threshold in params["stitch_threshold"]:
+                                                                            for tile_overlap in params["tile_overlap"]:
+
+                                                                                config = CellposeConfig(
                                                                                     model_name=model_name,
                                                                                     channel_segment=channel_segment,
                                                                                     channel_nuclei=channel_nuclei,
@@ -67,20 +100,20 @@ def optimize_parameters(
                                                                                     niter=niter,
                                                                                     stitch_threshold=stitch_threshold,
                                                                                     tile_overlap=tile_overlap,
-                                                                                    type=type,
+                                                                                    type=params["type"],
                                                                                 )
 
-                                                                                results = evaluate_model(image_path, params, cache_dir)
+                                                                                results = evaluate_model(image_name, image, ground_truth, config, cache_dir)
 
                                                                                 if results == EvaluationError.GROUND_TRUTH_NOT_AVAILABLE:
                                                                                     break
                                                                                 elif not isinstance(results, dict):
                                                                                     continue
 
-                                                                                result_handler.log_result(results, params)
+                                                                                result_handler.log_result(results, config)
 
                                                                                 if show_viewer:
-                                                                                    show_napari(results, params)
+                                                                                    show_napari(results, config)
 
                                                                                 # if results["jaccard"] > 0.95:
                                                                                 #     print(f"Found good parameters for {type} on {image_path}")
@@ -88,104 +121,3 @@ def optimize_parameters(
 
     if log_wandb:
         wandb.finish()
-
-
-
-
-
-
-
-
-
-#
-# import os
-# import itertools
-# import wandb
-# from concurrent.futures import ProcessPoolExecutor
-# from experiments.results import ResultHandler
-# from cellpose_adapt.config import ensure_default_parameter, CellposeConfig
-# from cellpose_adapt.core import EvaluationError
-# from cellpose_adapt.main import evaluate_model
-# from cellpose_adapt.viz import show_napari
-#
-#
-# def evaluate_params(image_path, result_file, cache_dir, show_viewer, log_wandb, append_result, param_combination):
-#     """Evaluates a single combination of parameters."""
-#     params = CellposeConfig(**param_combination)
-#     result_handler = ResultHandler(result_file, log_wandb, append_result)
-#
-#     try:
-#         results = evaluate_model(image_path, params, cache_dir)
-#         if results == EvaluationError.GROUND_TRUTH_NOT_AVAILABLE:
-#             return None
-#         elif not isinstance(results, dict):
-#             return None
-#
-#         result_handler.log_result(results, params)
-#
-#         if show_viewer:
-#             show_napari(results, params)
-#
-#         # if results.get("jaccard", 0) > 0.95:
-#         #     print(f"Found good parameters: {param_combination}")
-#         #     return param_combination
-#
-#     except Exception as e:
-#         print(f"Error with parameters {param_combination}: {e}")
-#
-#     return None
-#
-#
-# def generate_param_combinations(param_options):
-#     """Generates all combinations of parameters."""
-#     keys = param_options.keys()
-#     combinations = list(itertools.product(*param_options.values()))
-#     return [dict(zip(keys, combo)) for combo in combinations]
-#
-#
-# def optimize_parameters(
-#         param_options: dict,
-#         image_path: str = "",
-#         result_file: str = "",
-#         cache_dir: str = ".cache",
-#         show_viewer: bool = False,
-#         log_wandb: bool = False,
-#         append_result: bool = False,
-#         max_workers: int = 0,  # Number of parallel processes
-# ):
-#
-#     if max_workers == 0:
-#         max_workers = os.cpu_count()
-#
-#     if log_wandb:
-#         image_name = os.path.basename(image_path).replace(".tif", "")
-#         result_name = os.path.basename(result_file).replace(".csv", "")
-#         wandb.init(project="organoid_segmentation", name=f"{image_name}_{result_name}")
-#
-#     param_options = ensure_default_parameter(param_options)
-#     param_combinations = generate_param_combinations(param_options)
-#
-#     # Parallel execution
-#     with ProcessPoolExecutor(max_workers=max_workers) as executor:
-#         futures = [
-#             executor.submit(
-#                 evaluate_params,
-#                 image_path,
-#                 result_file,
-#                 cache_dir,
-#                 show_viewer,
-#                 log_wandb,
-#                 append_result,
-#                 combination,
-#             )
-#             for combination in param_combinations
-#         ]
-#
-#         # for future in futures:
-#         #     result = future.result()
-#         #     if result is not None:
-#         #         print(f"Optimal parameters found: {result}")
-#         #         break  # Stop further evaluations if optimal parameters are found
-#
-#     if log_wandb:
-#         wandb.finish()
