@@ -39,16 +39,17 @@ def optimize_parameters(
 
         result_handler = ResultHandler(result_file, log_wandb, append_result)
         append_result = True
+
         params = ensure_default_parameter(params)
 
         image_name = os.path.basename(image_path).replace(".tif", "")
         image_orig, ground_truth = load_image_with_gt(image_path, ground_truth_path)
 
         if image_orig is None:
-            return EvaluationError.IMAGE_NOT_AVAILABLE
+            continue
 
         if ground_truth is None:
-            return EvaluationError.GROUND_TRUTH_NOT_AVAILABLE
+            continue
 
         print(f"Processing {image_name}")
 
@@ -68,8 +69,8 @@ def optimize_parameters(
                     for channel_axis in params["channel_axis"]:
                         for invert in params["invert"]:
                             for normalize in params["normalize"]:
-                                for normalization_min in params["normalization_min"]:
-                                    for normalization_max in params["normalization_max"]:
+                                for percentile_min in params["percentile_min"]:
+                                    for percentile_max in params["percentile_max"]:
                                         for diameter in params["diameter"]:
                                             for do_3D in params["do_3D"]:
                                                 for flow_threshold in params["flow_threshold"]:
@@ -80,44 +81,50 @@ def optimize_parameters(
                                                                     for niter in params["niter"]:
                                                                         for stitch_threshold in params["stitch_threshold"]:
                                                                             for tile_overlap in params["tile_overlap"]:
+                                                                                for norm3D in params["norm3D"]:
+                                                                                    for sharpen in params["sharpen"]:
+                                                                                        for tile_norm in params["tile_norm"]:
 
-                                                                                config = CellposeConfig(
-                                                                                    model_name=model_name,
-                                                                                    channel_segment=channel_segment,
-                                                                                    channel_nuclei=channel_nuclei,
-                                                                                    channel_axis=channel_axis,
-                                                                                    invert=invert,
-                                                                                    normalize=normalize,
-                                                                                    normalization_min=normalization_min,
-                                                                                    normalization_max=normalization_max,
-                                                                                    diameter=diameter,
-                                                                                    do_3D=do_3D,
-                                                                                    flow_threshold=flow_threshold,
-                                                                                    cellprob_threshold=cellprob_threshold,
-                                                                                    interp=interp,
-                                                                                    min_size=min_size,
-                                                                                    max_size_fraction=max_size_fraction,
-                                                                                    niter=niter,
-                                                                                    stitch_threshold=stitch_threshold,
-                                                                                    tile_overlap=tile_overlap,
-                                                                                    type=params["type"],
-                                                                                )
+                                                                                            config = CellposeConfig(
+                                                                                                cellprob_threshold=cellprob_threshold,
+                                                                                                channel_axis=channel_axis,
+                                                                                                channel_nuclei=channel_nuclei,
+                                                                                                channel_segment=channel_segment,
+                                                                                                diameter=diameter,
+                                                                                                do_3D=do_3D,
+                                                                                                flow_threshold=flow_threshold,
+                                                                                                interp=interp,
+                                                                                                invert=invert,
+                                                                                                max_size_fraction=max_size_fraction,
+                                                                                                min_size=min_size,
+                                                                                                model_name=model_name,
+                                                                                                niter=niter,
+                                                                                                norm3D=norm3D,
+                                                                                                normalize=normalize,
+                                                                                                percentile_max=percentile_max,
+                                                                                                percentile_min=percentile_min,
+                                                                                                sharpen=sharpen,
+                                                                                                stitch_threshold=stitch_threshold,
+                                                                                                tile_norm=tile_norm,
+                                                                                                tile_overlap=tile_overlap,
+                                                                                                type=params["type"],
+                                                                                            )
 
-                                                                                results = evaluate_model(image_name, image, ground_truth, config, cache_dir)
+                                                                                            results = evaluate_model(image_name, image, ground_truth, config, cache_dir)
 
-                                                                                if results == EvaluationError.GROUND_TRUTH_NOT_AVAILABLE:
-                                                                                    break
-                                                                                elif not isinstance(results, dict):
-                                                                                    continue
+                                                                                            if results == EvaluationError.GROUND_TRUTH_NOT_AVAILABLE:
+                                                                                                break
+                                                                                            elif not isinstance(results, dict):
+                                                                                                continue
 
-                                                                                result_handler.log_result(results, config)
+                                                                                            result_handler.log_result(results, config)
 
-                                                                                if show_viewer:
-                                                                                    show_napari(results, config)
+                                                                                            if show_viewer:
+                                                                                                show_napari(results, config)
 
-                                                                                # if results["jaccard"] > 0.95:
-                                                                                #     print(f"Found good parameters for {type} on {image_path}")
-                                                                                #     return
+                                                                                            # if results["jaccard"] > 0.95:
+                                                                                            #     print(f"Found good parameters for {type} on {image_path}")
+                                                                                            #     return
 
     if log_wandb:
         wandb.finish()
