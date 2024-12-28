@@ -1,4 +1,3 @@
-from cellpose_adapt.utils import set_all_seeds
 from experiments import setup
 
 
@@ -12,6 +11,8 @@ def main():
     setup.run_min_size_experiments()
     setup.run_stitch_threshold_experiments()
     setup.run_tile_overlap_experiments()
+
+    # TODO experiments on tile_norm, sharpen, norm3D
 
 if __name__ == "__main__":
     main()
