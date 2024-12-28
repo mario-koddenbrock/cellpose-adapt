@@ -16,7 +16,7 @@ def evaluate_model(key, image, ground_truth, params, cache_dir=".cache", compute
     t0 = time.time()
 
     # get intensity percentile for normalization
-    q1, q3 = np.percentile(image, [params.normalization_min, params.normalization_max])
+    q1, q3 = np.percentile(image, [params.percentile_min, params.percentile_max])
     image = np.clip(image, q1, q3)
 
     # plot the intensity distribution of the image
@@ -34,28 +34,33 @@ def evaluate_model(key, image, ground_truth, params, cache_dir=".cache", compute
         print(f"\tEVALUATING: {model_name}")
         try:
 
-            # return EvaluationError.EVALUATION_ERROR
-
-            results = {
-                "image": image,
-                "image_name": key,
-                "ground_truth": ground_truth,
-                "masks": None,
-                "are": 42,
-                "precision": 43,
-                "recall": 44,
-                "f1": 45,
-                "jaccard": 46,
-                "jaccard_cellpose": 47,
-                "duration": 100,
-            }
-
-            return results
+            # return {
+            #     "image": image,
+            #     "image_name": key,
+            #     "ground_truth": ground_truth,
+            #     "masks": None,
+            #     "are": 42,
+            #     "precision": 43,
+            #     "recall": 44,
+            #     "f1": 45,
+            #     "jaccard": 46,
+            #     "jaccard_cellpose": 47,
+            #     "duration": 100,
+            # }
 
             device = check_set_gpu()
             model = CellposeModel(device=device, gpu=False, model_type=params.model_name,
                                     diam_mean=params.diameter, nchan=2,
                                     backbone="default")
+
+            normalzation_params = {
+                "lowhigh": None, # pass in normalization values for 0.0 and 1.0 as list [low, high] (if not None, all following parameters ignored)
+                "sharpen": params.sharpen * params.diameter, # sharpen image with high pass filter, recommended to be 1/4-1/8 diameter of cells in pixels
+                "normalize": params.normalize, # run normalization (if False, all following parameters ignored)
+                "percentile": [params.percentile_min, params.percentile_max], # pass in percentiles to use as list [perc_low, perc_high]
+                "tile_norm": params.tile_norm, # compute normalization in tiles across image to brighten dark areas, to turn on set to window size in pixels (e.g. 100)
+                "norm3D": params.norm3D, # compute normalization across entire z-stack rather than plane-by-plane in stitching mode.
+            }
 
             masks, flows, styles = model.eval(
                 image,
@@ -67,9 +72,13 @@ def evaluate_model(key, image, ground_truth, params, cache_dir=".cache", compute
                 do_3D=params.do_3D,
                 flow_threshold=params.flow_threshold,
                 invert=params.invert,
-                max_size_fraction=0.5, # default
-                min_size=15, # default
-                normalize=params.normalize,
+                interp=params.interp,
+                max_size_fraction=params.max_size_fraction,
+                min_size=params.min_size,
+                niter=params.niter,
+                normalize=normalzation_params,
+                tile_overlap=params.tile_overlap,
+                stitch_threshold=params.stitch_threshold,
                 z_axis=0,  # TODO: z-axis parameter always 0?
             )
             save_to_cache(cache_dir, cache_key, masks, flows, styles, params.diameter)
@@ -93,7 +102,7 @@ def evaluate_model(key, image, ground_truth, params, cache_dir=".cache", compute
 
         # TODO model might be not initialized
 
-        masks = model.cp._compute_masks(
+        masks = model._compute_masks(
             x.shape, dP, cellprob,
             flow_threshold=params.flow_threshold,
             cellprob_threshold=params.cellprob_threshold,

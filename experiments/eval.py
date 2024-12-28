@@ -31,14 +31,14 @@ if __name__ == "__main__":
     plot_eval(result_path)
 
     # Define the result files
-    result_file_models = os.path.join(main_folder, "results_models.csv")
-    result_file_channel = os.path.join(main_folder, "results_channel.csv")
-    result_file_normalize = os.path.join(main_folder, "results_normalize.csv")
-    result_file_diameter = os.path.join(main_folder, "results_diameter.csv")
-    result_file_cellprob_threshold = os.path.join(main_folder, "results_cellprob_threshold.csv")
-    result_file_min_size = os.path.join(main_folder, "results_min_size.csv")
-    result_file_stitch_threshold = os.path.join(main_folder, "results_stitch_threshold.csv")
-    result_file_tile_overlap = os.path.join(main_folder, "results_tile_overlap.csv")
+    result_file_models = os.path.join(main_folder, "experiments_1_models.csv")
+    result_file_channel = os.path.join(main_folder, "experiments_2_channel.csv")
+    result_file_normalize = os.path.join(main_folder, "experiments_3_normalize.csv")
+    result_file_diameter = os.path.join(main_folder, "experiments_4_diameter.csv")
+    result_file_cellprob_threshold = os.path.join(main_folder, "experiments_5_cellprob_threshold.csv")
+    result_file_min_size = os.path.join(main_folder, "experiments_6_min_size.csv")
+    result_file_stitch_threshold = os.path.join(main_folder, "experiments_7_stitch_threshold.csv")
+    result_file_tile_overlap = os.path.join(main_folder, "experiments_8_tile_overlap.csv")
 
     plot_eval(result_file_models)
     plot_eval(result_file_normalize)

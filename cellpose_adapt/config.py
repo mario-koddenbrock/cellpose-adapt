@@ -20,28 +20,43 @@ import yaml
 # backbone_list # TODO
 # anisotropic_list # TODO
 
-available_model_list = ["cyto2_cp3", "cyto", "cyto2", "cyto3", "nuclei", "tissuenet_cp3", "livecell_cp3",
-                           "yeast_PhC_cp3", "yeast_BF_cp3", "bact_phase_cp3", "bact_fluor_cp3", "deepbacs_cp3"]
+available_model_list = [
+    "cyto3",
+    "cyto2_cp3",
+    "cyto",
+    "cyto2",
+    "nuclei",
+    "tissuenet_cp3",
+    "livecell_cp3",
+    "yeast_PhC_cp3",
+    "yeast_BF_cp3",
+    "bact_phase_cp3",
+    "bact_fluor_cp3",
+    "deepbacs_cp3",
+]
 
 def ensure_default_parameter(params):
     default_params = {
-        "model_name": ["cyto3"],
-        "channel_segment": [0],
-        "channel_nuclei": [0],
+        "cellprob_threshold": [0.0],
         "channel_axis": [None],
-        "invert": [False],
-        "normalize": [True],
-        "normalization_min": [0],
-        "normalization_max": [1],
+        "channel_nuclei": [0],
+        "channel_segment": [0],
         "diameter": [30],
         "do_3D": [True],
         "flow_threshold": [0.1],  # apparently, this is not used in 3D
-        "cellprob_threshold": [0.0],
         "interp": [False],
-        "min_size": [15],
+        "invert": [False],
         "max_size_fraction": [0.5],
+        "min_size": [15],
+        "model_name": ["cyto3"],
         "niter": [100],
+        "norm3D": [True],
+        "normalize": [True],
+        "percentile_max": [1],
+        "percentile_min": [0],
+        "sharpen": [1/8],
         "stitch_threshold": [0.0],
+        "tile_norm": [0],
         "tile_overlap": [0.1],
     }
 
@@ -59,23 +74,26 @@ def ensure_default_parameter(params):
 # Define a dataclass to store the evaluation parameters
 @dataclass
 class CellposeConfig:
-    model_name: str
-    channel_segment: int
-    channel_nuclei: int
+    cellprob_threshold: float
     channel_axis: any
-    invert: bool
-    normalize: bool
-    normalization_min: int
-    normalization_max: int
+    channel_nuclei: int
+    channel_segment: int
     diameter: int
     do_3D: bool
     flow_threshold: float
-    cellprob_threshold: float
     interp: bool
-    min_size: int
+    invert: bool
     max_size_fraction: float
+    min_size: int
+    model_name: str
     niter: int
+    norm3D: bool
+    normalize: bool
+    percentile_max: int
+    percentile_min: int
+    sharpen: float
     stitch_threshold: float
+    tile_norm: int
     tile_overlap: float
     type: str
 
@@ -88,25 +106,28 @@ class CellposeConfig:
             yaml_file (str): The path to save the YAML file.
         """
         config = {
-            "model_name": self.model_name,
-            "channel_segment": self.channel_segment,
-            "channel_nuclei": self.channel_nuclei,
+            "cellprob_threshold": self.cellprob_threshold,
             "channel_axis": self.channel_axis,
-            "invert": self.invert,
-            "normalize": self.normalize,
-            "normalization_min": self.normalization_min,
-            "normalization_max": self.normalization_max,
+            "channel_nuclei": self.channel_nuclei,
+            "channel_segment": self.channel_segment,
             "diameter": self.diameter,
             "do_3D": self.do_3D,
             "flow_threshold": self.flow_threshold,
-            "cellprob_threshold": self.cellprob_threshold,
             "interp": self.interp,
-            "min_size": self.min_size,
+            "invert": self.invert,
             "max_size_fraction": self.max_size_fraction,
+            "min_size": self.min_size,
+            "model_name": self.model_name,
             "niter": self.niter,
+            "norm3D": self.norm3D,
+            "normalize": self.normalize,
+            "percentile_max": self.percentile_max,
+            "percentile_min": self.percentile_min,
+            "sharpen": self.sharpen,
             "stitch_threshold": self.stitch_threshold,
+            "tile_norm": self.tile_norm,
             "tile_overlap": self.tile_overlap,
-            "type": self.type
+            "type": self.type,
         }
         try:
             with open(yaml_file, 'w') as file:
