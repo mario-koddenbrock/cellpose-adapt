@@ -83,8 +83,10 @@ def optimize_parameters(
             params["stitch_threshold"],
             params["tile_overlap"],
             params["norm3D"],
-            params["sharpen"],
-            params["tile_norm"]
+            params["sharpen_radius"],
+            params["smooth_radius"],
+            params["tile_norm_blocksize"],
+            params["tile_norm_smooth3D"],
         )
 
         for combination in param_combinations:
@@ -92,7 +94,7 @@ def optimize_parameters(
                 model_name, channel_segment, channel_nuclei, channel_axis, invert, normalize,
                 percentile_min, percentile_max, diameter, do_3D, flow_threshold, cellprob_threshold,
                 interp, min_size, max_size_fraction, niter, stitch_threshold, tile_overlap,
-                norm3D, sharpen, tile_norm
+                norm3D, sharpen_radius, smooth_radius, tile_norm_blocksize, tile_norm_smooth3D
             ) = combination
 
             config = CellposeConfig(
@@ -113,9 +115,11 @@ def optimize_parameters(
                 normalize=normalize,
                 percentile_max=percentile_max,
                 percentile_min=percentile_min,
-                sharpen=sharpen,
+                sharpen_radius=sharpen_radius,
+                smooth_radius=smooth_radius,
                 stitch_threshold=stitch_threshold,
-                tile_norm=tile_norm,
+                tile_norm_blocksize=tile_norm_blocksize,
+                tile_norm_smooth3D=tile_norm_smooth3D,
                 tile_overlap=tile_overlap,
                 type=params["type"],
             )

@@ -53,13 +53,36 @@ def evaluate_model(key, image, ground_truth, params, cache_dir=".cache", compute
                                     diam_mean=params.diameter, nchan=2,
                                     backbone="default")
 
+            #     Args:
+            #         img (ndarray): The input image. It should have at least 3 dimensions.
+            #             If it is 4-dimensional, it assumes the first non-channel axis is the Z dimension.
+            #         normalize (bool, optional): Whether to perform normalization. Defaults to True.
+            #         norm3D (bool, optional): Whether to normalize in 3D. If True, the entire 3D stack will
+            #             be normalized per channel. If False, normalization is applied per Z-slice. Defaults to False.
+            #         invert (bool, optional): Whether to invert the image. Useful if cells are dark instead of bright.
+            #             Defaults to False.
+            #         lowhigh (tuple or ndarray, optional): The lower and upper bounds for normalization.
+            #             Can be a tuple of two values (applied to all channels) or an array of shape (nchan, 2)
+            #             for per-channel normalization. Incompatible with smoothing and sharpening.
+            #             Defaults to None.
+            #         percentile (tuple, optional): The lower and upper percentiles for normalization. If provided, it should be
+            #             a tuple of two values. Each value should be between 0 and 100. Defaults to (1.0, 99.0).
+            #         sharpen_radius (int, optional): The radius for sharpening the image. Defaults to 0.
+            #         smooth_radius (int, optional): The radius for smoothing the image. Defaults to 0.
+            #         tile_norm_blocksize (int, optional): The block size for tile-based normalization. Defaults to 0.
+            #         tile_norm_smooth3D (int, optional): The smoothness factor for tile-based normalization in 3D. Defaults to 1.
+            #         axis (int, optional): The channel axis to loop over for normalization. Defaults to -1.
+
             normalzation_params = {
-                "lowhigh": None, # pass in normalization values for 0.0 and 1.0 as list [low, high] (if not None, all following parameters ignored)
-                "sharpen": params.sharpen * params.diameter, # sharpen image with high pass filter, recommended to be 1/4-1/8 diameter of cells in pixels
-                "normalize": params.normalize, # run normalization (if False, all following parameters ignored)
-                "percentile": [params.percentile_min, params.percentile_max], # pass in percentiles to use as list [perc_low, perc_high]
-                "tile_norm": params.tile_norm, # compute normalization in tiles across image to brighten dark areas, to turn on set to window size in pixels (e.g. 100)
-                "norm3D": params.norm3D, # compute normalization across entire z-stack rather than plane-by-plane in stitching mode.
+                "lowhigh": None,
+                "norm3D": params.norm3D,
+                "normalize": params.normalize,
+                "invert": params.invert,
+                "percentile": (params.percentile_min, params.percentile_max),
+                "sharpen_radius": params.sharpen_radius,
+                "smooth_radius": params.smooth_radius,
+                "tile_norm_blocksize": params.tile_norm_blocksize,
+                "tile_norm_smooth3D": params.tile_norm_smooth3D,
             }
 
             masks, flows, styles = model.eval(

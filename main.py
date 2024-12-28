@@ -12,7 +12,7 @@ def main():
     setup.run_stitch_threshold_experiments()
     setup.run_tile_overlap_experiments()
 
-    # TODO experiments on tile_norm, sharpen, norm3D
+    # TODO experiments on tile_norm, sharpen_radius + smooth_radius, norm3D
 
 if __name__ == "__main__":
     main()

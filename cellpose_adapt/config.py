@@ -54,9 +54,11 @@ def ensure_default_parameter(params):
         "normalize": [True],
         "percentile_max": [1],
         "percentile_min": [0],
-        "sharpen": [1/8],
+        "sharpen_radius": [2],
+        "smooth_radius": [2],
         "stitch_threshold": [0.0],
-        "tile_norm": [0],
+        "tile_norm_blocksize": [0],
+        "tile_norm_smooth3D": [0],
         "tile_overlap": [0.1],
     }
 
@@ -91,9 +93,11 @@ class CellposeConfig:
     normalize: bool
     percentile_max: int
     percentile_min: int
-    sharpen: float
+    sharpen_radius: int
+    smooth_radius: int
     stitch_threshold: float
-    tile_norm: int
+    tile_norm_blocksize: int
+    tile_norm_smooth3D: int
     tile_overlap: float
     type: str
 
@@ -123,9 +127,11 @@ class CellposeConfig:
             "normalize": self.normalize,
             "percentile_max": self.percentile_max,
             "percentile_min": self.percentile_min,
-            "sharpen": self.sharpen,
+            "sharpen_radius": self.sharpen_radius,
+            "smooth_radius": self.smooth_radius,
             "stitch_threshold": self.stitch_threshold,
-            "tile_norm": self.tile_norm,
+            "tile_norm_blocksize": self.tile_norm_blocksize,
+            "tile_norm_smooth3D": self.tile_norm_smooth3D,
             "tile_overlap": self.tile_overlap,
             "type": self.type,
         }
