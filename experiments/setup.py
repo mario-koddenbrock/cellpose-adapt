@@ -32,11 +32,15 @@ def run_channel_experiments(eval: bool = False):
 
 def run_normalization_experiments(eval: bool = False):
     result_file_normalize = os.path.join(main_folder, "experiments_3_normalize.csv")
-    options_normalization = {"percentile_min": [0, 1, 5, 10, 20, 30, 50], "normalize": [True, False]}
-    optimize_parameters(options_normalization, data, result_file_normalize)
 
-    options_normalization = {"percentile_max": [90, 93, 95, 97, 98, 99, 99.5, 100], "normalize": [True, False]}
-    optimize_parameters(options_normalization, data, result_file_normalize, append_result=True)
+    options_normalization_off = {"normalize": [False]}
+    optimize_parameters(options_normalization_off, data, result_file_normalize)
+
+    options_normalization_min = {"percentile_min": [0, 1, 5, 10, 20, 30, 50], "normalize": [True]}
+    optimize_parameters(options_normalization_min, data, result_file_normalize)
+
+    options_normalization_max = {"percentile_max": [90, 93, 95, 97, 98, 99, 99.5, 100], "normalize": [True]}
+    optimize_parameters(options_normalization_max, data, result_file_normalize, append_result=True)
     if eval:
         plot_eval(result_file_normalize)
 
