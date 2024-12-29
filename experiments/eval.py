@@ -38,7 +38,8 @@ if __name__ == "__main__":
     result_file_cellprob_threshold = os.path.join(main_folder, "experiments_5_cellprob_threshold.csv")
     result_file_min_size = os.path.join(main_folder, "experiments_6_min_size.csv")
     result_file_stitch_threshold = os.path.join(main_folder, "experiments_7_stitch_threshold.csv")
-    result_file_tile_overlap = os.path.join(main_folder, "experiments_8_tile_overlap.csv")
+    result_file_tile = os.path.join(main_folder, "experiments_8_tile.csv")
+    result_file_smoothing = os.path.join(main_folder, "experiments_9_smoothing.csv")
 
     plot_eval(result_file_models)
     plot_eval(result_file_normalize)
@@ -47,7 +48,8 @@ if __name__ == "__main__":
     plot_eval(result_file_cellprob_threshold)
     plot_eval(result_file_min_size)
     plot_eval(result_file_stitch_threshold)
-    plot_eval(result_file_tile_overlap)
+    plot_eval(result_file_tile)
+    plot_eval(result_file_smoothing)
 
     all_results = [
         result_file_models,
@@ -57,7 +59,8 @@ if __name__ == "__main__":
         result_file_cellprob_threshold,
         result_file_min_size,
         result_file_stitch_threshold,
-        result_file_tile_overlap
+        result_file_tile,
+        result_file_smoothing,
     ]
 
     plot_eval(all_results)
