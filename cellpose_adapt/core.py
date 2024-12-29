@@ -24,12 +24,11 @@ def evaluate_model(key, image, ground_truth, params, cache_dir=".cache", compute
 
     cache_key = compute_hash(image, params, compute_masks)
 
-    cached_result = load_from_cache(cache_dir, cache_key)
+    masks, flows, styles, diams = load_from_cache(cache_dir, cache_key)
     model_name = params.model_name
 
-    if cached_result:
+    if masks is not None:
         print(f"\tLOADING FROM CACHE: {model_name}")
-        masks, flows, styles, diams = cached_result
     else:
         print(f"\tEVALUATING: {model_name}")
         try:

@@ -61,15 +61,31 @@ def load_from_cache(cache_dir, cache_key):
     """
     cache_key_dir = os.path.join(cache_dir, cache_key)
     if not os.path.exists(cache_key_dir):
-        return None
+        return None, None, None, None
 
-    # Load each component
-    masks = np.load(os.path.join(cache_key_dir, "masks.npy"))
-    styles = np.load(os.path.join(cache_key_dir, "styles.npy"))
-    diams = np.load(os.path.join(cache_key_dir, "diams.npy")).item()
+    try:
+        masks = np.load(os.path.join(cache_key_dir, "masks.npy"))
+    except Exception as e:
+        print(f"Error: {e}")
+        masks = None
 
-    # Load flows from separate files
-    flows_dir = os.path.join(cache_key_dir, "flows")
-    flows = [np.load(os.path.join(flows_dir, f)) for f in sorted(os.listdir(flows_dir))]
+    try:
+        styles = np.load(os.path.join(cache_key_dir, "styles.npy"))
+    except Exception as e:
+        print(f"Error: {e}")
+        styles = None
+
+    try:
+        diams = np.load(os.path.join(cache_key_dir, "diams.npy")).item()
+    except Exception as e:
+        print(f"Error: {e}")
+        diams = None
+
+    try:
+        flows_dir = os.path.join(cache_key_dir, "flows")
+        flows = [np.load(os.path.join(flows_dir, f)) for f in sorted(os.listdir(flows_dir))]
+    except Exception as e:
+        print(f"Error: {e}")
+        flows = None
 
     return masks, flows, styles, diams
