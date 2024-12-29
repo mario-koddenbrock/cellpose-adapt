@@ -7,8 +7,8 @@
 #SBATCH --cpus-per-task=128         # Adjust CPUs per task based on the total available cores
 #SBATCH --mem=512G                  # Total memory for the job
 #SBATCH --qos=normal
-#SBATCH --output=%j_cellpose_out.log
-#SBATCH --error=%j_cellpose_err.log
+#SBATCH --output=%j_cp-out.log
+#SBATCH --error=%j_cp-err.log
 
 # Log SLURM environment variables
 echo "SLURM Job ID: $SLURM_JOB_ID"
