@@ -37,13 +37,13 @@ available_model_list = [
 
 def ensure_default_parameter(params):
     default_params = {
-        "cellprob_threshold": [0.0],
+        "cellprob_threshold": [0.1],
         "channel_axis": [None],
         "channel_nuclei": [0],
         "channel_segment": [0],
-        "diameter": [30],
+        "diameter": [50],
         "do_3D": [True],
-        "flow_threshold": [0.1],  # apparently, this is not used in 3D
+        "flow_threshold": [0.5],  # apparently, this is not used in 3D
         "interp": [False],
         "invert": [False],
         "max_size_fraction": [0.5],
