@@ -63,7 +63,7 @@ def run_cellprob_threshold_experiments(eval: bool = False):
 
 def run_min_size_experiments(eval: bool = False):
     result_file_min_size = os.path.join(main_folder, "experiments_6_min_size.csv")
-    options_min_size = {"min_size": [5, 10, 30, 50, 70, 90, 200]}
+    options_min_size = {"min_size": [5, 10, 30, 50, 70, 90, 200, 1000], "stitch_threshold": [0.0]}
     optimize_parameters(options_min_size, data, result_file_min_size)
     if eval:
         plot_eval(result_file_min_size)
@@ -71,7 +71,7 @@ def run_min_size_experiments(eval: bool = False):
 
 def run_stitch_threshold_experiments(eval: bool = False):
     result_file_stitch_threshold = os.path.join(main_folder, "experiments_7_stitch_threshold.csv")
-    options_stitch_threshold = {"stitch_threshold": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5], "do_3D": [False]}
+    options_stitch_threshold = {"stitch_threshold": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1.0], "do_3D": [False]}
     optimize_parameters(options_stitch_threshold, data, result_file_stitch_threshold)
     if eval:
         plot_eval(result_file_stitch_threshold)
