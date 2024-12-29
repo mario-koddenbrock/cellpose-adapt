@@ -9,7 +9,7 @@ def jaccard(ground_truth, masks):
     unique_masks = np.unique(masks[masks > 0])
 
     if len(unique_gt) == 0 or len(unique_masks) == 0:
-        return 0
+        return 0.0
 
     aji = np.zeros((len(unique_gt), len(unique_masks)))
     for label_gt in unique_gt:
