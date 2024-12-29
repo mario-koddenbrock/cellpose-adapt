@@ -15,9 +15,9 @@ from .utils import check_set_gpu
 def evaluate_model(key, image, ground_truth, params, cache_dir=".cache", compute_masks=True):
     t0 = time.time()
 
-    # get intensity percentile for normalization
-    q1, q3 = np.percentile(image, [params.percentile_min, params.percentile_max])
-    image = np.clip(image, q1, q3)
+    # # get intensity percentile for normalization
+    # q1, q3 = np.percentile(image, [params.percentile_min, params.percentile_max])
+    # image = np.clip(image, q1, q3)
 
     # plot the intensity distribution of the image
     # plot_intensity(image)
