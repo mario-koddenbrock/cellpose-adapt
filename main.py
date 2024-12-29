@@ -10,9 +10,8 @@ def main():
     setup.run_cellprob_threshold_experiments()
     setup.run_min_size_experiments()
     setup.run_stitch_threshold_experiments()
-    setup.run_tile_overlap_experiments()
-
-    # TODO experiments on tile_norm, sharpen_radius + smooth_radius, norm3D
+    setup.run_tile_experiments()
+    setup.run_smoothing_experiments()
 
 if __name__ == "__main__":
     main()

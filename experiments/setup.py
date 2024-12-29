@@ -36,10 +36,10 @@ def run_normalization_experiments(eval: bool = False):
     options_normalization_off = {"normalize": [False]}
     optimize_parameters(options_normalization_off, data, result_file_normalize)
 
-    options_normalization_min = {"percentile_min": [0, 0.1, 0.5, 1, 3, 5, 10], "normalize": [True]}
+    options_normalization_min = {"percentile_min": [0, 0.1, 0.5, 1, 3, 5, 10], "normalize": [True], "norm3D": [True, False]}
     optimize_parameters(options_normalization_min, data, result_file_normalize)
 
-    options_normalization_max = {"percentile_max": [90, 93, 95, 97, 98, 99, 99.5, 100], "normalize": [True]}
+    options_normalization_max = {"percentile_max": [90, 93, 95, 97, 98, 99, 99.5, 100], "normalize": [True], "norm3D": [True, False]}
     optimize_parameters(options_normalization_max, data, result_file_normalize, append_result=True)
     if eval:
         plot_eval(result_file_normalize)
@@ -77,9 +77,32 @@ def run_stitch_threshold_experiments(eval: bool = False):
         plot_eval(result_file_stitch_threshold)
 
 
-def run_tile_overlap_experiments(eval: bool = False):
-    result_file_tile_overlap = os.path.join(main_folder, "experiments_8_tile_overlap.csv")
+def run_tile_experiments(eval: bool = False):
+    result_file_tile = os.path.join(main_folder, "experiments_8_tile.csv")
+
     options_tile_overlap = {"tile_overlap": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5]}
-    optimize_parameters(options_tile_overlap, data, result_file_tile_overlap)
+    optimize_parameters(options_tile_overlap, data, result_file_tile)
+
+    options_tile_norm_blocksize = {"tile_norm_blocksize": [0, 1, 2, 5, 10, 50]}
+    optimize_parameters(options_tile_norm_blocksize, data, result_file_tile)
+
+    options_tile_norm_smooth3D = {"tile_norm_smooth3D": [0, 1, 2, 5, 10, 50]}
+    optimize_parameters(options_tile_norm_smooth3D, data, result_file_tile)
+
+
     if eval:
-        plot_eval(result_file_tile_overlap)
+        plot_eval(result_file_tile)
+
+
+def run_smoothing_experiments(eval: bool = False):
+    result_file_smoothing = os.path.join(main_folder, "experiments_9_smoothing.csv")
+
+    options_sharpen_radius = {"sharpen_radius": [0, 1, 2, 3, 5, 10]}
+    optimize_parameters(options_sharpen_radius, data, result_file_smoothing)
+
+    options_smooth_radius = {"smooth_radius": [0, 1, 2, 3, 5, 10]}
+    optimize_parameters(options_smooth_radius, data, result_file_smoothing)
+
+
+    if eval:
+        plot_eval(result_file_smoothing)

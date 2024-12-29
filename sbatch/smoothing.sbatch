@@ -1,14 +1,14 @@
 #!/bin/bash
 
-#SBATCH --job-name=cp-tile_overlap
+#SBATCH --job-name=cp-smoothing
 #SBATCH --gres=gpu:1               # Request 4 GPUs
 #SBATCH --nodes=1
 #SBATCH --ntasks=1                 # Number of tasks (1 task that uses multiple GPUs)
 #SBATCH --cpus-per-task=32         # Adjust CPUs per task based on the total available cores
 #SBATCH --mem=128G                  # Total memory for the job
 #SBATCH --qos=normal
-#SBATCH --output=%j_cp-tile_overlap_out.log
-#SBATCH --error=%j_cp-tile_overlap_err.log
+#SBATCH --output=%j_cp-smoothing_out.log
+#SBATCH --error=%j_cp-smoothing_err.log
 
 # Log SLURM environment variables
 echo "SLURM Job ID: $SLURM_JOB_ID"
@@ -30,7 +30,7 @@ conda activate microscopy_image_analysis
 which python
 
 # Run the evaluation script
-python -c "from experiments.setup import run_tile_experiments; run_tile_experiments()"
+python -c "from experiments.setup import run_smoothing_experiments; run_smoothing_experiments()"
 
 # Log completion time
 echo "Job finished at $(date)"
