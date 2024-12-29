@@ -6,6 +6,8 @@ import wandb
 import yaml
 from prettytable import PrettyTable
 
+from cellpose_adapt.config import CellposeConfig
+
 
 class ResultHandler:
     def __init__(self, result_file, log_wandb=False, append_result=False):
@@ -19,13 +21,13 @@ class ResultHandler:
             os.remove(result_file)
 
 
-    def log_result(self, results, evaluation_params):
+    def log_result(self, results, config: CellposeConfig):
         """
         Log a new result to the CSV file.
 
         Args:
             results (dict): All results in one dict.
-            evaluation_params (CellposeConfig): The parameters as a dataclass instance.
+            config (CellposeConfig): The parameters as a dataclass instance.
         """
 
 
@@ -34,15 +36,15 @@ class ResultHandler:
 
         # 1. add the image name and type
         out['image_name'] = results["image_name"]
-        out['type'] = evaluation_params.type
+        out['type'] = config.type
 
         # 2. add the rest of the evaluation parameters
-        keys = evaluation_params.__dict__.keys()
+        keys = config.__dict__.keys()
         for key in keys:
             # skip the image name and type
             if key == 'image_name' or key == 'type':
                 continue
-            out[key] = evaluation_params.__dict__[key]
+            out[key] = config.__dict__[key]
 
         # 3. add the results
         out['duration'] = results["duration"]
