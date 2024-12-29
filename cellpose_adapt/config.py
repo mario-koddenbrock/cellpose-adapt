@@ -52,13 +52,13 @@ def ensure_default_parameter(params):
         "niter": [100],
         "norm3D": [True],
         "normalize": [True],
-        "percentile_max": [1],
-        "percentile_min": [0],
-        "sharpen_radius": [2],
-        "smooth_radius": [2],
+        "percentile_max": [99.0],
+        "percentile_min": [1.0],
+        "sharpen_radius": [0],
+        "smooth_radius": [0],
         "stitch_threshold": [0.0],
         "tile_norm_blocksize": [0],
-        "tile_norm_smooth3D": [0],
+        "tile_norm_smooth3D": [1],
         "tile_overlap": [0.1],
     }
 

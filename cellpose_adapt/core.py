@@ -54,8 +54,6 @@ def evaluate_model(key, image, ground_truth, params, cache_dir=".cache", compute
                                     backbone="default")
 
             #     Args:
-            #         img (ndarray): The input image. It should have at least 3 dimensions.
-            #             If it is 4-dimensional, it assumes the first non-channel axis is the Z dimension.
             #         normalize (bool, optional): Whether to perform normalization. Defaults to True.
             #         norm3D (bool, optional): Whether to normalize in 3D. If True, the entire 3D stack will
             #             be normalized per channel. If False, normalization is applied per Z-slice. Defaults to False.
@@ -74,11 +72,11 @@ def evaluate_model(key, image, ground_truth, params, cache_dir=".cache", compute
             #         axis (int, optional): The channel axis to loop over for normalization. Defaults to -1.
 
             normalzation_params = {
+                "invert": params.invert,
                 "lowhigh": None,
                 "norm3D": params.norm3D,
                 "normalize": params.normalize,
-                "invert": params.invert,
-                "percentile": (params.percentile_min, params.percentile_max),
+                "percentile": (float(params.percentile_min), float(params.percentile_max)),
                 "sharpen_radius": params.sharpen_radius,
                 "smooth_radius": params.smooth_radius,
                 "tile_norm_blocksize": params.tile_norm_blocksize,
@@ -102,8 +100,10 @@ def evaluate_model(key, image, ground_truth, params, cache_dir=".cache", compute
                 normalize=normalzation_params,
                 tile_overlap=params.tile_overlap,
                 stitch_threshold=params.stitch_threshold,
-                z_axis=0,  # TODO: z-axis parameter always 0?
+                z_axis=0,
             )
+
+            print(f"\tMask: {np.any(masks)}")
             save_to_cache(cache_dir, cache_key, masks, flows, styles, params.diameter)
 
         except Exception as e:

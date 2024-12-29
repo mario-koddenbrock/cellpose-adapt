@@ -36,7 +36,7 @@ def run_normalization_experiments(eval: bool = False):
     options_normalization_off = {"normalize": [False]}
     optimize_parameters(options_normalization_off, data, result_file_normalize)
 
-    options_normalization_min = {"percentile_min": [0, 1, 5, 10, 20, 30, 50], "normalize": [True]}
+    options_normalization_min = {"percentile_min": [0, 0.1, 0.5, 1, 3, 5, 10], "normalize": [True]}
     optimize_parameters(options_normalization_min, data, result_file_normalize)
 
     options_normalization_max = {"percentile_max": [90, 93, 95, 97, 98, 99, 99.5, 100], "normalize": [True]}
