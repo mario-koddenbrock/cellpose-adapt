@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=cp-stitch_threshold
+#SBATCH --job-name=cp7-stitch_threshold
 #SBATCH --gres=gpu:1               # Request 4 GPUs
 #SBATCH --nodes=1
 #SBATCH --ntasks=1                 # Number of tasks (1 task that uses multiple GPUs)

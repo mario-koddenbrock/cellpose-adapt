@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=cp-model
+#SBATCH --job-name=cp1-model
 #SBATCH --gres=gpu:1               # Request 4 GPUs
 #SBATCH --nodes=1
 #SBATCH --ntasks=1                 # Number of tasks (1 task that uses multiple GPUs)

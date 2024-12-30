@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=cp-tile_overlap
+#SBATCH --job-name=cp8-tile_overlap
 #SBATCH --gres=gpu:1               # Request 4 GPUs
 #SBATCH --nodes=1
 #SBATCH --ntasks=1                 # Number of tasks (1 task that uses multiple GPUs)

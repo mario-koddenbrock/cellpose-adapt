@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=cp-min_size
+#SBATCH --job-name=cp6-min_size
 #SBATCH --gres=gpu:1               # Request 4 GPUs
 #SBATCH --nodes=1
 #SBATCH --ntasks=1                 # Number of tasks (1 task that uses multiple GPUs)
