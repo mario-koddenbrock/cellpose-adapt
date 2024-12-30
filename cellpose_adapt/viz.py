@@ -171,25 +171,41 @@ def save_as_video(output_video_path, image_with_labels, labels, regions):
 
 
 
-def plot_aggregated_metric_variation(file_path, metric='jaccard', boxplot=False, save_plot=False):
+def plot_aggregated_metric_variation(result_path, metric='jaccard', boxplot=False, save_plot=False):
     """
     Detect varying parameters and plot the aggregated metric over these parameters with uncertainty bands
     aggregated over all image_name and type combinations. Optionally display a boxplot.
 
     Parameters:
-        file_path (str): Path to the CSV file containing experiment results.
+        result_path (str): Path to the CSV file containing experiment results.
         metric (str): The column name of the metric to evaluate (default is 'jaccard').
         boxplot (bool): If True, display boxplots instead of error bars (default is False).
     """
 
-    if not isinstance(file_path, list):
-        file_path = [file_path]
+    if isinstance(result_path, list):
+        # run over the result_path list and only keep existing files
+        result_path = [f for f in result_path if os.path.exists(f)]
+        if len(result_path) == 0:
+            print(f"No result files found in {result_path}")
+            return
+    else:
+        if not os.path.exists(result_path):
+            print(f"Result file {result_path} does not exist.")
+            return
+
+    if not isinstance(result_path, list):
+        result_path = [result_path]
 
     # Load data
-    df = pd.concat([pd.read_csv(f) for f in file_path])
+    df = pd.concat([pd.read_csv(f) for f in result_path])
 
     # Create output directory in the same folder as the input file
-    output_dir = os.path.dirname(file_path[0])
+    output_dir = os.path.dirname(result_path[0])
+
+    if len(result_path) > 1:
+        result_name = "all_results"
+    else:
+        result_name = os.path.basename(result_path[0]).replace('.csv', '')
 
     # Identify varying parameters (excluding fixed columns and specified metrics)
     excluded_columns = ['image_name', 'type', metric, 'duration', 'are', 'precision', 'recall', 'f1', 'jaccard', 'jaccard_cellpose', 'jaccard']
@@ -218,7 +234,6 @@ def plot_aggregated_metric_variation(file_path, metric='jaccard', boxplot=False,
             plt.xticks(rotation=45, ha='right')
             ax.set_xlabel(param)
             ax.set_ylabel(metric)
-            plt.title("")
             plt.suptitle("")  # Remove default title
             output_path = os.path.join(output_dir, f"boxplot_{param}_{metric}.png")
 
@@ -242,6 +257,7 @@ def plot_aggregated_metric_variation(file_path, metric='jaccard', boxplot=False,
             ax.grid(True)
             output_path = os.path.join(output_dir, f"errorbar_{param}_{metric}.png")
 
+        plt.title(result_name)
         plt.ylim(0, 1)
         plt.tight_layout()
         if save_plot:
@@ -252,21 +268,32 @@ def plot_aggregated_metric_variation(file_path, metric='jaccard', boxplot=False,
 
 
 
-def plot_best_scores_barplot(file_path, metric='jaccard', output_file='best_scores_barplot.png', save_plot=False):
+def plot_best_scores_barplot(result_path, metric='jaccard', output_file='best_scores_barplot.png', save_plot=False):
     """
     Visualize the best score for each image_name and type as a grouped bar plot.
 
     Parameters:
-        file_path (str): Path to the CSV file containing experiment results.
+        result_path (str): Path to the CSV file containing experiment results.
         metric (str): The column name of the metric to visualize (default is 'jaccard').
         output_file (str): Path to save the bar plot (default is 'best_scores_barplot.png').
     """
 
-    if not isinstance(file_path, list):
-        file_path = [file_path]
+    if isinstance(result_path, list):
+        # run over the result_path list and only keep existing files
+        result_path = [f for f in result_path if os.path.exists(f)]
+        if len(result_path) == 0:
+            print(f"No result files found in {result_path}")
+            return
+    else:
+        if not os.path.exists(result_path):
+            print(f"Result file {result_path} does not exist.")
+            return
+
+    if not isinstance(result_path, list):
+        result_path = [result_path]
 
         # Load data
-    df = pd.concat([pd.read_csv(f) for f in file_path])
+    df = pd.concat([pd.read_csv(f) for f in result_path])
 
     # Ensure the metric column exists
     if metric not in df.columns:

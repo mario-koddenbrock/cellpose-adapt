@@ -1,10 +1,11 @@
 import os
 
+from cellpose_adapt.viz import plot_aggregated_metric_variation
 from cellpose_adapt.config import available_model_list
 from cellpose_adapt.utils import set_all_seeds
-from .eval import plot_eval
 from .data import data
 from .optimize import optimize_parameters
+
 
 # Set the random seed based on the image index
 set_all_seeds(42)
@@ -16,7 +17,7 @@ def run_model_experiments(eval: bool = False):
     options_model = {"model_name": available_model_list}
     optimize_parameters(options_model, data, result_file_models)
     if eval:
-        plot_eval(result_file_models)
+        plot_aggregated_metric_variation(result_file_models)
 
 
 def run_channel_experiments(eval: bool = False):
@@ -27,7 +28,7 @@ def run_channel_experiments(eval: bool = False):
     options_channel_nuclei = {"channel_nuclei": [0, 1, 2, 3]}
     optimize_parameters(options_channel_nuclei, data, result_file_channel, append_result=True)
     if eval:
-        plot_eval(result_file_channel)
+        plot_aggregated_metric_variation(result_file_channel)
 
 
 def run_normalization_experiments(eval: bool = False):
@@ -42,7 +43,7 @@ def run_normalization_experiments(eval: bool = False):
     options_normalization_max = {"percentile_max": [90, 93, 95, 97, 98, 99, 99.5, 100], "normalize": [True], "norm3D": [True, False]}
     optimize_parameters(options_normalization_max, data, result_file_normalize, append_result=True)
     if eval:
-        plot_eval(result_file_normalize)
+        plot_aggregated_metric_variation(result_file_normalize)
 
 
 def run_diameter_experiments(eval: bool = False):
@@ -50,7 +51,7 @@ def run_diameter_experiments(eval: bool = False):
     options_diameter = {"diameter": [1, 5, 10, 12, 17, 30, 40, 50, 70, 100, 200, 500]}
     optimize_parameters(options_diameter, data, result_file_diameter)
     if eval:
-        plot_eval(result_file_diameter)
+        plot_aggregated_metric_variation(result_file_diameter)
 
 
 def run_cellprob_threshold_experiments(eval: bool = False):
@@ -58,7 +59,7 @@ def run_cellprob_threshold_experiments(eval: bool = False):
     options_cellprob_threshold = {"cellprob_threshold": [0.0, 1.0, 3.0, 5.0, 7.5, 10.0, 15.0, 20.0, 25.0, 30.0]}
     optimize_parameters(options_cellprob_threshold, data, result_file_cellprob_threshold)
     if eval:
-        plot_eval(result_file_cellprob_threshold)
+        plot_aggregated_metric_variation(result_file_cellprob_threshold)
 
 
 def run_min_size_experiments(eval: bool = False):
@@ -66,7 +67,7 @@ def run_min_size_experiments(eval: bool = False):
     options_min_size = {"min_size": [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000], "stitch_threshold": [0.0]}
     optimize_parameters(options_min_size, data, result_file_min_size)
     if eval:
-        plot_eval(result_file_min_size)
+        plot_aggregated_metric_variation(result_file_min_size)
 
 
 def run_stitch_threshold_experiments(eval: bool = False):
@@ -74,7 +75,7 @@ def run_stitch_threshold_experiments(eval: bool = False):
     options_stitch_threshold = {"stitch_threshold": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1.0, 2.0], "do_3D": [False]}
     optimize_parameters(options_stitch_threshold, data, result_file_stitch_threshold)
     if eval:
-        plot_eval(result_file_stitch_threshold)
+        plot_aggregated_metric_variation(result_file_stitch_threshold)
 
 
 def run_tile_experiments(eval: bool = False):
@@ -91,7 +92,7 @@ def run_tile_experiments(eval: bool = False):
 
 
     if eval:
-        plot_eval(result_file_tile)
+        plot_aggregated_metric_variation(result_file_tile)
 
 
 def run_smoothing_experiments(eval: bool = False):
@@ -105,4 +106,4 @@ def run_smoothing_experiments(eval: bool = False):
 
 
     if eval:
-        plot_eval(result_file_smoothing)
+        plot_aggregated_metric_variation(result_file_smoothing)
