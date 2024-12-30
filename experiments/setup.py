@@ -48,7 +48,7 @@ def run_normalization_experiments(eval: bool = False):
 
 def run_diameter_experiments(eval: bool = False):
     result_file_diameter = os.path.join(main_folder, "experiments_4_diameter.csv")
-    options_diameter = {"diameter": [1, 5, 10, 12, 17, 30, 40, 50, 70, 100, 200, 500]}
+    options_diameter = {"diameter": [1, 5, 10, 12, 17, 30, 40, 50, 70, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1500, 2000]}
     optimize_parameters(options_diameter, data, result_file_diameter)
     if eval:
         plot_aggregated_metric_variation(result_file_diameter)
@@ -56,7 +56,7 @@ def run_diameter_experiments(eval: bool = False):
 
 def run_cellprob_threshold_experiments(eval: bool = False):
     result_file_cellprob_threshold = os.path.join(main_folder, "experiments_5_cellprob_threshold.csv")
-    options_cellprob_threshold = {"cellprob_threshold": [0.0, 1.0, 3.0, 5.0, 7.5, 10.0, 15.0, 20.0, 25.0, 30.0]}
+    options_cellprob_threshold = {"cellprob_threshold": [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.5, 9.0, 10.0, 15.0, 20.0, 25.0, 30.0]}
     optimize_parameters(options_cellprob_threshold, data, result_file_cellprob_threshold)
     if eval:
         plot_aggregated_metric_variation(result_file_cellprob_threshold)
@@ -64,7 +64,7 @@ def run_cellprob_threshold_experiments(eval: bool = False):
 
 def run_min_size_experiments(eval: bool = False):
     result_file_min_size = os.path.join(main_folder, "experiments_6_min_size.csv")
-    options_min_size = {"min_size": [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000], "stitch_threshold": [0.0]}
+    options_min_size = {"min_size": [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000, 3000], "stitch_threshold": [0.0]}
     optimize_parameters(options_min_size, data, result_file_min_size)
     if eval:
         plot_aggregated_metric_variation(result_file_min_size)
@@ -72,7 +72,7 @@ def run_min_size_experiments(eval: bool = False):
 
 def run_stitch_threshold_experiments(eval: bool = False):
     result_file_stitch_threshold = os.path.join(main_folder, "experiments_7_stitch_threshold.csv")
-    options_stitch_threshold = {"stitch_threshold": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 1.0, 2.0], "do_3D": [False]}
+    options_stitch_threshold = {"stitch_threshold": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.8, 0.9, 1.0], "do_3D": [False]}
     optimize_parameters(options_stitch_threshold, data, result_file_stitch_threshold)
     if eval:
         plot_aggregated_metric_variation(result_file_stitch_threshold)
