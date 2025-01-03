@@ -4,7 +4,7 @@ from experiments import setup
 def main():
 
     setup.run_model_experiments()
-    setup.run_channel_experiments()
+    # setup.run_channel_experiments()
     setup.run_normalization_experiments()
     setup.run_diameter_experiments()
     setup.run_cellprob_threshold_experiments()
