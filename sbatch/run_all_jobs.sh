@@ -4,8 +4,8 @@
 echo "Starting job: model"
 sbatch sbatch/model.sbatch
 
-echo "Starting job: channel"
-sbatch sbatch/channel.sbatch
+#echo "Starting job: channel"
+#sbatch sbatch/channel.sbatch
 
 echo "Starting job: normalization"
 sbatch sbatch/normalization.sbatch
