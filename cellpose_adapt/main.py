@@ -3,14 +3,17 @@ import os
 
 import napari
 import numpy as np
+from skimage.filters.rank import enhance_contrast
+from skimage.morphology import ball
 
-from .file_io import read_yaml
+from .file_io import read_yaml, load_image_with_gt
 from .core import evaluate_model
-from .viz import extract_cellpose_video
+from .viz import extract_cellpose_video, plot_intensity
 
 
-def main(
+def cellpose_eval(
         image_path,
+        ground_truth_path,
         param_file,
         output_dir,
         cache_dir=".cache",
@@ -26,26 +29,31 @@ def main(
     params.type = type
 
     print(f"Processing image: {image_path}")
-    results = evaluate_model(image_path, params, cache_dir)
 
-    if results is None:
-        print(f"Failed to process image {image_path}")
+    image_orig, ground_truth = load_image_with_gt(image_path, ground_truth_path)
 
-    image = results['image']
-    masks = results['masks']
-    ground_truth = results['ground_truth']
-    are = results['are']
-    precision = results['precision']
-    recall = results['recall']
-    f1 = results['f1']
+    if image_orig is None:
+        raise ValueError(f"Image not found: {image_path}")
 
-    print(f"shape: {image.shape}")
-    print(f"dtype: {image.dtype}")
-    print(f"range: ({np.min(image)}, {np.max(image)})")
-    print(f"are: {are}")
-    print(f"precision: {precision}")
-    print(f"recall: {recall}")
-    print(f"f1: {f1}")
+    if ground_truth is None:
+        raise ValueError(f"Ground truth not found: {ground_truth_path}")
+
+    if type == "Nuclei":
+        channel_idx = 0
+    elif type == "Membranes":
+        channel_idx = 1
+    else:
+        raise ValueError(f"Invalid type: {params.type}")
+
+    # Get the right channel
+    image = image_orig[:, channel_idx, :, :] if image_orig.ndim == 4 else image_orig
+    image_name = os.path.basename(image_path).replace(".tif", "")
+
+    # # Enhance the contrast of the image
+    # image = enhance_contrast(image, ball(1))
+
+    # q1, q3 = np.percentile(image, [1, 99.5])
+    # image = np.clip(image, q1, q3)
 
     # plot the intensity distribution of the image
     # plot_intensity(image)
@@ -72,22 +80,33 @@ def main(
             blending='translucent',
             # colormap='magma',
         )
-        layer.contour = 2
+        # layer.contour = 2
 
     if show_prediction:
-        # Add the labels to the viewer
-        layer = viewer.add_labels(
-            masks,
-            name=params.model_name,
-            opacity=0.7,
-            blending='translucent',
-            # colormap='magma',
-        )
-        layer.contour = 2
+        results = evaluate_model(image_name, image, ground_truth, params, cache_dir)
+
+        if results is None:
+            print(f"Failed to process image {image_path}")
+        else:
+            masks = results['masks']
+
+            num_regions_mask = len(np.unique(masks)) - 1
+            print(f"\tNumber of regions mask: {num_regions_mask}")
+            num_regions_gt = len(np.unique(ground_truth)) - 1
+            print(f"\tNumber of regions gt: {num_regions_gt}")
+
+            # Add the labels to the viewer
+            layer = viewer.add_labels(
+                masks,
+                name=params.model_name,
+                opacity=0.7,
+                blending='translucent',
+                # colormap='magma',
+            )
+            layer.contour = 2
 
     if export_video:
         # Save the animation
-        image_name = os.path.basename(image_path).replace(".tif", "")
         video_filename = f"{image_name}_{type}.mp4"
 
         if show_prediction:
@@ -121,6 +140,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="View cellpose results with Napari.")
     parser.add_argument("--image_path", type=str, default="data/P013T/20240305_P013T_40xSil_Hoechst_SiRActin/images_cropped_isotropic/20240305_P013T_A003_cropped_isotropic.tif", help="Path to the image file.")
+    parser.add_argument("--ground_truth_path", type=str, default="data/P013T/20240305_P013T_40xSil_Hoechst_SiRActin/labelmaps/Nuclei/20240305_P013T_A003_cropped_isotropic_nuclei-labels.tif", help="Path to the ground truth file.")
     parser.add_argument("--type", type=str, default="Nuclei", help="Membranes or Nuclei.")
     parser.add_argument("--param_file", type=str, default="data/P013T/20240305_P013T_A003_cropped_isotropic_Nuclei_config.yaml", help="Path to the parameter YAML file.")
     parser.add_argument("--output_dir", type=str, default="Segmentation", help="Directory to save the output.")
@@ -133,8 +153,9 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    main(
+    cellpose_eval(
         image_path=args.image_path,
+        ground_truth_path=args.ground_truth_path,
         param_file=args.param_file,
         output_dir=args.output_dir,
         cache_dir=args.cache_dir,
