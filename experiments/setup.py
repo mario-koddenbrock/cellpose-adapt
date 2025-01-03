@@ -37,10 +37,10 @@ def run_normalization_experiments(eval: bool = False):
     options_normalization_off = {"normalize": [False]}
     optimize_parameters(options_normalization_off, data, result_file_normalize)
 
-    options_normalization_min = {"percentile_min": [0, 0.1, 0.5, 1, 3, 5, 10], "normalize": [True], "norm3D": [True, False]}
+    options_normalization_min = {"percentile_min": [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 2.0, 3.0, 4.0, 5.0], "normalize": [True], "norm3D": [True, False]}
     optimize_parameters(options_normalization_min, data, result_file_normalize, append_result=True)
 
-    options_normalization_max = {"percentile_max": [90, 93, 95, 97, 98, 99, 99.5, 100], "normalize": [True], "norm3D": [True, False]}
+    options_normalization_max = {"percentile_max": [90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 99.1, 99.2, 99.3, 99.4, 99.5, 99.6, 99.7, 99.8, 99.9, 100], "normalize": [True], "norm3D": [True, False]}
     optimize_parameters(options_normalization_max, data, result_file_normalize, append_result=True)
     if eval:
         plot_aggregated_metric_variation(result_file_normalize)
@@ -81,13 +81,13 @@ def run_stitch_threshold_experiments(eval: bool = False):
 def run_tile_experiments(eval: bool = False):
     result_file_tile = os.path.join(main_folder, "experiments_8_tile.csv")
 
-    options_tile_overlap = {"tile_overlap": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5]}
+    options_tile_overlap = {"tile_overlap": [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3], "tile_norm_blocksize": [5], "tile_norm_smooth3D": [1]}
     optimize_parameters(options_tile_overlap, data, result_file_tile)
 
-    options_tile_norm_blocksize = {"tile_norm_blocksize": [0, 1, 2, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]}
+    options_tile_norm_blocksize = {"tile_overlap": [0.0], "tile_norm_blocksize": [0, 1, 2, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100], "tile_norm_smooth3D": [1]}
     optimize_parameters(options_tile_norm_blocksize, data, result_file_tile, append_result=True)
 
-    options_tile_norm_smooth3D = {"tile_norm_smooth3D": [0, 1, 2, 5, 10, 50]}
+    options_tile_norm_smooth3D = {"tile_overlap": [0.0], "tile_norm_blocksize": [5], "tile_norm_smooth3D": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
     optimize_parameters(options_tile_norm_smooth3D, data, result_file_tile, append_result=True)
 
 
@@ -101,7 +101,7 @@ def run_smoothing_experiments(eval: bool = False):
     options_sharpen_radius = {"sharpen_radius": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]}
     optimize_parameters(options_sharpen_radius, data, result_file_smoothing)
 
-    options_smooth_radius = {"smooth_radius": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]}
+    options_smooth_radius = {"smooth_radius": [0, 0.5, 1, 1.5, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
     optimize_parameters(options_smooth_radius, data, result_file_smoothing)
 
 

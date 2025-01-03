@@ -37,7 +37,7 @@ available_model_list = [
 
 def ensure_default_parameter(params):
     default_params = {
-        "cellprob_threshold": [0.1],
+        "cellprob_threshold": [5],
         "channel_axis": [None],
         "channel_nuclei": [0],  # apparently, this is not used in grayscale
         "channel_segment": [0],  # apparently, this is not used in grayscale
@@ -50,16 +50,16 @@ def ensure_default_parameter(params):
         "min_size": [15],
         "model_name": ["cyto3"],
         "niter": [100],
-        "norm3D": [True],
+        "norm3D": [False],
         "normalize": [True],
         "percentile_max": [99.0],
-        "percentile_min": [1.0],
+        "percentile_min": [0.0],
         "sharpen_radius": [0],
-        "smooth_radius": [0],
-        "stitch_threshold": [0.0],
+        "smooth_radius": [1.0],
+        "stitch_threshold": [0.75],
         "tile_norm_blocksize": [0],
         "tile_norm_smooth3D": [1],
-        "tile_overlap": [0.1],
+        "tile_overlap": [0.0],
     }
 
     diameter_not_set = "diameter" not in params
