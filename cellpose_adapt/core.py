@@ -2,7 +2,7 @@ import time
 from enum import Enum
 
 import numpy as np
-from cellpose import transforms
+from cellpose.dynamics import compute_masks
 from cellpose.metrics import aggregated_jaccard_index
 from cellpose.models import CellposeModel
 from skimage.metrics import adapted_rand_error
@@ -12,17 +12,17 @@ from .metrics import jaccard
 from .utils import check_set_gpu
 
 
-def evaluate_model(key, image, ground_truth, params, cache_dir=".cache", compute_masks=True):
+def evaluate_model(key, image, ground_truth, params, cache_dir=".cache", compute_masks_flag=False):
     t0 = time.time()
 
     # # get intensity percentile for normalization
-    # q1, q3 = np.percentile(image, [params.percentile_min, params.percentile_max])
+    # q1, q3 = np.percentile(image, [params.percentile_min / 100, params.percentile_max / 100])
     # image = np.clip(image, q1, q3)
 
     # plot the intensity distribution of the image
     # plot_intensity(image)
 
-    cache_key = compute_hash(image, params, compute_masks)
+    cache_key = compute_hash(image, params, compute_masks_flag)
 
     masks, flows, styles, diams = load_from_cache(cache_dir, cache_key)
     model_name = params.model_name
@@ -87,7 +87,7 @@ def evaluate_model(key, image, ground_truth, params, cache_dir=".cache", compute
                 cellprob_threshold=params.cellprob_threshold,
                 channel_axis=params.channel_axis,
                 channels=[params.channel_segment, params.channel_nuclei],
-                compute_masks=compute_masks,
+                compute_masks=compute_masks_flag,
                 diameter=params.diameter,
                 do_3D=params.do_3D,
                 flow_threshold=params.flow_threshold,
@@ -109,34 +109,16 @@ def evaluate_model(key, image, ground_truth, params, cache_dir=".cache", compute
             print(f"Error: {e}")
             return EvaluationError.EVALUATION_ERROR
 
-    if not compute_masks:
+    if not compute_masks_flag:
         # dP_colors = flows[0]
         dP = flows[1]
         cellprob = flows[2]
-        nchan = 2  # TODO
-        x = transforms.convert_image(
-            image,
-            [params.channel_segment, params.channel_nuclei],
-            channel_axis=params.channel_axis,
-            z_axis=0,
-            do_3D=(params.do_3D or params.stitch_threshold > 0),
-            nchan=nchan)
 
-        # TODO model might be not initialized
-
-        masks = model._compute_masks(
-            x.shape, dP, cellprob,
-            flow_threshold=params.flow_threshold,
-            cellprob_threshold=params.cellprob_threshold,
-            interp=params.interp,
-            min_size=params.min_size,
-            max_size_fraction=params.max_size_fraction,
-            niter=params.niter,
-            stitch_threshold=params.stitch_threshold,
-            do_3D=params.do_3D,
-        )
-
-        masks = masks.squeeze()
+        masks = compute_masks(dP, cellprob, niter=params.niter,
+                             cellprob_threshold=params.cellprob_threshold,
+                             flow_threshold=params.flow_threshold, interp=params.interp, do_3D=params.do_3D,
+                             max_size_fraction=params.max_size_fraction,
+                             device='cpu') # TODO: MPS not available
 
     if masks is None:
         print(f"Error: No masks found with parameters")
