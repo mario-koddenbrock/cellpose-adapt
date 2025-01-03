@@ -4,6 +4,16 @@ from medpy.metric import jc
 from scipy.optimize import linear_sum_assignment
 
 
+def jaccard_index_3d(gt_mask, pred_mask):
+    """
+    Compute Jaccard index (IoU) for two 3D binary masks.
+    """
+    intersection = np.logical_and(gt_mask, pred_mask).sum()
+    union = np.logical_or(gt_mask, pred_mask).sum()
+    if union == 0:  # Handle edge case where both masks are empty
+        return 0.0
+    return intersection / union
+
 def jaccard(ground_truth, masks):
     unique_gt = np.unique(ground_truth[ground_truth > 0])
     unique_masks = np.unique(masks[masks > 0])
@@ -11,14 +21,17 @@ def jaccard(ground_truth, masks):
     if len(unique_gt) == 0 or len(unique_masks) == 0:
         return 0.0
 
+    # Compute pairwise Jaccard index for all combinations
     aji = np.zeros((len(unique_gt), len(unique_masks)))
-    for label_gt in unique_gt:
-        for label_mask in unique_masks:
-            gt_mask = (ground_truth == label_gt)
+    for i, label_gt in enumerate(unique_gt):
+        gt_mask = (ground_truth == label_gt)
+        for j, label_mask in enumerate(unique_masks):
             pred_mask = (masks == label_mask)
-            aji[label_gt - 1, label_mask - 1] = jc(gt_mask, pred_mask)
+            aji[i, j] = jaccard_index_3d(gt_mask, pred_mask)
+
     # Match ground truth and predicted instances using Hungarian algorithm
     row_ind, col_ind = linear_sum_assignment(-aji)  # Maximize Jaccard score
+
     # Compute mean Jaccard score for matched pairs
     matched_scores = aji[row_ind, col_ind]
     mean_score = matched_scores.mean()
