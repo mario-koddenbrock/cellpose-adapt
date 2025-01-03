@@ -12,7 +12,7 @@ from .metrics import jaccard
 from .utils import check_set_gpu
 
 
-def evaluate_model(key, image, ground_truth, params, cache_dir=".cache", separate_mask_computing=False):
+def evaluate_model(key, image, ground_truth, params, cache_dir=".cache", separate_mask_computing=False, only_cached_results=True):
     t0 = time.time()
 
     # # get intensity percentile for normalization
@@ -30,6 +30,10 @@ def evaluate_model(key, image, ground_truth, params, cache_dir=".cache", separat
     if masks is not None:
         print(f"\tLOADING FROM CACHE: {model_name}")
     else:
+
+        if only_cached_results:
+            return EvaluationError.CACHE_NOT_AVAILABLE
+
         print(f"\tEVALUATING: {model_name}")
         try:
 
@@ -159,11 +163,9 @@ def evaluate_model(key, image, ground_truth, params, cache_dir=".cache", separat
     return results
 
 
-
-
-
 class EvaluationError(Enum):
+    CACHE_NOT_AVAILABLE = "Cache not available"
+    EMPTY_MASKS = "Empty masks"
+    EVALUATION_ERROR = "Evaluation error"
     GROUND_TRUTH_NOT_AVAILABLE = "Ground truth not available"
     IMAGE_NOT_AVAILABLE = "Image not available"
-    EVALUATION_ERROR = "Evaluation error"
-    EMPTY_MASKS = "Empty masks"
