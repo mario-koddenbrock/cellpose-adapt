@@ -38,7 +38,7 @@ def run_normalization_experiments(eval: bool = False):
     optimize_parameters(options_normalization_off, data, result_file_normalize)
 
     options_normalization_min = {"percentile_min": [0, 0.1, 0.5, 1, 3, 5, 10], "normalize": [True], "norm3D": [True, False]}
-    optimize_parameters(options_normalization_min, data, result_file_normalize)
+    optimize_parameters(options_normalization_min, data, result_file_normalize, append_result=True)
 
     options_normalization_max = {"percentile_max": [90, 93, 95, 97, 98, 99, 99.5, 100], "normalize": [True], "norm3D": [True, False]}
     optimize_parameters(options_normalization_max, data, result_file_normalize, append_result=True)
@@ -85,10 +85,10 @@ def run_tile_experiments(eval: bool = False):
     optimize_parameters(options_tile_overlap, data, result_file_tile)
 
     options_tile_norm_blocksize = {"tile_norm_blocksize": [0, 1, 2, 5, 10, 50]}
-    optimize_parameters(options_tile_norm_blocksize, data, result_file_tile)
+    optimize_parameters(options_tile_norm_blocksize, data, result_file_tile, append_result=True)
 
     options_tile_norm_smooth3D = {"tile_norm_smooth3D": [0, 1, 2, 5, 10, 50]}
-    optimize_parameters(options_tile_norm_smooth3D, data, result_file_tile)
+    optimize_parameters(options_tile_norm_smooth3D, data, result_file_tile, append_result=True)
 
 
     if eval:
@@ -98,10 +98,10 @@ def run_tile_experiments(eval: bool = False):
 def run_smoothing_experiments(eval: bool = False):
     result_file_smoothing = os.path.join(main_folder, "experiments_9_smoothing.csv")
 
-    options_sharpen_radius = {"sharpen_radius": [0, 1, 2, 3, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]}
+    options_sharpen_radius = {"sharpen_radius": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]}
     optimize_parameters(options_sharpen_radius, data, result_file_smoothing)
 
-    options_smooth_radius = {"smooth_radius": [0, 1, 2, 3, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]}
+    options_smooth_radius = {"smooth_radius": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]}
     optimize_parameters(options_smooth_radius, data, result_file_smoothing)
 
 
