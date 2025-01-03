@@ -24,7 +24,7 @@ data_nuclei = [
 
 data_membranes = [
     ("data/P013T/20240305_P013T_40xSil_Hoechst_SiRActin/images_cropped_isotropic/20240305_P013T_A001a_cropped_isotropic.tif",
-     "data/P013T/20240305_P013T_40xSil_Hoechst_SiRActin/labelmaps/Nuclei/20240305_P013T_A001a_cropped_isotropic_membranes-labels.tif"),
+     "data/P013T/20240305_P013T_40xSil_Hoechst_SiRActin/labelmaps/Membranes/20240305_P013T_A001a_cropped_isotropic_membranes-labels.tif"),
 ]
 
 data = data_nuclei + data_membranes
