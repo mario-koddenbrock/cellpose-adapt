@@ -21,6 +21,12 @@ def optimize_parameters(
         append_result: bool = False,
 ):
 
+    # Ensure that all images and ground truth files exist
+    for image_path, ground_truth_path in data:
+        if not os.path.exists(image_path):
+            print(f"Image file {image_path} does not exist.")
+        if not os.path.exists(ground_truth_path):
+            print(f"Labels file {ground_truth_path} does not exist.")
 
     for image_idx, (image_path, ground_truth_path) in enumerate(data):
 
