@@ -8,12 +8,12 @@ from cellpose.models import CellposeModel
 from skimage.metrics import adapted_rand_error
 
 from .hash import save_to_cache, compute_hash, load_from_cache
-from .metrics import jaccard
+# from .metrics import jaccard
 from .utils import check_set_gpu
 
 
 def evaluate_model(key, image, ground_truth, params,
-                   cache_dir=".cache", separate_mask_computing=False, only_cached_results=False):
+                   cache_dir=".cache", separate_mask_computing=True, only_cached_results=False):
     t0 = time.time()
 
     # # get intensity percentile for normalization
@@ -114,6 +114,9 @@ def evaluate_model(key, image, ground_truth, params,
             print(f"Error: {e}")
             return EvaluationError.EVALUATION_ERROR
 
+    # for i in range(len(flows)):
+    #     print(np.max(np.abs(flows_orig[i] - flows[i])))
+
     if separate_mask_computing:
         # dP_colors = flows[0]
         dP = flows[1]
@@ -130,17 +133,18 @@ def evaluate_model(key, image, ground_truth, params,
         return EvaluationError.EMPTY_MASKS
 
     else:
-        jaccard_score = jaccard(ground_truth, masks)
+        # jaccard_score = jaccard(ground_truth, masks)
         
         aji_scores = aggregated_jaccard_index([ground_truth], [masks])
         jaccard_cellpose = np.mean(aji_scores[~np.isnan(aji_scores)])
+        jaccard_score = jaccard_cellpose
 
         are, precision, recall = adapted_rand_error(ground_truth, masks)
         f1 = 2 * (precision * recall) / (precision + recall) if precision + recall > 0 else 0
-        print(f"\tAdapted Rand Error: {are:.2f}")
-        print(f"\tPrecision: {precision:.2f}")
-        print(f"\tRecall: {recall:.2f}")
-        print(f"\tF1: {f1:.2f}")
+        # print(f"\tAdapted Rand Error: {are:.2f}")
+        # print(f"\tPrecision: {precision:.2f}")
+        # print(f"\tRecall: {recall:.2f}")
+        # print(f"\tF1: {f1:.2f}")
         print(f"\tJaccard (own): {jaccard_score:.2f}")
         print(f"\tJaccard (cellpose): {jaccard_cellpose:.2f}")
 

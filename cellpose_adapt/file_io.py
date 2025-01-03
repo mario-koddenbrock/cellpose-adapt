@@ -62,8 +62,8 @@ def read_yaml(yaml_file: str = "") -> CellposeConfig:
         return None
 
     print(f"Loaded configuration from {yaml_file}:")
-    for key, value in config.items():
-        print(f"  {key}: {value}")
+    # for key, value in config.items():
+    #     print(f"  {key}: {value}")
 
     # Map configuration to CellposeConfig
     params = CellposeConfig(
@@ -85,7 +85,12 @@ def read_yaml(yaml_file: str = "") -> CellposeConfig:
         niter=config.get('niter'),
         stitch_threshold=config.get('stitch_threshold'),
         tile_overlap=config.get('tile_overlap'),
-        type=config.get('type')
+        type=config.get('type'),
+        norm3D=config.get('norm3D'),
+        sharpen_radius=config.get('sharpen_radius'),
+        smooth_radius=config.get('smooth_radius'),
+        tile_norm_blocksize=config.get('tile_norm_blocksize'),
+        tile_norm_smooth3D=config.get('tile_norm_smooth3D'),
     )
 
     return params

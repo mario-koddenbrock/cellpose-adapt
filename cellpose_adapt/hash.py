@@ -63,7 +63,10 @@ def save_to_cache(cache_dir, cache_key, masks, flows, styles, diams):
     if not os.path.exists(flows_dir):
         os.makedirs(flows_dir)
     for i, flow in enumerate(flows):
-        np.save(os.path.join(flows_dir, f"flow_{i}.npy"), flow.astype(np.uint8))
+        if i == 0:
+            np.save(os.path.join(flows_dir, f"flow_{i}.npy"), flow.astype(np.uint8))
+        else:
+            np.save(os.path.join(flows_dir, f"flow_{i}.npy"), flow.astype(np.float32))
 
 
 def load_from_cache(cache_dir, cache_key):

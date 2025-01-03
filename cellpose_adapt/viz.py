@@ -64,6 +64,9 @@ def extract_cellpose_video(viewer, output_dir, video_filename, num_z_slices, mod
     else:
         raise ValueError("Invalid mode. Use '2D' or '3D'.")
 
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
     # Save the animation
     animation.animate(video_path, canvas_only=True, fps=fps, quality=9)
     print(f"Saved animation to {video_path}")
