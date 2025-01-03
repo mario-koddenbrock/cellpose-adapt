@@ -94,26 +94,35 @@ class ResultHandler:
 
 
 
-def print_best_config_per_image(file_path, metric='jaccard'):
+def print_best_config_per_image(result_path, metric='jaccard'):
     """
     Print the best configuration for each unique image_name and type combination based on the specified metric.
     Save the best configurations to an output JSON file.
 
     Parameters:
-        file_path (str): Path to the CSV file containing experiment results.
+        result_path (str): Path to the CSV file containing experiment results.
         metric (str): The column name of the metric to evaluate (default is 'jaccard').
         output_file (str): Path to save the best configurations (default is 'best_configs.json').
     """
     # Load data
 
-    try:
-        df = pd.read_csv(file_path)
-    except FileNotFoundError:
-        print(f"Error: File '{file_path}' not found.")
-        return
-    except pd.errors.EmptyDataError:
-        print("Error: The file is empty.")
-        return
+
+    if isinstance(result_path, list):
+        # run over the result_path list and only keep existing files
+        result_path = [f for f in result_path if os.path.exists(f)]
+        if len(result_path) == 0:
+            print(f"No result files found in {result_path}")
+            return
+    else:
+        if not os.path.exists(result_path):
+            print(f"Result file {result_path} does not exist.")
+            return
+
+    if not isinstance(result_path, list):
+        result_path = [result_path]
+
+    # Load data
+    df = pd.concat([pd.read_csv(f) for f in result_path])
 
     # Ensure the metric column exists
     if metric not in df.columns:
@@ -127,11 +136,23 @@ def print_best_config_per_image(file_path, metric='jaccard'):
     # Find the best configuration per image_name and type based on the metric
     best_configs = df.loc[df.groupby(['image_name', 'type'])[metric].idxmax()]
 
+    # Exclude columns that don't affect the configuration
+    config_columns = [col for col in df.columns if col not in ['image_name', 'type', metric]]
+
+    # Group by configuration and calculate the median score
+    grouped = df.groupby(config_columns)[metric].median().reset_index()
+
+    # Find the configuration with the highest median score
+    best_median_config = grouped.loc[grouped[metric].idxmax()]
+
+    # Convert the best configuration to a dictionary
+    best_config = best_median_config.to_dict()
+
     # Sort for better readability
     best_configs = best_configs.sort_values(by=['image_name', 'type'])
 
     # Create output directory in the same folder as the input file
-    output_dir = os.path.dirname(file_path)
+    output_dir = os.path.dirname(result_path[0])
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
@@ -156,3 +177,15 @@ def print_best_config_per_image(file_path, metric='jaccard'):
             if col not in ['image_name', 'type', metric]:
                 print(f"    {col}: {row[col]}")
         print("-")
+
+
+    # Save the best configuration to a YAML file
+    file_path = os.path.join(output_dir, "best_median_config.yaml")
+    with open(file_path, 'w') as yaml_file:
+        yaml.dump(best_config, yaml_file, default_flow_style=False)
+    print(f"Saved best median configuration to {file_path}")
+
+    # Print the best configuration
+    print(f"Best configuration based on median '{metric}':")
+    for key, value in best_config.items():
+        print(f"  {key}: {value}")
