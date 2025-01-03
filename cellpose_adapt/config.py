@@ -39,8 +39,8 @@ def ensure_default_parameter(params):
     default_params = {
         "cellprob_threshold": [0.1],
         "channel_axis": [None],
-        "channel_nuclei": [0],
-        "channel_segment": [0],
+        "channel_nuclei": [0],  # apparently, this is not used in grayscale
+        "channel_segment": [0],  # apparently, this is not used in grayscale
         "diameter": [50],
         "do_3D": [True],
         "flow_threshold": [0.5],  # apparently, this is not used in 3D
@@ -141,3 +141,10 @@ class CellposeConfig:
             print(f"Saved CellposeConfig to {yaml_file}")
         except Exception as e:
             print(f"Error saving CellposeConfig to YAML: {e}")
+
+
+    def get(self, key, default=None):
+        return getattr(self, key, default)
+
+    def asdict(self):
+        return self.__dict__
