@@ -12,7 +12,8 @@ from .metrics import jaccard
 from .utils import check_set_gpu
 
 
-def evaluate_model(key, image, ground_truth, params, cache_dir=".cache", separate_mask_computing=False, only_cached_results=True):
+def evaluate_model(key, image, ground_truth, params,
+                   cache_dir=".cache", separate_mask_computing=False, only_cached_results=False):
     t0 = time.time()
 
     # # get intensity percentile for normalization

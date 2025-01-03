@@ -72,7 +72,7 @@ def run_min_size_experiments(eval: bool = False):
 
 def run_stitch_threshold_experiments(eval: bool = False):
     result_file_stitch_threshold = os.path.join(main_folder, "experiments_7_stitch_threshold.csv")
-    options_stitch_threshold = {"stitch_threshold": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.8, 0.9, 1.0], "do_3D": [False]}
+    options_stitch_threshold = {"stitch_threshold": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75, 0.8, 0.9, 0.95, 0.99, 1.0], "do_3D": [False]}
     optimize_parameters(options_stitch_threshold, data, result_file_stitch_threshold)
     if eval:
         plot_aggregated_metric_variation(result_file_stitch_threshold)
@@ -84,7 +84,7 @@ def run_tile_experiments(eval: bool = False):
     options_tile_overlap = {"tile_overlap": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5]}
     optimize_parameters(options_tile_overlap, data, result_file_tile)
 
-    options_tile_norm_blocksize = {"tile_norm_blocksize": [0, 1, 2, 5, 10, 50]}
+    options_tile_norm_blocksize = {"tile_norm_blocksize": [0, 1, 2, 5, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]}
     optimize_parameters(options_tile_norm_blocksize, data, result_file_tile, append_result=True)
 
     options_tile_norm_smooth3D = {"tile_norm_smooth3D": [0, 1, 2, 5, 10, 50]}
