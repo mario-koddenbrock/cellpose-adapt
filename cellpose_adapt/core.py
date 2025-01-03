@@ -12,7 +12,7 @@ from .metrics import jaccard
 from .utils import check_set_gpu
 
 
-def evaluate_model(key, image, ground_truth, params, cache_dir=".cache", compute_masks_flag=False):
+def evaluate_model(key, image, ground_truth, params, cache_dir=".cache", separate_mask_computing=False):
     t0 = time.time()
 
     # # get intensity percentile for normalization
@@ -22,7 +22,7 @@ def evaluate_model(key, image, ground_truth, params, cache_dir=".cache", compute
     # plot the intensity distribution of the image
     # plot_intensity(image)
 
-    cache_key = compute_hash(image, params, compute_masks_flag)
+    cache_key = compute_hash(image, params, separate_mask_computing)
 
     masks, flows, styles, diams = load_from_cache(cache_dir, cache_key)
     model_name = params.model_name
@@ -87,7 +87,7 @@ def evaluate_model(key, image, ground_truth, params, cache_dir=".cache", compute
                 cellprob_threshold=params.cellprob_threshold,
                 channel_axis=params.channel_axis,
                 channels=[params.channel_segment, params.channel_nuclei],
-                compute_masks=compute_masks_flag,
+                compute_masks=(not separate_mask_computing),
                 diameter=params.diameter,
                 do_3D=params.do_3D,
                 flow_threshold=params.flow_threshold,
@@ -109,7 +109,7 @@ def evaluate_model(key, image, ground_truth, params, cache_dir=".cache", compute
             print(f"Error: {e}")
             return EvaluationError.EVALUATION_ERROR
 
-    if not compute_masks_flag:
+    if separate_mask_computing:
         # dP_colors = flows[0]
         dP = flows[1]
         cellprob = flows[2]

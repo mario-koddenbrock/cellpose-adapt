@@ -28,12 +28,11 @@ def filter_model_parameter(params):
     ]
     return {k: params.get(k) for k in model_keys}
 
-def compute_hash(image, parameters, compute_masks_flag:bool = True):
+def compute_hash(image, parameters, separate_mask_computing:bool = True):
     """
     Compute a unique hash for the image and parameters.
     """
-    if not compute_masks_flag:
-        # TODO adapt to new parameter object
+    if separate_mask_computing:
         parameters = filter_model_parameter(parameters)
 
     image_hash = hashlib.sha256(image.tobytes()).hexdigest()
