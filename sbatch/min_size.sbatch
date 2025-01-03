@@ -1,14 +1,14 @@
 #!/bin/bash
 
 #SBATCH --job-name=cp6-min_size
-#SBATCH --gres=gpu:1               # Request 4 GPUs
+#SBATCH --gres=gpu:2               # Request 4 GPUs
 #SBATCH --nodes=1
 #SBATCH --ntasks=1                 # Number of tasks (1 task that uses multiple GPUs)
 #SBATCH --cpus-per-task=32         # Adjust CPUs per task based on the total available cores
 #SBATCH --mem=128G                  # Total memory for the job
 #SBATCH --qos=normal
-#SBATCH --output=%j_cp-min_size_out.log
-#SBATCH --error=%j_cp-min_size_err.log
+#SBATCH --output=%j_cp6-min_size_out.log
+#SBATCH --error=%j_cp6-min_size_err.log
 
 # Log SLURM environment variables
 echo "SLURM Job ID: $SLURM_JOB_ID"

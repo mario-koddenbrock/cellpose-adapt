@@ -1,14 +1,14 @@
 #!/bin/bash
 
 #SBATCH --job-name=cp9-smoothing
-#SBATCH --gres=gpu:1               # Request 4 GPUs
+#SBATCH --gres=gpu:2               # Request 4 GPUs
 #SBATCH --nodes=1
 #SBATCH --ntasks=1                 # Number of tasks (1 task that uses multiple GPUs)
 #SBATCH --cpus-per-task=32         # Adjust CPUs per task based on the total available cores
 #SBATCH --mem=128G                  # Total memory for the job
 #SBATCH --qos=normal
-#SBATCH --output=%j_cp-smoothing_out.log
-#SBATCH --error=%j_cp-smoothing_err.log
+#SBATCH --output=%j_cp9-smoothing_out.log
+#SBATCH --error=%j_cp9-smoothing_err.log
 
 # Log SLURM environment variables
 echo "SLURM Job ID: $SLURM_JOB_ID"
