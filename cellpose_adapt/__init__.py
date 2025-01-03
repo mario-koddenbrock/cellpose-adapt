@@ -5,6 +5,8 @@ import cellpose
 import napari
 import torch
 
+from .utils import check_set_gpu
+
 # Ignore specific warnings
 ignored_warnings = [
     DeprecationWarning,
@@ -23,3 +25,4 @@ print(f"torch cuda available: {torch.cuda.is_available()}")
 print(f"torch cuda version: {torch.version.cuda}")
 print(f"napari version: {napari.__version__}")
 print(f"ffmpeg available: {os.path.exists(os.environ['IMAGEIO_FFMPEG_EXE'])}")
+print(f"device: {check_set_gpu()}")
