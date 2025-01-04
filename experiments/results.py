@@ -1,6 +1,7 @@
 import csv
 import os
 
+import numpy as np
 import pandas as pd
 import wandb
 import yaml
@@ -94,7 +95,7 @@ class ResultHandler:
 
 
 
-def print_best_config_per_image(result_path, metric='jaccard'):
+def save_best_config_per_image(result_path, metric='jaccard'):
     """
     Print the best configuration for each unique image_name and type combination based on the specified metric.
     Save the best configurations to an output JSON file.
@@ -121,8 +122,13 @@ def print_best_config_per_image(result_path, metric='jaccard'):
     if not isinstance(result_path, list):
         result_path = [result_path]
 
+    # Create output directory in the same folder as the input file
+    output_dir = os.path.dirname(result_path[0])
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
     # Load data
-    df = pd.concat([pd.read_csv(f) for f in result_path])
+    df = pd.concat([pd.read_csv(f) for f in result_path]).reset_index()
 
     # Ensure the metric column exists
     if metric not in df.columns:
@@ -133,59 +139,45 @@ def print_best_config_per_image(result_path, metric='jaccard'):
     # Round the metric column to 2 decimal places
     df[metric] = df[metric].round(2)
 
-    # Find the best configuration per image_name and type based on the metric
-    best_configs = df.loc[df.groupby(['image_name', 'type'])[metric].idxmax()]
+    unique_images = df[['image_name', 'type']].drop_duplicates()
+    excluded_columns = ['image_name', 'type', 'duration', 'are', 'precision', 'recall', 'f1', 'jaccard',
+                        'jaccard_cellpose', 'jaccard', 'index']
 
-    # Exclude columns that don't affect the configuration
-    config_columns = [col for col in df.columns if col not in ['image_name', 'type', metric]]
+    # iterate over the unique images and find the best configuration
+    for idx, row in unique_images.iterrows():
+        image_name = row['image_name']
+        type = row['type']
 
-    # Group by configuration and calculate the median score
-    grouped = df.groupby(config_columns)[metric].median().reset_index()
+        # Filter the data for the current image and type
+        filtered = df[(df['image_name'] == image_name) & (df['type'] == type)]
 
-    # Find the configuration with the highest median score
-    best_median_config = grouped.loc[grouped[metric].idxmax()]
+        # Get the row with the highest score
+        best_config = filtered.loc[filtered[metric].idxmax()]
 
-    # Convert the best configuration to a dictionary
-    best_config = best_median_config.to_dict()
+        # config = {col: val for col, val in best_config.items() if col not in excluded_columns}
+        config = {col: (val.item() if isinstance(val, (np.generic, np.ndarray)) else val) for col, val in
+                  best_config.items() if col not in excluded_columns}
 
-    # Sort for better readability
-    best_configs = best_configs.sort_values(by=['image_name', 'type'])
-
-    # Create output directory in the same folder as the input file
-    output_dir = os.path.dirname(result_path[0])
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-
-    # Save each configuration to a separate YAML file
-    excluded_columns = ['image_name', 'type', 'duration', 'are', 'precision', 'recall', 'f1', 'jaccard', 'jaccard_cellpose', 'jaccard']
-    for _, row in best_configs.iterrows():
-        config = {col: row[col] for col in best_configs.columns if col not in excluded_columns}
         file_name = f"{row['image_name']}_{row['type']}_config.yaml"
         file_path = os.path.join(output_dir, file_name)
+
+        # save the best configuration to a YAML file
         with open(file_path, 'w') as yaml_file:
             yaml.dump(config, yaml_file, default_flow_style=False)
+
         print(f"Saved configuration to {file_path}")
 
-    # Print results
-    print(f"Best configurations based on '{metric}':\n")
-    for _, row in best_configs.iterrows():
-        print(f"Image: {row['image_name']}")
-        print(f"  Type: {row['type']}")
-        print(f"  Best {metric}: {row[metric]}")
-        print("  Configuration:")
-        for col in df.columns:
-            if col not in ['image_name', 'type', metric]:
-                print(f"    {col}: {row[col]}")
-        print("-")
 
 
-    # Save the best configuration to a YAML file
-    file_path = os.path.join(output_dir, "best_median_config.yaml")
-    with open(file_path, 'w') as yaml_file:
-        yaml.dump(best_config, yaml_file, default_flow_style=False)
-    print(f"Saved best median configuration to {file_path}")
 
-    # Print the best configuration
-    print(f"Best configuration based on median '{metric}':")
-    for key, value in best_config.items():
-        print(f"  {key}: {value}")
+
+    # # Save the best configuration to a YAML file
+    # file_path = os.path.join(output_dir, "best_median_config.yaml")
+    # with open(file_path, 'w') as yaml_file:
+    #     yaml.dump(best_config, yaml_file, default_flow_style=False)
+    # print(f"Saved best median configuration to {file_path}")
+    #
+    # # Print the best configuration
+    # print(f"Best configuration based on median '{metric}':")
+    # for key, value in best_config.items():
+    #     print(f"  {key}: {value}")
