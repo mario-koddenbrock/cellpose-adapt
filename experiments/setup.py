@@ -56,7 +56,7 @@ def run_diameter_experiments(eval: bool = False):
 
 def run_cellprob_threshold_experiments(eval: bool = False):
     result_file_cellprob_threshold = os.path.join(main_folder, "experiments_5_cellprob_threshold.csv")
-    options_cellprob_threshold = {"cellprob_threshold": [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.5, 9.0, 10.0, 15.0, 20.0, 25.0, 30.0]}
+    options_cellprob_threshold = {"cellprob_threshold": [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.5, 9.0, 10.0, 15.0, 20.0, 25.0, 30.0, -1.0, -2.0, -3.0, -4.0, -5.0, -6.0, -7.5, -9.0, -10.0, -15.0, -20.0, -25.0, -30.0]}
     optimize_parameters(options_cellprob_threshold, data, result_file_cellprob_threshold)
     if eval:
         plot_aggregated_metric_variation(result_file_cellprob_threshold)
