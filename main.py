@@ -39,9 +39,10 @@ def main():
             cache_dir=".cache",
             show_gt=True,
             show_prediction=True,
-            video_3d=False,
-            show_viewer=False,
-            export_video=True,
+            video_3d=True,
+            show_viewer=True,
+            export_video=False,
+            only_std_out=False,
             type=type,
         )
 
