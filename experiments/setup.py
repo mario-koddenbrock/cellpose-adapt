@@ -64,7 +64,14 @@ def run_cellprob_threshold_experiments(eval: bool = False):
 
 def run_min_size_experiments(eval: bool = False):
     result_file_min_size = os.path.join(main_folder, "experiments_6_min_size.csv")
-    options_min_size = {"min_size": [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1200, 1400, 1600, 1800, 2000, 3000], "stitch_threshold": [0.0]}
+    options_min_size = {"min_size": [
+        50, 100, 200, 300, 400, 500, 600, 700, 800, 900,
+        1000, 1200, 1400, 1600, 1800,
+        2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000,
+        10000, 12000, 14000, 16000, 18000,
+        20000, 25000, 30000, 35000, 40000, 45000, 50000, 55000,
+        60000, 65000, 70000, 75000, 80000
+    ], "stitch_threshold": [0.0]}
     optimize_parameters(options_min_size, data, result_file_min_size)
     if eval:
         plot_aggregated_metric_variation(result_file_min_size)
