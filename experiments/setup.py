@@ -102,7 +102,7 @@ def run_smoothing_experiments(eval: bool = False):
     optimize_parameters(options_sharpen_radius, data, result_file_smoothing)
 
     options_smooth_radius = {"smooth_radius": [0, 0.5, 1, 1.5, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
-    optimize_parameters(options_smooth_radius, data, result_file_smoothing)
+    optimize_parameters(options_smooth_radius, data, result_file_smoothing, append_result=True)
 
 
     if eval:
