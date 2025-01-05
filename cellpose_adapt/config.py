@@ -41,7 +41,7 @@ def ensure_default_parameter(params):
         "channel_axis": [None],
         "channel_nuclei": [0],  # apparently, this is not used in grayscale
         "channel_segment": [0],  # apparently, this is not used in grayscale
-        "diameter": [50],
+        "diameter": [1000],
         "do_3D": [True],
         "flow_threshold": [0.5],  # apparently, this is not used in 3D
         "interp": [False],
@@ -54,7 +54,7 @@ def ensure_default_parameter(params):
         "normalize": [True],
         "percentile_max": [99.0],
         "percentile_min": [0.0],
-        "sharpen_radius": [0],
+        "sharpen_radius": [0.0],
         "smooth_radius": [1.0],
         "stitch_threshold": [0.75],
         "tile_norm_blocksize": [0],

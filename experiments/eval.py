@@ -1,6 +1,6 @@
 import os
 
-from experiments.results import print_best_config_per_image
+from experiments.results import save_best_config_per_image
 from cellpose_adapt import viz
 
 
@@ -44,4 +44,4 @@ if __name__ == "__main__":
     viz.plot_best_scores_barplot(all_results, output_file=result_file_models.replace('.csv', '_best_score.png'))
 
 
-    print_best_config_per_image(all_results)
+    save_best_config_per_image(all_results)

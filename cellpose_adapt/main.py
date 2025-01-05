@@ -3,8 +3,6 @@ import os
 
 import napari
 import numpy as np
-from skimage.filters.rank import enhance_contrast
-from skimage.morphology import ball
 
 from .file_io import read_yaml, load_image_with_gt
 from .core import evaluate_model
@@ -22,13 +20,12 @@ def cellpose_eval(
         video_3d=True,
         show_viewer = True,
         export_video = False,
+        only_std_out = False,
         type="Nuclei", # Nuclei or Membranes
 ):
 
     params = read_yaml(param_file)
     params.type = type
-
-    print(f"Processing image: {image_path}")
 
     image_orig, ground_truth = load_image_with_gt(image_path, ground_truth_path)
 
@@ -58,6 +55,23 @@ def cellpose_eval(
     # plot the intensity distribution of the image
     # plot_intensity(image)
 
+    if show_prediction or only_std_out:
+        results = evaluate_model(image_name, image, ground_truth, params, cache_dir)
+
+        if results is None:
+            print(f"Failed to process image {image_path}")
+        else:
+            masks = results['masks']
+
+            num_regions_mask = len(np.unique(masks)) - 1
+            print(f"\tNumber of regions mask: {num_regions_mask}")
+            num_regions_gt = len(np.unique(ground_truth)) - 1
+            print(f"\tNumber of regions gt: {num_regions_gt}")
+
+        if only_std_out:
+            return
+
+
     # Initialize the Napari viewer
     viewer = napari.Viewer()
 
@@ -83,18 +97,6 @@ def cellpose_eval(
         # layer.contour = 2
 
     if show_prediction:
-        results = evaluate_model(image_name, image, ground_truth, params, cache_dir)
-
-        if results is None:
-            print(f"Failed to process image {image_path}")
-        else:
-            masks = results['masks']
-
-            num_regions_mask = len(np.unique(masks)) - 1
-            print(f"\tNumber of regions mask: {num_regions_mask}")
-            num_regions_gt = len(np.unique(ground_truth)) - 1
-            print(f"\tNumber of regions gt: {num_regions_gt}")
-
             # Add the labels to the viewer
             layer = viewer.add_labels(
                 masks,
