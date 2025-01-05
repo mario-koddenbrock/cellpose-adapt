@@ -47,7 +47,7 @@ def ensure_default_parameter(params):
         "interp": [False],
         "invert": [False],
         "max_size_fraction": [0.5],
-        "min_size": [20000],
+        "min_size": [5000],
         "model_name": ["cyto3"],
         "niter": [100],
         "norm3D": [False],
