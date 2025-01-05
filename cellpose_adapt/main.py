@@ -60,8 +60,10 @@ def cellpose_eval(
 
         if results is None:
             print(f"Failed to process image {image_path}")
+            show_prediction = False
         else:
             masks = results['masks']
+            jaccard = results['jaccard']
 
             num_regions_mask = len(np.unique(masks)) - 1
             print(f"\tNumber of regions mask: {num_regions_mask}")
@@ -83,7 +85,7 @@ def cellpose_eval(
         image,
         # contrast_limits=[q1, q3],
         name='Organoids',
-        colormap='gray',
+        colormap='gray_r',
     )
 
     if show_gt and (ground_truth is not None):
@@ -100,8 +102,8 @@ def cellpose_eval(
             # Add the labels to the viewer
             layer = viewer.add_labels(
                 masks,
-                name=params.model_name,
-                opacity=0.7,
+                name=f"{params.model_name} ({100*jaccard:.0f}%)",
+                opacity=1,
                 blending='translucent',
                 # colormap='magma',
             )
