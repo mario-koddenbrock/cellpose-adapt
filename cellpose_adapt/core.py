@@ -122,11 +122,20 @@ def evaluate_model(key, image, ground_truth, params,
         dP = flows[1]
         cellprob = flows[2]
 
-        masks = compute_masks(dP, cellprob, niter=params.niter,
-                             cellprob_threshold=params.cellprob_threshold,
-                             flow_threshold=params.flow_threshold, interp=params.interp, do_3D=params.do_3D,
-                             max_size_fraction=params.max_size_fraction,
-                             device='cpu') # TODO: MPS not available
+        # params.min_size = 60000
+
+        masks = compute_masks(
+            dP,
+            cellprob,
+            niter=params.niter,
+            cellprob_threshold=params.cellprob_threshold,
+            flow_threshold=params.flow_threshold,
+            interp=params.interp,
+            do_3D=params.do_3D,
+            min_size=params.min_size,
+            max_size_fraction=params.max_size_fraction,
+            device='cpu', # TODO: MPS not available
+        )
 
     if masks is None:
         print(f"Error: No masks found with parameters")
