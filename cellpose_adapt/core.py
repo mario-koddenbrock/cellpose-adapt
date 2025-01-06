@@ -2,6 +2,7 @@ import time
 from enum import Enum
 
 import numpy as np
+import torch
 from cellpose.dynamics import compute_masks
 from cellpose.metrics import aggregated_jaccard_index
 from cellpose.models import CellposeModel
@@ -134,7 +135,7 @@ def evaluate_model(key, image, ground_truth, params,
             do_3D=params.do_3D,
             min_size=params.min_size,
             max_size_fraction=params.max_size_fraction,
-            device='cpu', # TODO: MPS not available
+            device=torch.device('cpu'), # TODO: MPS not available
         )
 
     if masks is None:
