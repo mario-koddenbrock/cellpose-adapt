@@ -174,7 +174,7 @@ def save_as_video(output_video_path, image_with_labels, labels, regions):
 
 
 
-def plot_aggregated_metric_variation(result_path, metric='jaccard', boxplot=False, save_plot=False):
+def plot_aggregated_metric_variation(result_path, metric='jaccard', boxplot=False, save_plot=True):
     """
     Detect varying parameters and plot the aggregated metric over these parameters with uncertainty bands
     aggregated over all image_name and type combinations. Optionally display a boxplot.
@@ -238,7 +238,7 @@ def plot_aggregated_metric_variation(result_path, metric='jaccard', boxplot=Fals
             ax.set_xlabel(param)
             ax.set_ylabel(metric)
             plt.suptitle("")  # Remove default title
-            output_path = os.path.join(output_dir, f"boxplot_{param}_{metric}.png")
+            output_path = os.path.join(output_dir, "Plots", f"boxplot_{result_name}_{param}_{metric}.png")
 
         else:
             # Plot mean and standard deviation as error bars
@@ -258,7 +258,7 @@ def plot_aggregated_metric_variation(result_path, metric='jaccard', boxplot=Fals
             # ax.set_title(f"Aggregated {metric} vs {param} (over all images)")
             ax.legend()
             ax.grid(True)
-            output_path = os.path.join(output_dir, f"errorbar_{param}_{metric}.png")
+            output_path = os.path.join(output_dir, "Plots", f"errorbar_{result_name}_{param}_{metric}.png")
 
         plt.title(result_name)
         plt.ylim(0, 1)
@@ -271,7 +271,7 @@ def plot_aggregated_metric_variation(result_path, metric='jaccard', boxplot=Fals
 
 
 
-def plot_best_scores_barplot(result_path, metric='jaccard', output_file='best_scores_barplot.png', save_plot=False):
+def plot_best_scores_barplot(result_path, metric='jaccard', output_file='best_scores_barplot.png', save_plot=True):
     """
     Visualize the best score for each image_name and type as a grouped bar plot.
 
@@ -323,8 +323,14 @@ def plot_best_scores_barplot(result_path, metric='jaccard', output_file='best_sc
     plt.legend(title="Type", bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.tight_layout()
 
+    output_dir = os.path.join(os.path.dirname(result_path[0]), "Plots")
+    output_path = os.path.join(output_dir, output_file)
+
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
     # Save the plot
     if save_plot:
-        plt.savefig(output_file)
+        plt.savefig(output_path)
     plt.show()
-    print(f"Saved bar plot to {output_file}")
+    print(f"Saved bar plot to {output_path}")

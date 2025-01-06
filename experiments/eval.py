@@ -41,7 +41,8 @@ if __name__ == "__main__":
         result_file_smoothing,
     ]
 
-    viz.plot_best_scores_barplot(all_results, output_file=result_file_models.replace('.csv', '_best_score.png'))
+    # viz.plot_aggregated_metric_variation(all_results)
+    viz.plot_best_scores_barplot(all_results, output_file="best_scores.png")
 
 
     save_best_config_per_image(all_results)
