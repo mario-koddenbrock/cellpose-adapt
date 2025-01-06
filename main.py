@@ -7,7 +7,7 @@ from experiments.data import data
 def main():
 
     root = "./"
-    output_dir = os.path.join(root, "results", "P013T", "Visualizations")
+    output_dir = os.path.join(root, "results", "P013T", "Videos")
 
     for image_path, ground_truth_path in data:
 
@@ -39,8 +39,8 @@ def main():
             cache_dir=".cache",
             show_gt=True,
             show_prediction=True,
-            video_3d=True,
-            show_viewer=True,
+            video_3d=False,
+            show_viewer=False,
             export_video=False,
             only_std_out=False,
             type=type,
