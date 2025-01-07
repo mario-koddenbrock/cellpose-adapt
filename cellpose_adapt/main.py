@@ -3,6 +3,8 @@ import os
 
 import napari
 import numpy as np
+from napari.utils.color import ColorArray
+from napari.utils.colormaps import colormap
 
 from .file_io import read_yaml, load_image_with_gt
 from .core import evaluate_model
@@ -15,6 +17,7 @@ def cellpose_eval(
         param_file,
         output_dir,
         cache_dir=".cache",
+        show_image=True,
         show_gt=True,
         show_prediction=False,
         video_3d=True,
@@ -81,33 +84,45 @@ def cellpose_eval(
     q1, q3 = np.percentile(image, [5, 99])
 
     # Add the image to the viewer
-    viewer.add_image(
-        image,
-        # contrast_limits=[q1, q3],
-        name='Organoids',
-        colormap='gray_r',
-    )
+    if show_image:
+        viewer.add_image(
+            image,
+            # contrast_limits=[q1, q3],
+            name='Organoids',
+            colormap='gray',
+        )
 
     if show_gt and (ground_truth is not None):
+        cmap = colormap.CyclicLabelColormap(
+            colors=ColorArray(
+                np.array([[0, 0, 0, 0], [1, 0.37254, 0, 1]])
+            ),
+            background_value=0,
+        )
         layer = viewer.add_labels(
             ground_truth,
             name="Ground truth",
-            opacity=0.7,
+            opacity=0.3,
             blending='translucent',
-            # colormap='magma',
+            colormap=cmap,
         )
-        # layer.contour = 2
+
 
     if show_prediction:
-            # Add the labels to the viewer
-            layer = viewer.add_labels(
-                masks,
-                name=f"{params.model_name} ({100*jaccard:.0f}%)",
-                opacity=1,
-                blending='translucent',
-                # colormap='magma',
-            )
-            layer.contour = 2
+        cmap = colormap.CyclicLabelColormap(
+            colors=ColorArray(
+                np.array([[0, 0, 0, 0], [0.4627, 0.72549, 0, 1]])
+            ),
+            background_value=0,
+        )
+        layer = viewer.add_labels(
+            masks,
+            name=f"{params.model_name} ({100*jaccard:.0f}%)",
+            opacity=0.7,
+            blending='translucent',
+            colormap=cmap,
+        )
+        layer.contour = 2
 
     if export_video:
         # Save the animation
