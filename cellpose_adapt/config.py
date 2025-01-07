@@ -37,7 +37,7 @@ available_model_list = [
 
 def ensure_default_parameter(params):
     default_params = {
-        "cellprob_threshold": [5],
+        "cellprob_threshold": [4],
         "channel_axis": [None],
         "channel_nuclei": [0],  # apparently, this is not used in grayscale
         "channel_segment": [0],  # apparently, this is not used in grayscale
