@@ -8,7 +8,7 @@ flow_threshold: 0.5
 interp: false
 invert: false
 max_size_fraction: 0.5
-min_size: 5000
+min_size: 100
 model_name: nuclei
 niter: 100
 norm3D: false
