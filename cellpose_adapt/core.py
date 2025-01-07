@@ -119,11 +119,11 @@ def evaluate_model(key, image, ground_truth, params,
         return EvaluationError.EMPTY_MASKS
 
     else:
-        jaccard_score = jaccard(ground_truth, masks)
-        
         aji_scores = aggregated_jaccard_index([ground_truth], [masks])
         jaccard_cellpose = np.mean(aji_scores[~np.isnan(aji_scores)])
-        # jaccard_score = jaccard_cellpose
+
+        # jaccard_score = jaccard(ground_truth, masks)
+        jaccard_score = jaccard_cellpose
 
         print(f"\tJaccard (own): {jaccard_score:.2f}")
         print(f"\tJaccard (cellpose): {jaccard_cellpose:.2f}")
