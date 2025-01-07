@@ -19,10 +19,10 @@ for warning in ignored_warnings:
 
 # Set the path to the ffmpeg executable - only needed for exporting animations
 os.environ["IMAGEIO_FFMPEG_EXE"] = "/opt/homebrew/bin/ffmpeg"
-print(f"Cellpose version: {cellpose.version}")
-print(f"torch version: {torch.__version__}")
+# print(f"Cellpose version: {cellpose.version}")
+# print(f"torch version: {torch.__version__}")
 print(f"torch cuda available: {torch.cuda.is_available()}")
-print(f"torch cuda version: {torch.version.cuda}")
-print(f"napari version: {napari.__version__}")
-print(f"ffmpeg available: {os.path.exists(os.environ['IMAGEIO_FFMPEG_EXE'])}")
+# print(f"torch cuda version: {torch.version.cuda}")
+# print(f"napari version: {napari.__version__}")
+# print(f"ffmpeg available: {os.path.exists(os.environ['IMAGEIO_FFMPEG_EXE'])}")
 print(f"device: {check_set_gpu()}")
