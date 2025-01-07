@@ -49,10 +49,6 @@ class ResultHandler:
 
         # 3. add the results
         out['duration'] = results["duration"]
-        out['are'] = results["are"]
-        out['precision'] = results["precision"]
-        out['recall'] = results["recall"]
-        out['f1'] = results["f1"]
         out['jaccard'] = results["jaccard"]
         out['jaccard_cellpose'] = results["jaccard_cellpose"]
 

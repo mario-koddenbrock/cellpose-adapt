@@ -174,7 +174,7 @@ def save_as_video(output_video_path, image_with_labels, labels, regions):
 
 
 
-def plot_aggregated_metric_variation(result_path, metric='jaccard', boxplot=False, save_plot=True):
+def plot_aggregated_metric_variation(result_path, metric='jaccard', boxplot=False, save_plot=False):
     """
     Detect varying parameters and plot the aggregated metric over these parameters with uncertainty bands
     aggregated over all image_name and type combinations. Optionally display a boxplot.
@@ -210,15 +210,18 @@ def plot_aggregated_metric_variation(result_path, metric='jaccard', boxplot=Fals
     else:
         result_name = os.path.basename(result_path[0]).replace('.csv', '')
 
+
+    unique_images = df[['image_name', 'type']].drop_duplicates()
+
     # Identify varying parameters (excluding fixed columns and specified metrics)
     excluded_columns = ['image_name', 'type', metric, 'duration', 'are', 'precision', 'recall', 'f1', 'jaccard', 'jaccard_cellpose', 'jaccard']
     varying_columns = [col for col in df.columns if df[col].nunique() > 1 and col not in excluded_columns]
 
+    print("Varying parameters detected:", varying_columns)
+
     if not varying_columns:
         print("No varying parameters detected.")
         return
-
-    print("Varying parameters detected:", varying_columns)
 
     # Aggregate metric over all image_name and type
     for param in varying_columns:
@@ -241,14 +244,26 @@ def plot_aggregated_metric_variation(result_path, metric='jaccard', boxplot=Fals
             output_path = os.path.join(output_dir, "Plots", f"boxplot_{result_name}_{param}_{metric}.png")
 
         else:
-            # Plot mean and standard deviation as error bars
-            grouped = df.groupby(param)[metric].agg(['mean', 'std']).reset_index()
-            x = grouped[param]
-            y = grouped['mean']
-            yerr = grouped['std']
 
-            ax.errorbar(x, y, yerr=yerr, fmt='-o', capsize=5, label=f"{metric} (mean ± std)")
+            # iterate over the unique images and find the best configuration
+            for idx, row in unique_images.iterrows():
+                image_name = row['image_name']
+                type = row['type']
 
+                filtered = df[(df['image_name'] == image_name) & (df['type'] == type)]
+
+                grouped = filtered.groupby(param)[metric].agg(['mean', 'std']).reset_index()
+                x = grouped[param]
+                y = grouped['mean']
+                yerr = grouped['std']
+
+                # ax.errorbar(x, y, yerr=yerr, fmt='-o', capsize=5, label=f"{image_name}-{type}")
+                # plot x and y values with an uncertainty band
+                ax.plot(x, y, '-o', label=f"{image_name}-{type}")
+                ax.fill_between(x, y - yerr, y + yerr, alpha=0.2)
+
+                # show legend above the axis in 3 rows, but make it extremely small
+                ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.05), ncol=3, fontsize=4.5)
 
             if len(x) > 10:
                 ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
@@ -256,7 +271,10 @@ def plot_aggregated_metric_variation(result_path, metric='jaccard', boxplot=Fals
             ax.set_xlabel(param)
             ax.set_ylabel(f"Aggregated {metric}")
             # ax.set_title(f"Aggregated {metric} vs {param} (over all images)")
-            ax.legend()
+
+            # ax.legend(bbox_to_anchor=(0.5, 1.15), loc='upper center', ncol=2)
+
+
             ax.grid(True)
             output_path = os.path.join(output_dir, "Plots", f"errorbar_{result_name}_{param}_{metric}.png")
 

@@ -11,7 +11,7 @@ from cellpose_adapt.viz import show_napari
 from experiments.results import ResultHandler
 
 
-def optimize_parameters(
+def grid_search(
         params: dict,
         data: list,
         result_file: str = "",
