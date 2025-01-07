@@ -5,13 +5,14 @@ import wandb
 from ray import tune
 from ray.air import session
 
+from cellpose_adapt.config import CellposeConfig
 from cellpose_adapt.core import evaluate_model
 from cellpose_adapt.file_io import load_image_with_gt
 from experiments.data import data
 
 
 # Wrapping your evaluate_model to integrate with Ray Tune
-def objective(config, image_path, ground_truth_path, log_wandb=False):
+def objective(params, image_path, ground_truth_path, log_wandb=False):
     key = os.path.basename(image_path).replace(".tif", "")
 
     image_name = os.path.basename(image_path).replace(".tif", "")
@@ -24,13 +25,40 @@ def objective(config, image_path, ground_truth_path, log_wandb=False):
 
     # Adjust parameters for type based on ground truth
     if "nuclei" in ground_truth_path.lower():
-        config["type"] = "Nuclei"
+        params["type"] = "Nuclei"
         channel_idx = 0
     elif "membrane" in ground_truth_path.lower():
-        config["type"] = "Membranes"
+        params["type"] = "Membranes"
         channel_idx = 1
     else:
         raise ValueError(f"Invalid ground truth: {ground_truth_path}")
+
+    config = CellposeConfig(
+        cellprob_threshold=params["cellprob_threshold"],
+        channel_axis=params["channel_axis"],
+        channel_nuclei=params["channel_nuclei"],
+        channel_segment=params["channel_segment"],
+        diameter=params["diameter"],
+        do_3D=params["do_3D"],
+        flow_threshold=params["flow_threshold"],
+        interp=params["interp"],
+        invert=params["invert"],
+        max_size_fraction=params["max_size_fraction"],
+        min_size=params["min_size"],
+        model_name=params["model_name"],
+        niter=params["niter"],
+        norm3D=params["norm3D"],
+        normalize=params["normalize"],
+        percentile_max=params["percentile_max"],
+        percentile_min=params["percentile_min"],
+        sharpen_radius=params["sharpen_radius"],
+        smooth_radius=params["smooth_radius"],
+        stitch_threshold=params["stitch_threshold"],
+        tile_norm_blocksize=params["tile_norm_blocksize"],
+        tile_norm_smooth3D=params["tile_norm_smooth3D"],
+        tile_overlap=params["tile_overlap"],
+        type=params["type"],
+    )
 
     # Get the right channel
     image = image_orig[:, channel_idx, :, :] if image_orig.ndim == 4 else image_orig
@@ -140,7 +168,8 @@ def main(data, log_wandb=False, root="../"):
             config=search_space,
             metric="jaccard_cellpose",
             mode="max",
-            num_samples=50,  # Number of trials per image
+            num_samples=50,
+            resume=False,
         )
 
         # Log the best results for the current image
