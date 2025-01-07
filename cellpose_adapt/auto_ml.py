@@ -8,7 +8,12 @@ from ray.air import session
 from cellpose_adapt.config import CellposeConfig
 from cellpose_adapt.core import evaluate_model
 from cellpose_adapt.file_io import load_image_with_gt
+from cellpose_adapt.utils import set_all_seeds
 from experiments.data import data
+
+
+
+set_all_seeds(42)
 
 
 # Wrapping your evaluate_model to integrate with Ray Tune
@@ -80,6 +85,9 @@ def objective(params, image_path, ground_truth_path, log_wandb=False):
             only_cached_results=False,
         )
 
+        if not isinstance(results, dict):
+            session.report({"jaccard_cellpose": -1.0})
+
         # Log results to Weights & Biases
         if log_wandb:
             wandb.log({"jaccard_cellpose": results["jaccard_cellpose"]})
@@ -94,7 +102,7 @@ def objective(params, image_path, ground_truth_path, log_wandb=False):
 
 
 def main(data, log_wandb=False, root="../"):
-    ray.init(ignore_reinit_error=True)
+    ray.init(ignore_reinit_error=True, local_mode=False)
 
     # Ensure all images and ground truth files exist
     for image_path, ground_truth_path in data:

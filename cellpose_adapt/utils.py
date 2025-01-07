@@ -1,3 +1,4 @@
+import os
 import random
 
 import numpy as np
@@ -24,3 +25,4 @@ def set_all_seeds(seed):
     torch.backends.cudnn.benchmark = False
     np.random.seed(seed)
     random.seed(seed)
+    os.environ["PYTHONHASHSEED"] = f"{seed}"
