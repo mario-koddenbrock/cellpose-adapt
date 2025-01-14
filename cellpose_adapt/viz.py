@@ -174,7 +174,7 @@ def save_as_video(output_video_path, image_with_labels, labels, regions):
 
 
 
-def plot_aggregated_metric_variation(result_path, metric='jaccard', boxplot=False, save_plot=False):
+def plot_aggregated_metric_variation(result_path, metric='jaccard', boxplot=False, save_plot=True):
     """
     Detect varying parameters and plot the aggregated metric over these parameters with uncertainty bands
     aggregated over all image_name and type combinations. Optionally display a boxplot.
