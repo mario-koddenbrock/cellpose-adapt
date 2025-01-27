@@ -2,7 +2,6 @@ from dataclasses import dataclass
 
 import yaml
 
-
 # The dataset-specific models were trained on the training images from the following datasets:
 # tissuenet_cp3: tissuenet dataset.
 # livecell_cp3: livecell dataset
@@ -34,6 +33,7 @@ available_model_list = [
     "bact_fluor_cp3",
     "deepbacs_cp3",
 ]
+
 
 def ensure_default_parameter(params):
     default_params = {
@@ -68,10 +68,11 @@ def ensure_default_parameter(params):
             params[key] = default_params[key]
 
     if diameter_not_set:
-        diam_mean = 17. if "nuclei" in params["type"][0].lower() else 30.
+        diam_mean = 17.0 if "nuclei" in params["type"][0].lower() else 30.0
         params["diameter"] = [diam_mean]
 
     return params
+
 
 # Define a dataclass to store the evaluation parameters
 @dataclass
@@ -136,12 +137,11 @@ class CellposeConfig:
             "type": self.type,
         }
         try:
-            with open(yaml_file, 'w') as file:
+            with open(yaml_file, "w") as file:
                 yaml.dump(config, file, default_flow_style=False)
             print(f"Saved CellposeConfig to {yaml_file}")
         except Exception as e:
             print(f"Error saving CellposeConfig to YAML: {e}")
-
 
     def get(self, key, default=None):
         return getattr(self, key, default)

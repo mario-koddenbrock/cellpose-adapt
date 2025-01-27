@@ -52,7 +52,7 @@ def read_yaml(yaml_file: str = "") -> CellposeConfig:
     """
     # Load configuration from YAML
     try:
-        with open(yaml_file, 'r') as file:
+        with open(yaml_file, "r") as file:
             config = yaml.safe_load(file)
     except FileNotFoundError:
         print(f"Error: File '{yaml_file}' not found.")
@@ -67,30 +67,30 @@ def read_yaml(yaml_file: str = "") -> CellposeConfig:
 
     # Map configuration to CellposeConfig
     params = CellposeConfig(
-        model_name=config.get('model_name'),
-        channel_segment=config.get('channel_segment'),
-        channel_nuclei=config.get('channel_nuclei'),
-        channel_axis=config.get('channel_axis'),
-        invert=config.get('invert'),
-        normalize=config.get('normalize'),
-        percentile_min=config.get('percentile_min'),
-        percentile_max=config.get('percentile_max'),
-        diameter=config.get('diameter'),
-        do_3D=config.get('do_3D'),
-        flow_threshold=config.get('flow_threshold'),
-        cellprob_threshold=config.get('cellprob_threshold'),
-        interp=config.get('interp'),
-        min_size=config.get('min_size'),
-        max_size_fraction=config.get('max_size_fraction'),
-        niter=config.get('niter'),
-        stitch_threshold=config.get('stitch_threshold'),
-        tile_overlap=config.get('tile_overlap'),
-        type=config.get('type'),
-        norm3D=config.get('norm3D'),
-        sharpen_radius=config.get('sharpen_radius'),
-        smooth_radius=config.get('smooth_radius'),
-        tile_norm_blocksize=config.get('tile_norm_blocksize'),
-        tile_norm_smooth3D=config.get('tile_norm_smooth3D'),
+        model_name=config.get("model_name"),
+        channel_segment=config.get("channel_segment"),
+        channel_nuclei=config.get("channel_nuclei"),
+        channel_axis=config.get("channel_axis"),
+        invert=config.get("invert"),
+        normalize=config.get("normalize"),
+        percentile_min=config.get("percentile_min"),
+        percentile_max=config.get("percentile_max"),
+        diameter=config.get("diameter"),
+        do_3D=config.get("do_3D"),
+        flow_threshold=config.get("flow_threshold"),
+        cellprob_threshold=config.get("cellprob_threshold"),
+        interp=config.get("interp"),
+        min_size=config.get("min_size"),
+        max_size_fraction=config.get("max_size_fraction"),
+        niter=config.get("niter"),
+        stitch_threshold=config.get("stitch_threshold"),
+        tile_overlap=config.get("tile_overlap"),
+        type=config.get("type"),
+        norm3D=config.get("norm3D"),
+        sharpen_radius=config.get("sharpen_radius"),
+        smooth_radius=config.get("smooth_radius"),
+        tile_norm_blocksize=config.get("tile_norm_blocksize"),
+        tile_norm_smooth3D=config.get("tile_norm_smooth3D"),
     )
 
     return params

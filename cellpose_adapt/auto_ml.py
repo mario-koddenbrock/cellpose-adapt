@@ -43,9 +43,9 @@ def objective(trial, image_path, ground_truth_path):
         "percentile_max": trial.suggest_uniform("percentile_max", 90.0, 100.0),
         "sharpen_radius": trial.suggest_uniform("sharpen_radius", 0, 500),
         "smooth_radius": trial.suggest_uniform("smooth_radius", 0, 500),
-        "tile_norm_blocksize": trial.suggest_uniform("tile_norm_blocksize", 0, 500),
-        "tile_norm_smooth3D": trial.suggest_uniform("tile_norm_smooth3D", 0, 500),
-        "cellprob_threshold": trial.suggest_uniform("cellprob_threshold", -30, 30),
+        "tile_norm_blocksize": 0, # trial.suggest_uniform("tile_norm_blocksize", 0, 500),
+        "tile_norm_smooth3D": 0, # trial.suggest_uniform("tile_norm_smooth3D", 0, 500),
+        "cellprob_threshold": 0, # trial.suggest_uniform("cellprob_threshold", -30, 30),
         "channel_axis": None,
         "channel_segment": 0,
         "channel_nuclei": 0,
@@ -108,7 +108,7 @@ def main(data, root="../"):
         study = optuna.create_study(direction="maximize", study_name=study_name)
         study.optimize(
             lambda trial: objective(trial, full_image_path, full_ground_truth_path),
-            n_trials=50,
+            n_trials=100,
         )
 
         # Log the best result for the current image

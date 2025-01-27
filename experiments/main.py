@@ -13,5 +13,6 @@ def main():
     setup.run_tile_experiments()
     setup.run_smoothing_experiments()
 
+
 if __name__ == "__main__":
     main()

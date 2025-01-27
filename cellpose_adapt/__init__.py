@@ -1,18 +1,12 @@
 import os
 import warnings
 
-import cellpose
-import napari
 import torch
 
 from .utils import check_set_gpu
 
 # Ignore specific warnings
-ignored_warnings = [
-    DeprecationWarning,
-    FutureWarning,
-    UserWarning
-]
+ignored_warnings = [DeprecationWarning, FutureWarning, UserWarning]
 
 for warning in ignored_warnings:
     warnings.filterwarnings("ignore", category=warning)

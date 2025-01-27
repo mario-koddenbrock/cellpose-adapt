@@ -28,7 +28,8 @@ def filter_model_parameter(params):
     ]
     return {k: params.get(k) for k in model_keys}
 
-def compute_hash(image, parameters, separate_mask_computing:bool = True):
+
+def compute_hash(image, parameters, separate_mask_computing: bool = True):
     """
     Compute a unique hash for the image and parameters.
     """
@@ -38,9 +39,13 @@ def compute_hash(image, parameters, separate_mask_computing:bool = True):
     image_hash = hashlib.sha256(image.tobytes()).hexdigest()
 
     if isinstance(parameters, dict):
-        param_hash = hashlib.sha256(json.dumps(parameters, sort_keys=True).encode()).hexdigest()
+        param_hash = hashlib.sha256(
+            json.dumps(parameters, sort_keys=True).encode()
+        ).hexdigest()
     else:
-        param_hash = hashlib.sha256(json.dumps(asdict(parameters), sort_keys=True).encode()).hexdigest()
+        param_hash = hashlib.sha256(
+            json.dumps(asdict(parameters), sort_keys=True).encode()
+        ).hexdigest()
 
     return f"{image_hash}_{param_hash}"
 
@@ -56,7 +61,9 @@ def save_to_cache(cache_dir, cache_key, masks, flows, styles, diams):
     # Save each component separately
     np.save(os.path.join(cache_key_dir, "masks.npy"), masks.astype(np.uint16))
     np.save(os.path.join(cache_key_dir, "styles.npy"), styles.astype(np.float32))
-    np.save(os.path.join(cache_key_dir, "diams.npy"), np.array([diams], dtype=np.float32))
+    np.save(
+        os.path.join(cache_key_dir, "diams.npy"), np.array([diams], dtype=np.float32)
+    )
 
     # Save flows as separate files
     flows_dir = os.path.join(cache_key_dir, "flows")
@@ -97,7 +104,9 @@ def load_from_cache(cache_dir, cache_key):
 
     try:
         flows_dir = os.path.join(cache_key_dir, "flows")
-        flows = [np.load(os.path.join(flows_dir, f)) for f in sorted(os.listdir(flows_dir))]
+        flows = [
+            np.load(os.path.join(flows_dir, f)) for f in sorted(os.listdir(flows_dir))
+        ]
     except Exception as e:
         print(f"Error: {e}")
         flows = None

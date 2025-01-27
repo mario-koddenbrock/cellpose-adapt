@@ -1,6 +1,5 @@
 import numpy as np
-from cellpose.metrics import aggregated_jaccard_index, average_precision
-from medpy.metric import jc
+from cellpose.metrics import average_precision
 from scipy.optimize import linear_sum_assignment
 
 
@@ -14,6 +13,7 @@ def jaccard_index_3d(gt_mask, pred_mask):
         return 0.0
     return intersection / union
 
+
 def jaccard(ground_truth, masks):
     unique_gt = np.unique(ground_truth[ground_truth > 0])
     unique_masks = np.unique(masks[masks > 0])
@@ -24,9 +24,9 @@ def jaccard(ground_truth, masks):
     # Compute pairwise Jaccard index for all combinations
     aji = np.zeros((len(unique_gt), len(unique_masks)))
     for i, label_gt in enumerate(unique_gt):
-        gt_mask = (ground_truth == label_gt)
+        gt_mask = ground_truth == label_gt
         for j, label_mask in enumerate(unique_masks):
-            pred_mask = (masks == label_mask)
+            pred_mask = masks == label_mask
             aji[i, j] = jaccard_index_3d(gt_mask, pred_mask)
 
     # Match ground truth and predicted instances using Hungarian algorithm
@@ -36,6 +36,7 @@ def jaccard(ground_truth, masks):
     matched_scores = aji[row_ind, col_ind]
     mean_score = matched_scores.mean()
     return mean_score
+
 
 def f1_score(ground_truth, masks):
     ap, tp, fp, fn = average_precision(ground_truth, masks)
@@ -61,6 +62,7 @@ def simple_iou(ground_truth, masks):
     except Exception as e:
         print(f"Error: {e}")
         return -1
+
 
 def dice_coefficient(ground_truth, prediction):
     """Calculate Dice coefficient for a single mask."""

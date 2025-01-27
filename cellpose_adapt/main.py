@@ -6,25 +6,25 @@ import numpy as np
 from napari.utils.color import ColorArray
 from napari.utils.colormaps import colormap
 
-from .file_io import read_yaml, load_image_with_gt
 from .core import evaluate_model
-from .viz import extract_cellpose_video, plot_intensity
+from .file_io import read_yaml, load_image_with_gt
+from .viz import extract_cellpose_video
 
 
 def cellpose_eval(
-        image_path,
-        ground_truth_path,
-        param_file,
-        output_dir,
-        cache_dir=".cache",
-        show_image=True,
-        show_gt=True,
-        show_prediction=False,
-        video_3d=True,
-        show_viewer = True,
-        export_video = False,
-        only_std_out = False,
-        type="Nuclei", # Nuclei or Membranes
+    image_path,
+    ground_truth_path,
+    param_file,
+    output_dir,
+    cache_dir=".cache",
+    show_image=True,
+    show_gt=True,
+    show_prediction=False,
+    video_3d=True,
+    show_viewer=True,
+    export_video=False,
+    only_std_out=False,
+    type="Nuclei",  # Nuclei or Membranes
 ):
 
     params = read_yaml(param_file)
@@ -65,8 +65,8 @@ def cellpose_eval(
             print(f"Failed to process image {image_path}")
             show_prediction = False
         else:
-            masks = results['masks']
-            jaccard = results['jaccard']
+            masks = results["masks"]
+            jaccard = results["jaccard"]
 
             num_regions_mask = len(np.unique(masks)) - 1
             print(f"\tNumber of regions mask: {num_regions_mask}")
@@ -75,7 +75,6 @@ def cellpose_eval(
 
         if only_std_out:
             return
-
 
     # Initialize the Napari viewer
     viewer = napari.Viewer()
@@ -88,38 +87,33 @@ def cellpose_eval(
         viewer.add_image(
             image,
             # contrast_limits=[q1, q3],
-            name='Organoids',
-            colormap='gray',
+            name="Organoids",
+            colormap="gray",
         )
 
     if show_gt and (ground_truth is not None):
         cmap = colormap.CyclicLabelColormap(
-            colors=ColorArray(
-                np.array([[0, 0, 0, 0], [1, 0.37254, 0, 1]])
-            ),
+            colors=ColorArray(np.array([[0, 0, 0, 0], [1, 0.37254, 0, 1]])),
             background_value=0,
         )
         layer = viewer.add_labels(
             ground_truth,
             name="Ground truth",
             opacity=0.3,
-            blending='translucent',
+            blending="translucent",
             colormap=cmap,
         )
 
-
     if show_prediction:
         cmap = colormap.CyclicLabelColormap(
-            colors=ColorArray(
-                np.array([[0, 0, 0, 0], [0.4627, 0.72549, 0, 1]])
-            ),
+            colors=ColorArray(np.array([[0, 0, 0, 0], [0.4627, 0.72549, 0, 1]])),
             background_value=0,
         )
         layer = viewer.add_labels(
             masks,
             name=f"{params.model_name} ({100*jaccard:.0f}%)",
             opacity=0.7,
-            blending='translucent',
+            blending="translucent",
             colormap=cmap,
         )
         layer.contour = 2
@@ -140,7 +134,9 @@ def cellpose_eval(
 
         mode = "3D" if video_3d else "2D"
         num_z_slices = image.shape[0]
-        extract_cellpose_video(viewer, output_dir, video_filename, num_z_slices, mode=mode)
+        extract_cellpose_video(
+            viewer, output_dir, video_filename, num_z_slices, mode=mode
+        )
 
         # Close the viewer to release resources
         viewer.close()
@@ -158,16 +154,46 @@ if __name__ == "__main__":
     # python main.py path/to/image.tif path/to/params.yaml path/to/output --show_gt --show_prediction --show_viewer
 
     parser = argparse.ArgumentParser(description="View cellpose results with Napari.")
-    parser.add_argument("--image_path", type=str, default="data/P013T/20240305_P013T_40xSil_Hoechst_SiRActin/images_cropped_isotropic/20240305_P013T_A003_cropped_isotropic.tif", help="Path to the image file.")
-    parser.add_argument("--ground_truth_path", type=str, default="data/P013T/20240305_P013T_40xSil_Hoechst_SiRActin/labelmaps/Nuclei/20240305_P013T_A003_cropped_isotropic_nuclei-labels.tif", help="Path to the ground truth file.")
-    parser.add_argument("--type", type=str, default="Nuclei", help="Membranes or Nuclei.")
-    parser.add_argument("--param_file", type=str, default="data/P013T/20240305_P013T_A003_cropped_isotropic_Nuclei_config.yaml", help="Path to the parameter YAML file.")
-    parser.add_argument("--output_dir", type=str, default="Segmentation", help="Directory to save the output.")
-    parser.add_argument("--cache_dir", type=str, default=".cache", help="Directory for cache files.")
-    parser.add_argument("--show_gt", action="store_true", help="Show ground truth labels.")
-    parser.add_argument("--show_prediction", action="store_true", help="Show prediction labels.")
+    parser.add_argument(
+        "--image_path",
+        type=str,
+        default="data/P013T/20240305_P013T_40xSil_Hoechst_SiRActin/images_cropped_isotropic/20240305_P013T_A003_cropped_isotropic.tif",
+        help="Path to the image file.",
+    )
+    parser.add_argument(
+        "--ground_truth_path",
+        type=str,
+        default="data/P013T/20240305_P013T_40xSil_Hoechst_SiRActin/labelmaps/Nuclei/20240305_P013T_A003_cropped_isotropic_nuclei-labels.tif",
+        help="Path to the ground truth file.",
+    )
+    parser.add_argument(
+        "--type", type=str, default="Nuclei", help="Membranes or Nuclei."
+    )
+    parser.add_argument(
+        "--param_file",
+        type=str,
+        default="data/P013T/20240305_P013T_A003_cropped_isotropic_Nuclei_config.yaml",
+        help="Path to the parameter YAML file.",
+    )
+    parser.add_argument(
+        "--output_dir",
+        type=str,
+        default="Segmentation",
+        help="Directory to save the output.",
+    )
+    parser.add_argument(
+        "--cache_dir", type=str, default=".cache", help="Directory for cache files."
+    )
+    parser.add_argument(
+        "--show_gt", action="store_true", help="Show ground truth labels."
+    )
+    parser.add_argument(
+        "--show_prediction", action="store_true", help="Show prediction labels."
+    )
     parser.add_argument("--video_3d", action="store_true", help="Export 3D video.")
-    parser.add_argument("--show_viewer", action="store_true", help="Show Napari viewer.")
+    parser.add_argument(
+        "--show_viewer", action="store_true", help="Show Napari viewer."
+    )
     parser.add_argument("--export_video", action="store_true", help="Export video.")
 
     args = parser.parse_args()

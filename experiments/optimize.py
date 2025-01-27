@@ -2,7 +2,6 @@ import os
 from itertools import product
 
 import wandb
-
 from cellpose_adapt.config import ensure_default_parameter, CellposeConfig
 from cellpose_adapt.core import EvaluationError
 from cellpose_adapt.file_io import load_image_with_gt
@@ -12,13 +11,13 @@ from experiments.results import ResultHandler
 
 
 def grid_search(
-        params: dict,
-        data: list,
-        result_file: str = "",
-        cache_dir: str = ".cache",
-        show_viewer: bool = False,
-        log_wandb: bool = False,
-        append_result: bool = False,
+    params: dict,
+    data: list,
+    result_file: str = "",
+    cache_dir: str = ".cache",
+    show_viewer: bool = False,
+    log_wandb: bool = False,
+    append_result: bool = False,
 ):
 
     # Ensure that all images and ground truth files exist
@@ -33,7 +32,9 @@ def grid_search(
         if log_wandb:
             image_name = os.path.basename(image_path).replace(".tif", "")
             result_name = os.path.basename(result_file).replace(".csv", "")
-            wandb.init(project="organoid_segmentation", name=f"{image_name}_{result_name}")
+            wandb.init(
+                project="organoid_segmentation", name=f"{image_name}_{result_name}"
+            )
 
         if "nuclei" in ground_truth_path.lower():
             params["type"] = "Nuclei"
@@ -97,10 +98,29 @@ def grid_search(
 
         for combination in param_combinations:
             (
-                model_name, channel_segment, channel_nuclei, channel_axis, invert, normalize,
-                percentile_min, percentile_max, diameter, do_3D, flow_threshold, cellprob_threshold,
-                interp, min_size, max_size_fraction, niter, stitch_threshold, tile_overlap,
-                norm3D, sharpen_radius, smooth_radius, tile_norm_blocksize, tile_norm_smooth3D
+                model_name,
+                channel_segment,
+                channel_nuclei,
+                channel_axis,
+                invert,
+                normalize,
+                percentile_min,
+                percentile_max,
+                diameter,
+                do_3D,
+                flow_threshold,
+                cellprob_threshold,
+                interp,
+                min_size,
+                max_size_fraction,
+                niter,
+                stitch_threshold,
+                tile_overlap,
+                norm3D,
+                sharpen_radius,
+                smooth_radius,
+                tile_norm_blocksize,
+                tile_norm_smooth3D,
             ) = combination
 
             config = CellposeConfig(

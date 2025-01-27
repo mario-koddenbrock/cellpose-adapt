@@ -38,15 +38,14 @@ def main():
             output_dir=output_dir,
             cache_dir=".cache",
             show_image=True,
-            show_gt=False,
+            show_gt=True,
             show_prediction=True,
             video_3d=False,
-            show_viewer=False,
-            export_video=True,
+            show_viewer=True,
+            export_video=False,
             only_std_out=False,
             type=type,
         )
-
 
 
 if __name__ == "__main__":

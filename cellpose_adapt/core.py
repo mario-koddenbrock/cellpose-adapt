@@ -8,14 +8,19 @@ from cellpose.metrics import aggregated_jaccard_index
 from cellpose.models import CellposeModel
 
 from .hash import save_to_cache, compute_hash, load_from_cache
-from .metrics import jaccard
 from .utils import check_set_gpu
 
 
-def evaluate_model(key, image, ground_truth, params,
-                   cache_dir=".cache", separate_mask_computing=True, only_cached_results=False):
+def evaluate_model(
+    key,
+    image,
+    ground_truth,
+    params,
+    cache_dir=".cache",
+    separate_mask_computing=True,
+    only_cached_results=False,
+):
     t0 = time.time()
-
 
     cache_key = compute_hash(image, params, separate_mask_computing)
 
@@ -33,9 +38,14 @@ def evaluate_model(key, image, ground_truth, params,
         try:
 
             device = check_set_gpu()
-            model = CellposeModel(device=device, gpu=False, model_type=params.model_name,
-                                    diam_mean=params.diameter, nchan=2,
-                                    backbone="default")
+            model = CellposeModel(
+                device=device,
+                gpu=False,
+                model_type=params.model_name,
+                diam_mean=params.diameter,
+                nchan=2,
+                backbone="default",
+            )
 
             #     Args:
             #         normalize (bool, optional): Whether to perform normalization. Defaults to True.
@@ -60,7 +70,10 @@ def evaluate_model(key, image, ground_truth, params,
                 "lowhigh": None,
                 "norm3D": params.norm3D,
                 "normalize": params.normalize,
-                "percentile": (float(params.percentile_min), float(params.percentile_max)),
+                "percentile": (
+                    float(params.percentile_min),
+                    float(params.percentile_max),
+                ),
                 "sharpen_radius": params.sharpen_radius,
                 "smooth_radius": params.smooth_radius,
                 "tile_norm_blocksize": params.tile_norm_blocksize,
@@ -87,7 +100,9 @@ def evaluate_model(key, image, ground_truth, params,
                 z_axis=0,
             )
 
-            print(f"\tMask: {np.any(masks)}")
+            if not separate_mask_computing:
+                print(f"\tMask non-zero: {np.any(masks)}")
+
             save_to_cache(cache_dir, cache_key, masks, flows, styles, params.diameter)
 
         except Exception as e:
@@ -111,7 +126,7 @@ def evaluate_model(key, image, ground_truth, params,
             do_3D=params.do_3D,
             min_size=params.min_size,
             max_size_fraction=params.max_size_fraction,
-            device=torch.device('cpu'), # TODO: MPS not available
+            device=torch.device("cpu"),  # TODO: MPS not available
         )
 
     if masks is None:
@@ -127,7 +142,6 @@ def evaluate_model(key, image, ground_truth, params,
 
         print(f"\tJaccard (own): {jaccard_score:.2f}")
         print(f"\tJaccard (cellpose): {jaccard_cellpose:.2f}")
-
 
     results = {
         "image": image,
