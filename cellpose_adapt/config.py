@@ -68,7 +68,10 @@ def ensure_default_parameter(params):
             params[key] = default_params[key]
 
     if diameter_not_set:
-        diam_mean = 17.0 if "nuclei" in params["type"][0].lower() else 30.0
+        if params["type"] is None:
+            diam_mean = 30.0
+        else:
+            diam_mean = 17.0 if "nuclei" in params["type"][0].lower() else 30.0
         params["diameter"] = [diam_mean]
 
     return params
@@ -101,6 +104,7 @@ class CellposeConfig:
     tile_norm_smooth3D: int
     tile_overlap: float
     type: str
+    z_axis: int = 0
 
     def to_yaml(self, yaml_file: str):
         """

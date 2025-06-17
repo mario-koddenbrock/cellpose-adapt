@@ -97,7 +97,7 @@ def evaluate_model(
                 normalize=normalzation_params,
                 tile_overlap=params.tile_overlap,
                 stitch_threshold=params.stitch_threshold,
-                z_axis=0,
+                z_axis=params.z_axis,
             )
 
             if not separate_mask_computing:
