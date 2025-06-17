@@ -69,8 +69,6 @@ def grid_search(
         else:
             channel_idx = None
 
-        params["do_3D"] = [channel_idx is not None]
-
         # Get the right channel
         if channel_idx is not None:
             image = (
