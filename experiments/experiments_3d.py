@@ -4,7 +4,7 @@ from cellpose_adapt.config import available_model_list
 from cellpose_adapt.utils import set_all_seeds
 from cellpose_adapt.viz import plot_aggregated_metric_variation
 from .data import data
-from .optimize import grid_search
+from .optimization import grid_search
 
 # Set the random seed based on the image index
 set_all_seeds(42)

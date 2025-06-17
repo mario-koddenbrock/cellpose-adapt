@@ -2,7 +2,11 @@ import os
 from itertools import product
 
 import wandb
-from cellpose_adapt.config import ensure_default_parameter, CellposeConfig
+
+from cellpose_adapt.config import (
+    ensure_default_parameter,
+    CellposeConfig,
+)
 from cellpose_adapt.core import EvaluationError
 from cellpose_adapt.file_io import load_image_with_gt
 from cellpose_adapt.main import evaluate_model
@@ -41,13 +45,12 @@ def grid_search(
         elif "membrane" in ground_truth_path.lower():
             params["type"] = "Membranes"
         else:
-            raise ValueError(f"Invalid ground truth: {ground_truth_path}")
+            params["type"] = None
 
         result_handler = ResultHandler(result_file, log_wandb, append_result)
         append_result = True
 
         params = ensure_default_parameter(params)
-
         image_name = os.path.basename(image_path).replace(".tif", "")
         image_orig, ground_truth = load_image_with_gt(image_path, ground_truth_path)
 
@@ -64,10 +67,17 @@ def grid_search(
         elif params["type"] == "Membranes":
             channel_idx = 1
         else:
-            raise ValueError(f"Invalid type: {params.type}")
+            channel_idx = None
+
+        params["do_3D"] = [channel_idx is not None]
 
         # Get the right channel
-        image = image_orig[:, channel_idx, :, :] if image_orig.ndim == 4 else image_orig
+        if channel_idx is not None:
+            image = (
+                image_orig[:, channel_idx, :, :] if image_orig.ndim == 4 else image_orig
+            )
+        else:
+            image = image_orig
 
         # Get all combinations of parameters
         param_combinations = product(
@@ -147,7 +157,8 @@ def grid_search(
                 tile_norm_blocksize=tile_norm_blocksize,
                 tile_norm_smooth3D=tile_norm_smooth3D,
                 tile_overlap=tile_overlap,
-                type=params["type"],
+                type=params.get("type", None),
+                z_axis=params.get("z_axis", None),
             )
 
             results = evaluate_model(image_name, image, ground_truth, config, cache_dir)
