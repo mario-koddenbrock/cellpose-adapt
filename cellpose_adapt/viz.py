@@ -46,7 +46,7 @@ def extract_cellpose_video(
     video_path = os.path.join(output_dir, video_filename)
 
     # Set FPS based on mode
-    fps = 100 if mode == "2D" else 30  # Higher FPS for 2D, lower for 3D
+    fps = 25 if mode == "2D" else 30  # Higher FPS for 2D, lower for 3D
 
     # Create an animation object
     animation = Animation(viewer)
