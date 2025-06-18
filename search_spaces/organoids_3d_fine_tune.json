@@ -1,0 +1,32 @@
+{
+  "description": "Fine-tuning post-processing parameters for 3D organoids with a fixed model.",
+  "fixed_params": {
+    "do_3D": true,
+    "model_name": "cyto3",
+    "diameter": 65.0,
+    "normalize": true
+  },
+  "search_space": {
+    "flow_threshold": [
+      "suggest_float",
+      0.3,
+      0.5
+    ],
+    "cellprob_threshold": [
+      "suggest_float",
+      -1.0,
+      1.0
+    ],
+    "min_size": [
+      "suggest_int",
+      5000,
+      20000,
+      "log"
+    ],
+    "niter": [
+      "suggest_int",
+      100,
+      300
+    ]
+  }
+}
