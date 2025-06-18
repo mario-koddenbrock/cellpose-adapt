@@ -1,0 +1,23 @@
+{
+  "description": "Main configuration for the 2D bacteria segmentation experiment.",
+  "project_settings": {
+    "study_name": "bacteria_2d_study_v2",
+    "limit_images_per_source": 1,
+    "n_trials": 3
+  },
+  "data_sources": [
+    "./data/MG1655/All_images/CIP+ETOH",
+    "./data/MG1655/All_images/COAMOX+ETOH"
+  ],
+  "gt_mapping": {
+    "replace": [
+      [
+        "All_images",
+        "All_segmentations"
+      ]
+    ],
+    "suffix": ".tif",
+    "img_suffix": ".tif"
+  },
+  "search_space_config_path": "search_spaces/bacteria_2d_coarse.json"
+}
