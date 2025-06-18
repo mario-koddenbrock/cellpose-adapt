@@ -50,7 +50,7 @@ def main():
 
     # --- Setup ---
     timestamp = time.strftime("%Y%m%d-%H%M%S")
-    setup_logging(log_file=f"optimization{timestamp}.log")
+    setup_logging(log_level=logging.ERROR, log_file=f"optimization{timestamp}.log")
 
     project_config = load_project_config(args.project_config_path)
     if not project_config:
