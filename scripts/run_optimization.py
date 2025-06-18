@@ -2,6 +2,7 @@ import argparse
 import json
 import logging
 import os
+from datetime import time
 
 import optuna
 
@@ -10,7 +11,6 @@ from cellpose_adapt.logging_config import setup_logging
 from cellpose_adapt.optimization import OptunaOptimizer
 
 
-# ... (load_project_config function remains the same) ...
 def load_project_config(config_path: str) -> dict:
     """Loads and validates the main project configuration file."""
     try:
@@ -49,7 +49,8 @@ def main():
     args = parser.parse_args()
 
     # --- Setup ---
-    setup_logging(log_file="optimization.log")
+    timestamp = time.strftime("%Y%m%d-%H%M%S")
+    setup_logging(log_file=f"optimization{timestamp}.log")
 
     project_config = load_project_config(args.project_config_path)
     if not project_config:
