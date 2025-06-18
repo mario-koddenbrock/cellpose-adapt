@@ -36,7 +36,7 @@ def main():
             ground_truth_path=ground_truth_path,
             param_file=param_path,
             output_dir=output_dir,
-            cache_dir=".cache",
+            cache_dir="../.cache",
             show_image=True,
             show_gt=True,
             show_prediction=True,

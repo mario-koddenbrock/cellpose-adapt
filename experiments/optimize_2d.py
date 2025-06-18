@@ -1,18 +1,26 @@
 import os
 
-from experiments.experiments_2d import run_experiments
+from experiments.experiments_2d import run_experiments, eval_2d
 
 
-def main(max_num_images: int = 10):
+def main(max_num_images: int = 1):
 
-    root = "./"
+    data, result_file = get_zagajewski_data(max_num_images)
+
+    best_config_files = run_experiments(data, result_file=result_file)
+
+    eval_2d(data, result_file=result_file)
+
+
+def get_zagajewski_data(max_num_images):
+    # get parent of current path
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     output_parent_dir = os.path.join(root, "results", "Zagajewski_Data")
-
+    print("output_parent_dir", output_parent_dir)
     image_parent_dir = "/Users/koddenbrock/Repository/Deep-Learning-and-Single-Cell-Phenotyping-for-Rapid-Antimicrobial-Susceptibility-Testing/Zagajewski_Data/Data/MG1655/All_images"
-
+    result_file = os.path.join(output_parent_dir, "results_Zagajewski_Data.csv")
     # get all subfolders in the image parent directory
     image_subfolder = os.listdir(image_parent_dir)
-
     data = []
     count = 0
     for subfolder in image_subfolder:
@@ -20,7 +28,7 @@ def main(max_num_images: int = 10):
         if os.path.isdir(subfolder_path):
             subfolder_name = os.path.basename(subfolder_path)
             output_dir = os.path.join(output_parent_dir, subfolder_name)
-            os.makedirs(output_dir, exist_ok=True)
+            # os.makedirs(output_dir, exist_ok=True)
 
             # iterate through all tiff files in the subfolder
             for file in os.listdir(subfolder_path):
@@ -42,12 +50,9 @@ def main(max_num_images: int = 10):
                     data.append((image_path, gt_path))
                     count += 1
                     if count >= max_num_images:
-                        break
-        if count >= max_num_images:
-            break
+                        return data, result_file
 
-    print(f"Found {count} images.")
-    run_experiments(data, eval=False)
+    return data, result_file
 
 
 if __name__ == "__main__":

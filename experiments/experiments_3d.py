@@ -1,13 +1,10 @@
 import os
 
-from cellpose_adapt.config import available_model_list
-from cellpose_adapt.utils import set_all_seeds
 from cellpose_adapt.viz import plot_aggregated_metric_variation
+
+from cellpose_adapt.config import available_model_list
 from .data import data
 from .optimization import grid_search
-
-# Set the random seed based on the image index
-set_all_seeds(42)
 
 main_folder = "results/P013T/"
 
@@ -35,17 +32,6 @@ def run_model_experiments(eval: bool = False):
     grid_search(options_model, data, result_file_models)
     if eval:
         plot_aggregated_metric_variation(result_file_models)
-
-
-def run_channel_experiments(eval: bool = False):
-    result_file_channel = os.path.join(main_folder, "experiments_2_channel.csv")
-    options_channel_segment = {"channel_segment": [0, 1, 2, 3]}
-    grid_search(options_channel_segment, data, result_file_channel)
-
-    options_channel_nuclei = {"channel_nuclei": [0, 1, 2, 3]}
-    grid_search(options_channel_nuclei, data, result_file_channel, append_result=True)
-    if eval:
-        plot_aggregated_metric_variation(result_file_channel)
 
 
 def run_normalization_experiments(eval: bool = False):

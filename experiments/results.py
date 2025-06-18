@@ -1,12 +1,13 @@
 import csv
+import math
 import os
 
 import numpy as np
 import pandas as pd
+import wandb
 import yaml
 from prettytable import PrettyTable
 
-import wandb
 from cellpose_adapt.config import CellposeConfig
 
 
@@ -160,12 +161,21 @@ def save_best_config_per_image(result_path, metric="jaccard"):
     ]
 
     # iterate over the unique images and find the best configuration
+    best_config_files = []
     for idx, row in unique_images.iterrows():
         image_name = row["image_name"]
         type = row["type"]
 
         # Filter the data for the current image and type
-        filtered = df[(df["image_name"] == image_name) & (df["type"] == type)]
+        if not math.isnan(type):
+            filtered = df[(df["image_name"] == image_name) & (df["type"] == type)]
+        else:
+            filtered = df[df["image_name"] == image_name]
+
+        # Check if there are any results for this image and type
+        if filtered.empty:
+            print(f"No results found for image '{image_name}' with type '{type}'.")
+            continue
 
         # Get the row with the highest score
         best_config = filtered.loc[filtered[metric].idxmax()]
@@ -177,22 +187,19 @@ def save_best_config_per_image(result_path, metric="jaccard"):
             if col not in excluded_columns
         }
 
-        file_name = f"{row['image_name']}_{row['type']}_config.yaml"
+        if not math.isnan(type):
+            file_name = f"{image_name}_{type}_config.yaml"
+        else:
+            file_name = os.path.join(image_name, "best_config.yaml")
+
         file_path = os.path.join(output_dir, file_name)
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
         # save the best configuration to a YAML file
         with open(file_path, "w") as yaml_file:
             yaml.dump(config, yaml_file, default_flow_style=False)
 
         print(f"Saved configuration to {file_path}")
+        best_config_files.append(file_path)
 
-    # # Save the best configuration to a YAML file
-    # file_path = os.path.join(output_dir, "best_median_config.yaml")
-    # with open(file_path, 'w') as yaml_file:
-    #     yaml.dump(best_config, yaml_file, default_flow_style=False)
-    # print(f"Saved best median configuration to {file_path}")
-    #
-    # # Print the best configuration
-    # print(f"Best configuration based on median '{metric}':")
-    # for key, value in best_config.items():
-    #     print(f"  {key}: {value}")
+    return best_config_files

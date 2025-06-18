@@ -2,15 +2,15 @@ import os
 from itertools import product
 
 import wandb
+from cellpose_adapt.file_io import load_image_with_gt
+from cellpose_adapt.viz import show_napari
 
 from cellpose_adapt.config import (
     ensure_default_parameter,
     CellposeConfig,
 )
 from cellpose_adapt.core import EvaluationError
-from cellpose_adapt.file_io import load_image_with_gt
 from cellpose_adapt.main import evaluate_model
-from cellpose_adapt.viz import show_napari
 from experiments.results import ResultHandler
 
 
@@ -80,8 +80,6 @@ def grid_search(
         # Get all combinations of parameters
         param_combinations = product(
             params["model_name"],
-            params["channel_segment"],
-            params["channel_nuclei"],
             params["channel_axis"],
             params["invert"],
             params["normalize"],
@@ -107,8 +105,6 @@ def grid_search(
         for combination in param_combinations:
             (
                 model_name,
-                channel_segment,
-                channel_nuclei,
                 channel_axis,
                 invert,
                 normalize,
@@ -134,8 +130,6 @@ def grid_search(
             config = CellposeConfig(
                 cellprob_threshold=cellprob_threshold,
                 channel_axis=channel_axis,
-                channel_nuclei=channel_nuclei,
-                channel_segment=channel_segment,
                 diameter=diameter,
                 do_3D=do_3D,
                 flow_threshold=flow_threshold,
