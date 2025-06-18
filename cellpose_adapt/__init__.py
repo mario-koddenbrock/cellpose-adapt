@@ -3,13 +3,15 @@ import warnings
 
 import torch
 
-from .utils import check_set_gpu
+from .utils import check_set_gpu, set_all_seeds
 
 # Ignore specific warnings
 ignored_warnings = [DeprecationWarning, FutureWarning, UserWarning]
 
 for warning in ignored_warnings:
     warnings.filterwarnings("ignore", category=warning)
+
+set_all_seeds(42)
 
 # Set the path to the ffmpeg executable - only needed for exporting animations
 os.environ["IMAGEIO_FFMPEG_EXE"] = "/opt/homebrew/bin/ffmpeg"
@@ -19,4 +21,5 @@ print(f"torch cuda available: {torch.cuda.is_available()}")
 # print(f"torch cuda version: {torch.version.cuda}")
 # print(f"napari version: {napari.__version__}")
 # print(f"ffmpeg available: {os.path.exists(os.environ['IMAGEIO_FFMPEG_EXE'])}")
-print(f"device: {check_set_gpu()}")
+DEVICE = check_set_gpu()
+print(f"device: {DEVICE}")

@@ -16,7 +16,7 @@ def check_set_gpu(override=None):
     else:
         device = torch.device(override)
 
-    return torch.device("cpu")
+    return device
 
 
 def set_all_seeds(seed):

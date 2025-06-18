@@ -1,164 +1,149 @@
+import logging
 import time
-from enum import Enum
 
 import numpy as np
-import torch
 from cellpose.dynamics import compute_masks
 from cellpose.metrics import aggregated_jaccard_index
 from cellpose.models import CellposeModel
 
-from .hash import save_to_cache, compute_hash, load_from_cache
-from .utils import check_set_gpu
+from . import caching, DEVICE
+from .config import PipelineConfig
+from .metrics import jaccard, f1_score
+
+logger = logging.getLogger(__name__)
 
 
-def evaluate_model(
-    key,
-    image,
-    ground_truth,
-    params,
-    cache_dir=".cache",
-    separate_mask_computing=True,
-    only_cached_results=False,
-):
-    t0 = time.time()
+def initialize_model(model_name: str) -> CellposeModel:
+    """Initializes the CellposeModel based on the configuration."""
+    logger.info(
+        "Initializing Cellpose model '%s' on device '%s'",
+        model_name,
+        DEVICE,
+    )
+    try:
+        model = CellposeModel(
+            gpu=DEVICE.type != "cpu",
+            pretrained_model=model_name,
+            device=DEVICE,
+        )
+        return model
+    except Exception as e:
+        logger.error("Failed to initialize Cellpose model: %s", e)
+        raise
 
-    cache_key = compute_hash(image, params, separate_mask_computing)
+class CellposeRunner:
+    """Encapsulates the Cellpose model and evaluation logic with caching."""
 
-    masks, flows, styles, diams = load_from_cache(cache_dir, cache_key)
-    model_name = params.model_name
+    def __init__(self, model: CellposeModel, config: PipelineConfig):
+        self.model = model
+        self.config = config
 
-    if masks is not None:
-        print(f"\tLOADING FROM CACHE: {model_name}")
-    else:
+    def _get_raw_output(self, image: np.ndarray) -> (list, np.ndarray):
+        """
+        Gets the raw model output (flows, styles), using a cache to avoid re-computation.
+        This is the slow part of the pipeline.
+        """
+        model_params = caching.get_model_eval_params(self.config)
+        cache_key = caching.compute_hash(image, model_params)
 
-        if only_cached_results:
-            return EvaluationError.CACHE_NOT_AVAILABLE
+        # Try to load from cache first
+        cached_flows, cached_styles = caching.load_from_cache(cache_key)
+        if cached_flows is not None:
+            logger.info("CACHE HIT for model prediction.")
+            return cached_flows, cached_styles
 
-        print(f"\tEVALUATING: {model_name}")
-        try:
+        # If not in cache, run the model
+        logger.info("CACHE MISS. Running model.eval() to get raw flows.")
 
-            device = check_set_gpu()
-            model = CellposeModel(
-                device=device,
-                gpu=False,
-                model_type=params.model_name,
-                diam_mean=params.diameter,
-                nchan=2,
-                backbone="default",
-            )
+        # Build the full normalization dictionary
+        normalization_params = {
+            "normalize": self.config.normalize,
+            "norm3D": self.config.norm3D,
+            "invert": self.config.invert,
+            "percentile": (self.config.percentile_min, self.config.percentile_max),
+            "sharpen_radius": self.config.sharpen_radius,
+            "smooth_radius": self.config.smooth_radius,
+            "tile_norm_blocksize": self.config.tile_norm_blocksize,  # Added
+            "tile_norm_smooth3D": self.config.tile_norm_smooth3D,  # Added
+        }
 
-            #     Args:
-            #         normalize (bool, optional): Whether to perform normalization. Defaults to True.
-            #         norm3D (bool, optional): Whether to normalize in 3D. If True, the entire 3D stack will
-            #             be normalized per channel. If False, normalization is applied per Z-slice. Defaults to False.
-            #         invert (bool, optional): Whether to invert the image. Useful if cells are dark instead of bright.
-            #             Defaults to False.
-            #         lowhigh (tuple or ndarray, optional): The lower and upper bounds for normalization.
-            #             Can be a tuple of two values (applied to all channels) or an array of shape (nchan, 2)
-            #             for per-channel normalization. Incompatible with smoothing and sharpening.
-            #             Defaults to None.
-            #         percentile (tuple, optional): The lower and upper percentiles for normalization. If provided, it should be
-            #             a tuple of two values. Each value should be between 0 and 100. Defaults to (1.0, 99.0).
-            #         sharpen_radius (int, optional): The radius for sharpening the image. Defaults to 0.
-            #         smooth_radius (int, optional): The radius for smoothing the image. Defaults to 0.
-            #         tile_norm_blocksize (int, optional): The block size for tile-based normalization. Defaults to 0.
-            #         tile_norm_smooth3D (int, optional): The smoothness factor for tile-based normalization in 3D. Defaults to 1.
-            #         axis (int, optional): The channel axis to loop over for normalization. Defaults to -1.
-
-            normalzation_params = {
-                "invert": params.invert,
-                "lowhigh": None,
-                "norm3D": params.norm3D,
-                "normalize": params.normalize,
-                "percentile": (
-                    float(params.percentile_min),
-                    float(params.percentile_max),
-                ),
-                "sharpen_radius": params.sharpen_radius,
-                "smooth_radius": params.smooth_radius,
-                "tile_norm_blocksize": params.tile_norm_blocksize,
-                "tile_norm_smooth3D": params.tile_norm_smooth3D,
-            }
-
-            masks, flows, styles = model.eval(
-                image,
-                cellprob_threshold=params.cellprob_threshold,
-                channel_axis=params.channel_axis,
-                channels=[params.channel_segment, params.channel_nuclei],
-                compute_masks=(not separate_mask_computing),
-                diameter=params.diameter,
-                do_3D=params.do_3D,
-                flow_threshold=params.flow_threshold,
-                invert=params.invert,
-                interp=params.interp,
-                max_size_fraction=params.max_size_fraction,
-                min_size=params.min_size,
-                niter=params.niter,
-                normalize=normalzation_params,
-                tile_overlap=params.tile_overlap,
-                stitch_threshold=params.stitch_threshold,
-                z_axis=params.z_axis,
-            )
-
-            if not separate_mask_computing:
-                print(f"\tMask non-zero: {np.any(masks)}")
-
-            save_to_cache(cache_dir, cache_key, masks, flows, styles, params.diameter)
-
-        except Exception as e:
-            print(f"Error: {e}")
-            return EvaluationError.EVALUATION_ERROR
-
-    if separate_mask_computing:
-        # dP_colors = flows[0]
-        dP = flows[1]
-        cellprob = flows[2]
-
-        # params.min_size = 60000
-
-        masks = compute_masks(
-            dP,
-            cellprob,
-            niter=params.niter,
-            cellprob_threshold=params.cellprob_threshold,
-            flow_threshold=params.flow_threshold,
-            interp=params.interp,
-            do_3D=params.do_3D,
-            min_size=params.min_size,
-            max_size_fraction=params.max_size_fraction,
-            device=torch.device("cpu"),  # TODO: MPS not available
+        masks, flows, styles = self.model.eval(
+            image,
+            diameter=self.config.diameter if self.config.diameter > 0 else None,
+            do_3D=self.config.do_3D,
+            normalize=normalization_params,  # Pass the full dictionary
+            compute_masks=False,
+            tile_overlap=self.config.tile_overlap,
+            stitch_threshold=self.config.stitch_threshold,
+            z_axis=self.config.z_axis,
         )
 
-    if masks is None:
-        print(f"Error: No masks found with parameters")
-        return EvaluationError.EMPTY_MASKS
+        # Save the new result to the cache
+        caching.save_to_cache(cache_key, flows, styles)
 
-    else:
-        aji_scores = aggregated_jaccard_index([ground_truth], [masks])
-        jaccard_cellpose = np.mean(aji_scores[~np.isnan(aji_scores)])
+        return flows, styles
 
-        # jaccard_score = jaccard(ground_truth, masks)
-        jaccard_score = jaccard_cellpose
+    def run(self, image: np.ndarray) -> (np.ndarray, float):
+        """
+        Runs the full segmentation pipeline on a single image.
 
-        print(f"\tJaccard (own): {jaccard_score:.2f}")
-        print(f"\tJaccard (cellpose): {jaccard_cellpose:.2f}")
+        1. Gets raw model output (from cache or by running the model).
+        2. Computes final masks using post-processing parameters.
+        """
+        t0 = time.time()
 
-    results = {
-        "image": image,
-        "image_name": key,
-        "ground_truth": ground_truth,
-        "masks": masks,
-        "jaccard": jaccard_score,
-        "jaccard_cellpose": jaccard_cellpose,
-        "duration": time.time() - t0,
-    }
+        try:
+            # Step 1: Get raw output (cached)
+            flows, _ = self._get_raw_output(image)
 
-    return results
+            # Step 2: Compute masks from raw output (fast)
+            # This is where post-processing hyperparameters are used.
+            dP, cellprob = flows[1], flows[2]
 
+            masks = compute_masks(
+                dP,
+                cellprob,
+                niter=(
+                    self.config.niter
+                    if self.config.niter > 0
+                    else (200 if image.ndim > 2 else 0)
+                ),
+                flow_threshold=self.config.flow_threshold,
+                cellprob_threshold=self.config.cellprob_threshold,
+                min_size=self.config.min_size,
+                do_3D=self.config.do_3D,
+                max_size_fraction=self.config.max_size_fraction,
+                device=DEVICE,  # Can run on GPU or CPU
+            )
 
-class EvaluationError(Enum):
-    CACHE_NOT_AVAILABLE = "Cache not available"
-    EMPTY_MASKS = "Empty masks"
-    EVALUATION_ERROR = "Evaluation error"
-    GROUND_TRUTH_NOT_AVAILABLE = "Ground truth not available"
-    IMAGE_NOT_AVAILABLE = "Image not available"
+            duration = time.time() - t0
+            logger.info(
+                "Segmentation finished in %.2f seconds. Found %d masks.",
+                duration,
+                len(np.unique(masks)) - 1,
+            )
+            return masks, duration
+
+        except Exception as e:
+            logger.error("Error during Cellpose evaluation: %s", e, exc_info=True)
+            return None, time.time() - t0
+
+    @staticmethod
+    def evaluate_performance(ground_truth: np.ndarray, prediction: np.ndarray) -> dict:
+        """Calculates performance metrics."""
+        if prediction is None or np.all(prediction == 0):
+            logger.warning("Prediction is empty, returning zero scores.")
+            return {"jaccard_cellpose": 0.0, "jaccard_custom": 0.0, "f1_score": 0.0}
+
+        aji_scores = aggregated_jaccard_index([ground_truth], [prediction])
+        jaccard_cp = np.nanmean(aji_scores)
+        jaccard_custom = jaccard(ground_truth, prediction)
+        f1 = f1_score(ground_truth, prediction)
+
+        metrics = {
+            "jaccard_cellpose": jaccard_cp,
+            "jaccard_custom": jaccard_custom,
+            "f1_score": f1,
+        }
+        logger.debug("Evaluation metrics: %s", metrics)
+        return metrics

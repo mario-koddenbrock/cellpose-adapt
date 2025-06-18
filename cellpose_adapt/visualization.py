@@ -1,3 +1,4 @@
+import math
 import os
 
 import cv2
@@ -196,7 +197,7 @@ def save_as_video(output_video_path, image_with_labels, labels, regions):
 
 
 def plot_aggregated_metric_variation(
-    result_path, metric="jaccard", boxplot=False, save_plot=True
+    result_path, metric="f1_score", boxplot=False, save_plot=True
 ):
     """
     Detect varying parameters and plot the aggregated metric over these parameters with uncertainty bands
@@ -204,7 +205,7 @@ def plot_aggregated_metric_variation(
 
     Parameters:
         result_path (str): Path to the CSV file containing experiment results.
-        metric (str): The column name of the metric to evaluate (default is 'jaccard').
+        metric (str): The column name of the metric to evaluate (default is 'f1_score').
         boxplot (bool): If True, display boxplots instead of error bars (default is False).
     """
 
@@ -245,7 +246,7 @@ def plot_aggregated_metric_variation(
         "precision",
         "recall",
         "f1",
-        "jaccard",
+        "f1_score",
         "jaccard_cellpose",
         "jaccard",
     ]
@@ -290,7 +291,12 @@ def plot_aggregated_metric_variation(
                 image_name = row["image_name"]
                 type = row["type"]
 
-                filtered = df[(df["image_name"] == image_name) & (df["type"] == type)]
+                if not math.isnan(type):
+                    filtered = df[
+                        (df["image_name"] == image_name) & (df["type"] == type)
+                    ]
+                else:
+                    filtered = df[df["image_name"] == image_name]
 
                 grouped = (
                     filtered.groupby(param)[metric].agg(["mean", "std"]).reset_index()
@@ -322,7 +328,7 @@ def plot_aggregated_metric_variation(
             output_path = os.path.join(
                 output_dir, "Plots", f"errorbar_{result_name}_{param}_{metric}.png"
             )
-
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
         plt.title(result_name)
         plt.ylim(0, 1)
         plt.tight_layout()
@@ -334,14 +340,14 @@ def plot_aggregated_metric_variation(
 
 
 def plot_best_scores_barplot(
-    result_path, metric="jaccard", output_file="best_scores_barplot.png", save_plot=True
+    result_path, metric="f1_score", output_file="best_scores_barplot.png", save_plot=True
 ):
     """
     Visualize the best score for each image_name and type as a grouped bar plot.
 
     Parameters:
         result_path (str): Path to the CSV file containing experiment results.
-        metric (str): The column name of the metric to visualize (default is 'jaccard').
+        metric (str): The column name of the metric to visualize (default is 'f1_score').
         output_file (str): Path to save the bar plot (default is 'best_scores_barplot.png').
     """
 
