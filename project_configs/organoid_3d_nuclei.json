@@ -1,0 +1,27 @@
+{
+  "description": "An experiment to optimize 3D segmentation of organoid nuclei.",
+  "project_settings": {
+    "study_name": "organoid_3d_nuclei_study",
+    "n_trials": 2,
+    "logging_level": "DEBUG",
+    "device": "mps",
+    "limit_images_per_source": null
+  },
+  "data_sources": [
+    "data/Organoids/20231108_P021N_40xSil_Hoechst_SiRActin/images_cropped_isotropic",
+    "data/Organoids/20240220_P013T_40xSil_Hoechst_SiRActin/images_cropped_isotropic",
+    "data/Organoids/20240305_P013T_40xSil_Hoechst_SiRActin/images_cropped_isotropic",
+    "data/Organoids/20240701_P013T_60xOil_Hoechst_SiRActin/images_cropped_isotropic"
+  ],
+  "gt_mapping": {
+    "replace": [
+      [
+        "images_cropped_isotropic",
+        "labelmaps/Nuclei"
+      ]
+    ],
+    "suffix": "_nuclei-labels.tif",
+    "img_suffix": ".tif"
+  },
+  "search_space_config_path": "search_spaces/organoid_3d_nuclei_search.json"
+}

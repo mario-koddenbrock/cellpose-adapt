@@ -2,12 +2,17 @@
   "description": "Main configuration for the 2D bacteria segmentation experiment.",
   "project_settings": {
     "study_name": "bacteria_2d_study_v2",
-    "limit_images_per_source": 1,
-    "n_trials": 3
+    "limit_images_per_source": 3,
+    "device": "mps",
+    "logging_level": "ERROR",
+    "n_trials": 200
   },
   "data_sources": [
     "./data/MG1655/All_images/CIP+ETOH",
-    "./data/MG1655/All_images/COAMOX+ETOH"
+    "./data/MG1655/All_images/COAMOX+ETOH",
+    "./data/MG1655/All_images/GENT+ETOH",
+    "./data/MG1655/All_images/RIF+ETOH",
+    "./data/MG1655/All_images/WT+ETOH"
   ],
   "gt_mapping": {
     "replace": [
