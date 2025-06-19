@@ -12,6 +12,7 @@ import pandas as pd
 from cellpose_adapt import io, core, config
 from cellpose_adapt.logging_config import setup_logging
 from cellpose_adapt.metrics import calculate_segmentation_stats
+from scripts.run_optimization import get_device
 
 
 def normalize_to_uint8(img: np.ndarray) -> np.ndarray:
@@ -85,7 +86,8 @@ def main():
     # --- 2. Load Data ---
     data_sources = project_cfg_data['data_sources']
     gt_mapping = project_cfg_data['gt_mapping']
-    limit = project_cfg_data['project_settings'].get('limit_images_per_source')
+    settings = project_cfg_data["project_settings"]
+    limit = settings.get('limit_images_per_source')
     data_pairs = io.find_image_gt_pairs(data_sources, gt_mapping, limit)
     if not data_pairs:
         logging.error("No data pairs found. Cannot generate report.")
@@ -93,8 +95,9 @@ def main():
 
     # --- 3. Initialize Model and Process Images ---
     logging.info("Initializing model and generating reports...")
-    model = core.initialize_model(best_config.model_name)
-    runner = core.CellposeRunner(model, best_config)
+    device = get_device(settings.get("device"))
+    model = core.initialize_model(best_config.model_name, device)
+    runner = core.CellposeRunner(model, best_config, device)
 
     report_data = []
 
