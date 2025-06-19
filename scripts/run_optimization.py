@@ -84,7 +84,7 @@ def main():
     # --- Setup ---
     timestamp = time.strftime("%Y%m%d-%H%M%S")
     log_level = get_logging_level(settings.get("logging_level", "INFO"))
-    setup_logging(log_level=log_level, log_file=f"optimization{timestamp}.log")
+    setup_logging(log_level=log_level, log_file=f"optimization_{timestamp}.log")
 
 
     # Extract settings from the config
