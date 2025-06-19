@@ -2,29 +2,24 @@ import logging
 import time
 
 import numpy as np
+import torch
 from cellpose.dynamics import compute_masks
-from cellpose.metrics import aggregated_jaccard_index
 from cellpose.models import CellposeModel
 
-from . import caching, DEVICE
+from . import caching
 from .config import PipelineConfig
-from .metrics import jaccard, f1_score
 
 logger = logging.getLogger(__name__)
 
 
-def initialize_model(model_name: str) -> CellposeModel:
-    """Initializes the CellposeModel based on the configuration."""
-    logger.info(
-        "Initializing Cellpose model '%s' on device '%s'",
-        model_name,
-        DEVICE,
-    )
+def initialize_model(model_name: str, device: torch.device) -> CellposeModel:
+    """Initializes and returns a CellposeModel instance on a specific device."""
+    logger.info("Initializing Cellpose model '%s' on device '%s'", model_name, device)
     try:
         model = CellposeModel(
-            gpu=DEVICE.type != "cpu",
+            gpu=device.type != 'cpu',
             pretrained_model=model_name,
-            device=DEVICE,
+            device=device
         )
         return model
     except Exception as e:
@@ -32,11 +27,11 @@ def initialize_model(model_name: str) -> CellposeModel:
         raise
 
 class CellposeRunner:
-    """Encapsulates the Cellpose model and evaluation logic with caching."""
-
-    def __init__(self, model: CellposeModel, config: PipelineConfig):
+    """Encapsulates the Cellpose evaluation logic for a given config and preloaded model."""
+    def __init__(self, model: CellposeModel, config: PipelineConfig, device: torch.device):
         self.model = model
         self.config = config
+        self.device = device
 
     def _get_raw_output(self, image: np.ndarray) -> (list, np.ndarray):
         """
@@ -68,7 +63,7 @@ class CellposeRunner:
         }
 
         masks, flows, styles = self.model.eval(
-            image,
+            x=image,
             diameter=self.config.diameter if self.config.diameter > 0 else None,
             do_3D=self.config.do_3D,
             normalize=normalization_params,  # Pass the full dictionary
@@ -76,6 +71,20 @@ class CellposeRunner:
             tile_overlap=self.config.tile_overlap,
             stitch_threshold=self.config.stitch_threshold,
             z_axis=self.config.z_axis,
+            resample=True,
+            channel_axis=self.config.channel_axis,
+            invert=self.config.invert,
+            rescale=None,
+            flow_threshold=self.config.flow_threshold,
+            cellprob_threshold=self.config.cellprob_threshold,
+            anisotropy=None,
+            flow3D_smooth=0,
+            min_size=self.config.min_size,
+            max_size_fraction=self.config.max_size_fraction,
+            niter=self.config.niter,
+            augment=False,
+            bsize=256,
+            progress=None,
         )
 
         # Save the new result to the cache
@@ -113,7 +122,7 @@ class CellposeRunner:
                 min_size=self.config.min_size,
                 do_3D=self.config.do_3D,
                 max_size_fraction=self.config.max_size_fraction,
-                device=DEVICE,  # Can run on GPU or CPU
+                device=self.device,
             )
 
             duration = time.time() - t0
@@ -128,22 +137,4 @@ class CellposeRunner:
             logger.error("Error during Cellpose evaluation: %s", e, exc_info=True)
             return None, time.time() - t0
 
-    @staticmethod
-    def evaluate_performance(ground_truth: np.ndarray, prediction: np.ndarray) -> dict:
-        """Calculates performance metrics."""
-        if prediction is None or np.all(prediction == 0):
-            logger.warning("Prediction is empty, returning zero scores.")
-            return {"jaccard_cellpose": 0.0, "jaccard_custom": 0.0, "f1_score": 0.0}
 
-        aji_scores = aggregated_jaccard_index([ground_truth], [prediction])
-        jaccard_cp = np.nanmean(aji_scores)
-        jaccard_custom = jaccard(ground_truth, prediction)
-        f1 = f1_score(ground_truth, prediction)
-
-        metrics = {
-            "jaccard_cellpose": jaccard_cp,
-            "jaccard_custom": jaccard_custom,
-            "f1_score": f1,
-        }
-        logger.debug("Evaluation metrics: %s", metrics)
-        return metrics
