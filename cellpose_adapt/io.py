@@ -17,7 +17,7 @@ def load_image_with_gt(
     Loads an image and its corresponding ground truth mask.
     Results are cached in memory to avoid repeated disk reads.
     """
-    # ... (function content is unchanged) ...
+
     logger.debug("Loading image from: %s", image_path)
     image, ground_truth = None, None
     if os.path.exists(image_path):
@@ -127,7 +127,7 @@ def find_image_gt_pairs(
                             gt_path,
                         )
 
-            # Break from inner loops if limit is reached
+            # Break from inner loops if the limit is reached
             if limit_per_source and len(source_pairs) >= limit_per_source:
                 break
 
