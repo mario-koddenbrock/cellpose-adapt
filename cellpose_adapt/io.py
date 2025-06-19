@@ -4,7 +4,8 @@ from functools import lru_cache
 from typing import List, Tuple
 
 import numpy as np
-from cellpose import io
+# from cellpose import io
+from skimage import io
 
 logger = logging.getLogger(__name__)
 
