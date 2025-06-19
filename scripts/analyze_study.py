@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+import time
 
 import optuna
 from optuna.visualization import (
@@ -31,7 +32,8 @@ def main():
     )
     args = parser.parse_args()
 
-    setup_logging(log_file="analysis.log")
+    timestamp = time.strftime("%Y%m%d-%H%M%S")
+    setup_logging(log_level=logging.INFO, log_file=f"analysis_{timestamp}.log")
 
     if not os.path.exists(args.study_db):
         logging.error("Study database not found at %s", args.study_db)
@@ -44,7 +46,7 @@ def main():
 
     best_trial = study.best_trial
     logging.info("  Best trial number: %d", best_trial.number)
-    logging.info("  Best value (Jaccard): %.4f", best_trial.value)
+    logging.info("  Best value (F1): %.4f", best_trial.value)
     logging.info("  Best parameters:")
     for key, value in best_trial.params.items():
         logging.info(f"    {key}: {value}")
