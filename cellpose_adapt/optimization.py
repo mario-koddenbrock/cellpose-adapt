@@ -2,10 +2,12 @@ import logging
 
 import numpy as np
 import optuna
+import torch
 from tqdm import tqdm
 
 from . import core, io
 from .config import PipelineConfig
+from .metrics import calculate_segmentation_stats
 
 logger = logging.getLogger(__name__)
 
@@ -13,17 +15,18 @@ logger = logging.getLogger(__name__)
 class OptunaOptimizer:
     """Manages the Optuna hyperparameter optimization process."""
 
-    def __init__(self, data_pairs: list, search_space_config: dict):
+    def __init__(self, data_pairs: list, search_space_config: dict, device: torch.device):
         self.data_pairs = data_pairs
         self.search_space_config = search_space_config
+        self.device = device
         self.fixed_params = self.search_space_config.get("fixed_params", {})
         self.search_space = self.search_space_config.get("search_space", {})
-        self.loaded_models = {}  # Dictionary to cache loaded models
+        self.loaded_models = {}
 
     def _get_model(self, model_name: str):
-        """Loads a model if not already loaded, otherwise returns the cached model."""
+        """Loads a model if not already loaded, using the configured device."""
         if model_name not in self.loaded_models:
-            self.loaded_models[model_name] = core.initialize_model(model_name)
+            self.loaded_models[model_name] = core.initialize_model(model_name, device=self.device)
         return self.loaded_models[model_name]
 
     def _create_config_from_trial(self, trial: optuna.Trial) -> PipelineConfig:
@@ -73,7 +76,7 @@ class OptunaOptimizer:
         model = self._get_model(cfg.model_name)
 
         # Create a lightweight runner with the preloaded model
-        runner = core.CellposeRunner(model, cfg)
+        runner = core.CellposeRunner(model, cfg, device=self.device)
 
         scores = []
         pbar = tqdm(self.data_pairs, desc=f"Trial {trial.number}", leave=False)
@@ -87,7 +90,7 @@ class OptunaOptimizer:
                 scores.append(0.0)  # Penalize failures
                 continue
 
-            metrics = runner.evaluate_performance(ground_truth, masks)
+            metrics = calculate_segmentation_stats(ground_truth, masks)
             score = metrics["f1_score"]
             scores.append(score)
             pbar.set_postfix({"last_score": f"{score:.3f}"})
