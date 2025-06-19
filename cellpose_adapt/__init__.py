@@ -3,23 +3,16 @@ import warnings
 
 import torch
 
-from .utils import check_set_gpu, set_all_seeds
-
 # Ignore specific warnings
-ignored_warnings = [DeprecationWarning, FutureWarning, UserWarning]
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
 
-for warning in ignored_warnings:
-    warnings.filterwarnings("ignore", category=warning)
+# Set the path to the ffmpeg executable if needed for exporting animations
+if os.path.exists("/opt/homebrew/bin/ffmpeg"):
+    os.environ["IMAGEIO_FFMPEG_EXE"] = "/opt/homebrew/bin/ffmpeg"
 
-set_all_seeds(42)
-
-# Set the path to the ffmpeg executable - only needed for exporting animations
-os.environ["IMAGEIO_FFMPEG_EXE"] = "/opt/homebrew/bin/ffmpeg"
-# print(f"Cellpose version: {cellpose.version}")
-# print(f"torch version: {torch.__version__}")
-print(f"torch cuda available: {torch.cuda.is_available()}")
-# print(f"torch cuda version: {torch.version.cuda}")
-# print(f"napari version: {napari.__version__}")
-# print(f"ffmpeg available: {os.path.exists(os.environ['IMAGEIO_FFMPEG_EXE'])}")
-DEVICE = check_set_gpu()
-print(f"device: {DEVICE}")
+print(f"cellpose_adapt initialized.")
+print(f"PyTorch version: {torch.__version__}")
+if torch.cuda.is_available():
+    print(f"CUDA is available. Version: {torch.version.cuda}")
