@@ -1,0 +1,62 @@
+{
+  "description": "A search space for optimizing 3D organoid membrane segmentation. Uses the cpsam model and focuses on parameters relevant for larger, more complex cell shapes.",
+  "fixed_params": {
+    "do_3D": true,
+    "model_name": "cpsam",
+    "norm3D": false,
+    "stitch_threshold": 0.0,
+    "channel_axis": 1,
+    "tile_norm_smooth3D": 0,
+    "tile_norm_blocksize": 0,
+    "tile_overlap": 0.1,
+    "z_axis": 0
+  },
+  "search_space": {
+    "diameter": [
+      "suggest_float",
+      40.0,
+      200.0,
+      "log"
+    ],
+    "flow_threshold": [
+      "suggest_float",
+      0.2,
+      0.8
+    ],
+    "cellprob_threshold": [
+      "suggest_float",
+      -2.0,
+      2.0
+    ],
+    "min_size": [
+      "suggest_int",
+      5000,
+      100000,
+      "log"
+    ],
+    "niter": [
+      "suggest_int",
+      100,
+      500
+    ],
+    "stitch_threshold": [
+      "suggest_float",
+      0.5,
+      1.0
+    ],
+    "normalize": [
+      "suggest_categorical",
+      [
+        true,
+        false
+      ]
+    ],
+    "norm3D": [
+      "suggest_categorical",
+      [
+        true,
+        false
+      ]
+    ]
+  }
+}
