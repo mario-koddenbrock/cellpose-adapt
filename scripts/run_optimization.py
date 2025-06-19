@@ -5,10 +5,43 @@ import os
 import time
 
 import optuna
+import torch
 
 from cellpose_adapt import io
 from cellpose_adapt.logging_config import setup_logging
 from cellpose_adapt.optimization import OptunaOptimizer
+
+
+def get_device(device_str: str = None) -> torch.device:
+    """Determines the torch device, either from config or by auto-detection."""
+    if device_str:
+        logging.info(f"Using device specified in config: '{device_str}'")
+        return torch.device(device_str)
+
+    # Auto-detection fallback
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+    elif hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
+        device = torch.device("mps")
+    else:
+        device = torch.device("cpu")
+    logging.info(f"No device specified, auto-detected: '{device}'")
+    return device
+
+
+def get_logging_level(level_str: str = "INFO") -> int:
+    """Maps a string to a logging level constant."""
+    level_map = {
+        "DEBUG": logging.DEBUG,
+        "INFO": logging.INFO,
+        "WARNING": logging.WARNING,
+        "ERROR": logging.ERROR,
+        "CRITICAL": logging.CRITICAL,
+    }
+    level = level_map.get(level_str.upper(), logging.INFO)
+    if level_str.upper() not in level_map:
+        logging.warning(f"Invalid logging level '{level_str}'. Defaulting to 'INFO'.")
+    return level
 
 
 def load_project_config(config_path: str) -> dict:
@@ -38,27 +71,26 @@ def load_project_config(config_path: str) -> dict:
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Run Cellpose Hyperparameter Optimization using a project config file."
-    )
-    parser.add_argument(
-        "project_config_path",
-        type=str,
-        help="Path to the main JSON project configuration file.",
-    )
+    parser = argparse.ArgumentParser(description="Run Cellpose Hyperparameter Optimization.")
+    parser.add_argument("project_config_path", type=str, help="Path to the JSON project config.")
     args = parser.parse_args()
-
-    # --- Setup ---
-    timestamp = time.strftime("%Y%m%d-%H%M%S")
-    setup_logging(log_level=logging.ERROR, log_file=f"optimization{timestamp}.log")
 
     project_config = load_project_config(args.project_config_path)
     if not project_config:
         return
 
+    settings = project_config['project_settings']
+
+    # --- Setup ---
+    timestamp = time.strftime("%Y%m%d-%H%M%S")
+    log_level = get_logging_level(settings.get("logging_level", "INFO"))
+    setup_logging(log_level=log_level, log_file=f"optimization{timestamp}.log")
+
+
     # Extract settings from the config
     settings = project_config["project_settings"]
     study_name = settings["study_name"]
+    device = get_device(settings.get("device"))
     n_trials = settings["n_trials"]
     limit_per_source = settings.get("limit_images_per_source")
 
@@ -89,7 +121,7 @@ def main():
         return
 
     # --- Initialize and Run Optimizer ---
-    optimizer = OptunaOptimizer(data_pairs, search_space_config)
+    optimizer = OptunaOptimizer(data_pairs, search_space_config, device=device)
 
     storage_url = f"sqlite:///studies/{study_name}.db"
     study = optuna.create_study(
