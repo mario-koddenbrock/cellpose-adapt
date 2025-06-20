@@ -115,7 +115,7 @@ def main():
         for image_path, gt_path in data_pairs:
             base_name = os.path.splitext(os.path.basename(image_path))[0]
             logging.info(f"  - Processing image: {base_name}")
-            image, ground_truth = io.load_image_with_gt(image_path, gt_path)
+            image, ground_truth, _ = io.load_image_with_gt(image_path, gt_path)
             if image is None or ground_truth is None: continue
 
             pred_mask, _ = runner.run(image)

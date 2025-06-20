@@ -61,8 +61,8 @@ def main():
     device = get_device(cli_device=args.device, config_device=config_device)
 
     # --- Load Data ---
-    gt_path = io._find_gt_path(args.image_path, gt_mapping) if gt_mapping else None
-    image, ground_truth = io.load_image_with_gt(args.image_path, gt_path)
+    gt_path = io.find_gt_path(args.image_path, gt_mapping) if gt_mapping else None
+    _, ground_truth, image = io.load_image_with_gt(args.image_path, gt_path)
     if image is None:
         logging.error(f"Failed to load image from {args.image_path}")
         return
