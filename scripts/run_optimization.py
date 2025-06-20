@@ -129,6 +129,7 @@ def main():
         storage=storage_url,
         direction="maximize",
         load_if_exists=True,
+        sampler = optuna.samplers.TPESampler(seed=42),
     )
 
     logging.info(

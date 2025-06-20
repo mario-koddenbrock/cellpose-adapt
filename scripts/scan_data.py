@@ -19,6 +19,6 @@ def print_image_resolutions(tiff_files):
 
 
 if __name__ == "__main__":
-    root_directory = "./data/Organoids"
+    root_directory = "../data/Organoids"
     tiff_files = find_tiff_images(root_directory)
     print_image_resolutions(tiff_files)
