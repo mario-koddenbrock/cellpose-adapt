@@ -8,7 +8,7 @@ import numpy as np
 from skimage import io
 
 logger = logging.getLogger(__name__)
-
+logger.debug("Image I/O module loaded. Using skimage.io for image reading.")
 
 @lru_cache(maxsize=32)
 def load_image_with_gt(

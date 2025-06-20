@@ -6,11 +6,11 @@ import torch
 from tqdm import tqdm
 
 from . import core, io
-from .config import PipelineConfig
+from .config.pipeline_config import PipelineConfig
 from .metrics import calculate_segmentation_stats
 
 logger = logging.getLogger(__name__)
-
+logger.debug("Optuna optimizer module loaded. Version: %s", optuna.__version__)
 
 class OptunaOptimizer:
     """Manages the Optuna hyperparameter optimization process."""

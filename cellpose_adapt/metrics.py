@@ -1,6 +1,11 @@
+import logging
+
 import numpy as np
 from cellpose.metrics import average_precision
 from scipy.optimize import linear_sum_assignment
+
+logger = logging.getLogger(__name__)
+logger.debug("Metrics module loaded. Using cellpose's average_precision for segmentation metrics.")
 
 # Jaccard index (IoU) calculation - unchanged
 def jaccard_index_3d(gt_mask, pred_mask):

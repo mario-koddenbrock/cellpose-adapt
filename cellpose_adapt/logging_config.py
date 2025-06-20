@@ -36,3 +36,18 @@ def setup_logging(log_level=logging.INFO, log_file="app.log"):
     logger.addHandler(file_handler)
 
     logging.info("Logging configured to console and %s", log_path)
+
+
+def get_logging_level(level_str: str = "INFO") -> int:
+    """Maps a string to a logging level constant."""
+    level_map = {
+        "DEBUG": logging.DEBUG,
+        "INFO": logging.INFO,
+        "WARNING": logging.WARNING,
+        "ERROR": logging.ERROR,
+        "CRITICAL": logging.CRITICAL,
+    }
+    level = level_map.get(level_str.upper(), logging.INFO)
+    if level_str.upper() not in level_map:
+        logging.warning(f"Invalid logging level '{level_str}'. Defaulting to 'INFO'.")
+    return level

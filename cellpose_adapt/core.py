@@ -7,10 +7,10 @@ from cellpose.dynamics import compute_masks
 from cellpose.models import CellposeModel
 
 from . import caching
-from .config import PipelineConfig
+from .config.pipeline_config import PipelineConfig
 
 logger = logging.getLogger(__name__)
-
+logger.debug("Cellpose core module loaded.")
 
 def initialize_model(model_name: str, device: torch.device) -> CellposeModel:
     """Initializes and returns a CellposeModel instance on a specific device."""
@@ -84,7 +84,6 @@ class CellposeRunner:
             niter=self.config.niter,
             augment=False,
             bsize=256,
-            progress=None,
         )
 
         # Save the new result to the cache
@@ -96,7 +95,7 @@ class CellposeRunner:
         """
         Runs the full segmentation pipeline on a single image.
 
-        1. Gets raw model output (from cache or by running the model).
+        1. Get raw model output (from cache or by running the model).
         2. Computes final masks using post-processing parameters.
         """
         t0 = time.time()

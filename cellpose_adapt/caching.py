@@ -5,10 +5,14 @@ import os
 
 import numpy as np
 
-from .config import PipelineConfig
+from cellpose_adapt.config.pipeline_config import PipelineConfig
 
 logger = logging.getLogger(__name__)
 CACHE_DIR = ".cache"
+# Ensure the cache directory exists
+if not os.path.exists(CACHE_DIR):
+    os.makedirs(CACHE_DIR, exist_ok=True)
+logger.debug("Using cache directory: %s", CACHE_DIR)
 
 
 def get_model_eval_params(config: PipelineConfig) -> dict:
