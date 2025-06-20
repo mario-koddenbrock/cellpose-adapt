@@ -178,6 +178,8 @@ cellpose-adapt/
 ├── logs/                    # Log files are saved here
 │   └── optimization.log
 ├── project_configs/         # Main configuration files for experiments
+│   ├── search_spaces/       # Defines the hyperparameter search spaces
+│   │   └── bacteria_2d_coarse.json
 │   └── my_bacteria_experiment.json
 ├── reports/                 # Output directory for visual & quantitative reports
 │   └── bacteria_exp_v1_results/
@@ -186,8 +188,6 @@ cellpose-adapt/
 │   ├── analyze_study.py
 │   ├── generate_report.py
 │   └── visualize_results.py
-├── search_spaces/           # Defines the hyperparameter search spaces
-│   └── bacteria_2d_coarse.json
 ├── studies/                 # Optuna study databases are saved here
 │   └── bacteria_exp_v1.db
 └── requirements.txt
