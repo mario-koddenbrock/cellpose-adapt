@@ -1,6 +1,7 @@
 import os
-import warnings
+os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
 
+import warnings
 import torch
 
 # Ignore specific warnings
