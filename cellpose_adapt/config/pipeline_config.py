@@ -8,8 +8,9 @@ class PipelineConfig:
     """Configuration for the Cellpose segmentation pipeline."""
 
     # Model parameters
-    model_name: str = "cyto3"
+    model_name: str = "cpsam"
     diameter: float = 30.0
+    channel_to_segment: Optional[int] = None  # Channel index to segment, None for all channels
 
     # Pre-processing parameters
     invert: bool = False
@@ -25,6 +26,7 @@ class PipelineConfig:
     flow_threshold: float = 0.4
     cellprob_threshold: float = 0.0
     min_size: int = 15
+    max_size_fraction: float = 2.0
     niter: int = 0
 
     # Tiling and stitching
@@ -34,8 +36,7 @@ class PipelineConfig:
     tile_norm_blocksize: int = 0  # Added
     tile_norm_smooth3D: int = 1  # Added
 
-    # Advanced/Uncommon parameters
-    max_size_fraction: float = 2.0
+    # Axis configuration
     channel_axis: Optional[int] = None
     z_axis: int = 0
 

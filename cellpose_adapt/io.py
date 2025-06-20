@@ -1,7 +1,7 @@
 import logging
 import os
 from functools import lru_cache
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 import numpy as np
 # from cellpose import io
@@ -10,39 +10,57 @@ from skimage import io
 logger = logging.getLogger(__name__)
 logger.debug("Image I/O module loaded. Using skimage.io for image reading.")
 
-@lru_cache(maxsize=32)
+@lru_cache(maxsize=64)
+def _read_image_from_disk(path: str) -> Optional[np.ndarray]:
+    """A cached function to read an image file from disk."""
+    if not path or not os.path.exists(path):
+        logger.warning("File not found for caching: %s", path)
+        return None
+    logger.debug("CACHE MISS: Reading file from disk: %s", path)
+    return io.imread(path)
+
+
 def load_image_with_gt(
-    image_path: str, ground_truth_path: str
-) -> Tuple[np.ndarray, np.ndarray]:
+        image_path: str,
+        ground_truth_path: str,
+        channel_to_segment: Optional[int] = None
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
-    Loads an image and its corresponding ground truth mask.
-    Results are cached in memory to avoid repeated disk reads.
+    Loads an image and GT mask, using a cache for disk reads.
+    If channel_to_segment is specified, it extracts that channel for segmentation.
     """
+    # Use the cached function for the slow I/O operations
+    original_image = _read_image_from_disk(image_path)
+    ground_truth = _read_image_from_disk(ground_truth_path)
 
-    logger.debug("Loading image from: %s", image_path)
-    image, ground_truth = None, None
-    if os.path.exists(image_path):
-        image = io.imread(image_path)
-    else:
-        logger.warning("Image not found: %s. Skipping.", image_path)
+    if original_image is None:
+        return None, ground_truth, None
 
-    if ground_truth_path and os.path.exists(ground_truth_path):
-        ground_truth = io.imread(ground_truth_path)
-    elif ground_truth_path:
-        logger.warning("Ground truth not found: %s. Skipping.", ground_truth_path)
+    # --- Fast Processing: Channel Selection ---
+    # This part is fast and doesn't need to be cached itself.
+    image_for_segmentation = original_image
+    if channel_to_segment is not None:
+        # Assuming shape (Z, C, Y, X) for 3D or (C, Y, X) for 2D
+        # Determine which axis is the channel axis
+        channel_axis = -1
+        if original_image.ndim == 4:  # Z, C, Y, X
+            channel_axis = 1
+        elif original_image.ndim == 3 and original_image.shape[0] < 5:  # C, Y, X (heuristic)
+            channel_axis = 0
 
-    # For 3D images, ensure that the channel axis is the last dimension
-    if image is not None and image.ndim == 3:
-        if (image.ndim == 3) and (image.shape[0] == 3):
-            image = image.transpose((1, 2, 0))
-    if ground_truth is not None and ground_truth.ndim == 3:
-        if (ground_truth.ndim == 3) and (ground_truth.shape[0] == 3):
-            ground_truth = ground_truth.transpose((1, 2, 0))
+        if channel_axis != -1 and original_image.shape[channel_axis] > channel_to_segment:
+            logger.info(f"Selecting channel {channel_to_segment} from image with shape {original_image.shape}.")
+            # Use np.take to select the slice along the correct axis
+            image_for_segmentation = np.take(original_image, indices=channel_to_segment, axis=channel_axis)
+        elif original_image.ndim > 2:
+            logger.warning(
+                f"Cannot select channel {channel_to_segment}. Image has shape {original_image.shape}. Using as-is."
+            )
 
-    return image, ground_truth
+    return image_for_segmentation, ground_truth, original_image
 
 
-def _find_gt_path(image_path: str, mapping_rules: dict) -> str:
+def find_gt_path(image_path: str, mapping_rules: dict) -> str:
     """
     Constructs a ground truth path from an image path based on mapping rules.
     """
@@ -114,7 +132,7 @@ def find_image_gt_pairs(
 
                 if file.endswith(img_suffix):
                     image_path = os.path.join(root, file)
-                    gt_path = _find_gt_path(image_path, gt_mapping)
+                    gt_path = find_gt_path(image_path, gt_mapping)
 
                     if os.path.exists(gt_path):
                         source_pairs.append((image_path, gt_path))

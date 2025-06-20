@@ -67,21 +67,22 @@ class OptunaOptimizer:
         and returns the mean Jaccard score.
         """
         try:
-            cfg = self._create_config_from_trial(trial)
+            trial_params = self._create_config_from_trial(trial)
         except Exception as e:
             logger.error("Error creating config from trial: %s", e)
             raise optuna.exceptions.TrialPruned(f"Config creation failed: {e}")
 
         # Get the appropriate model, loading it only if necessary
-        model = self._get_model(cfg.model_name)
+        model = self._get_model(trial_params.model_name)
 
         # Create a lightweight runner with the preloaded model
-        runner = core.CellposeRunner(model, cfg, device=self.device)
-
+        runner = core.CellposeRunner(model, trial_params, device=self.device)
+        channel_to_segment = trial_params.channel_to_segment
+        
         scores = []
         pbar = tqdm(self.data_pairs, desc=f"Trial {trial.number}", leave=False)
         for image_path, gt_path in pbar:
-            image, ground_truth = io.load_image_with_gt(image_path, gt_path)
+            image, ground_truth, _ = io.load_image_with_gt(image_path, gt_path, channel_to_segment)
             if image is None or ground_truth is None:
                 continue
 
