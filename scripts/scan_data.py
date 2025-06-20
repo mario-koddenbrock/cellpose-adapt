@@ -1,7 +1,10 @@
+import logging
 import os
 
 from skimage.io import imread
 
+logger = logging.getLogger(__name__)
+logger.debug("Starting script to scan for TIFF images in the specified directory.")
 
 def find_tiff_images(root_dir):
     tiff_files = []

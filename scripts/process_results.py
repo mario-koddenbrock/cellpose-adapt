@@ -7,52 +7,20 @@ import cv2
 import numpy as np
 import optuna
 import pandas as pd
-import torch
 from optuna.visualization import plot_optimization_history, plot_param_importances, plot_slice
 
-from cellpose_adapt import io, core, config
+from cellpose_adapt import io, core
+from cellpose_adapt.config.pipeline_config import PipelineConfig
+from cellpose_adapt.config.plotting_config import PlottingConfig
 from cellpose_adapt.logging_config import setup_logging
 from cellpose_adapt.metrics import calculate_segmentation_stats
+from cellpose_adapt.plotting.plotting_utils import prepare_3d_slice_for_display, create_opencv_overlay, \
+    generate_comparison_panel
+from cellpose_adapt.utils import get_device
 
+logger = logging.getLogger(__name__)
+logger.debug("Starting script to process results from an Optuna study and generate reports.")
 
-def get_device(device_str: str = None) -> torch.device:
-    """Determines the torch device, either from config or by auto-detection."""
-    if device_str:
-        logging.info(f"Using device specified in config: '{device_str}'")
-        return torch.device(device_str)
-    if torch.cuda.is_available(): device = torch.device("cuda")
-    elif hasattr(torch.backends, 'mps') and torch.backends.mps.is_available(): device = torch.device("mps")
-    else: device = torch.device("cpu")
-    logging.info(f"No device specified, auto-detected: '{device}'")
-    return device
-
-def normalize_to_uint8(img: np.ndarray) -> np.ndarray:
-    img_norm = cv2.normalize(img, None, alpha=0, beta=255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
-    if img_norm.ndim == 2:
-        img_norm = cv2.cvtColor(img_norm, cv2.COLOR_GRAY2BGR)
-    return img_norm
-
-def create_opencv_overlay(image: np.ndarray, gt_mask: np.ndarray, pred_mask: np.ndarray) -> np.ndarray:
-    overlay = normalize_to_uint8(image)
-    overlay = np.ascontiguousarray(overlay, dtype=np.uint8)
-    for label in np.unique(gt_mask):
-        if label == 0: continue
-        binary_mask = np.uint8(gt_mask == label)
-        contours, _ = cv2.findContours(binary_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        cv2.drawContours(overlay, contours, -1, (0, 255, 0), 1)
-    for label in np.unique(pred_mask):
-        if label == 0: continue
-        binary_mask = np.uint8(pred_mask == label)
-        contours, _ = cv2.findContours(binary_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        cv2.drawContours(overlay, contours, -1, (0, 0, 255), 1)
-    return overlay
-
-def generate_comparison_panel(image: np.ndarray, overlay: np.ndarray) -> np.ndarray:
-    image_display = normalize_to_uint8(image)
-    font = cv2.FONT_HERSHEY_SIMPLEX
-    cv2.putText(image_display, 'Original Image', (10, 30), font, 0.8, (255, 255, 255), 2)
-    cv2.putText(overlay, 'GT (Green) vs Pred (Red)', (10, 30), font, 0.8, (255, 255, 255), 2)
-    return np.hstack((image_display, overlay))
 
 def main():
     parser = argparse.ArgumentParser(description="Analyze a study and generate all reports.")
@@ -60,9 +28,16 @@ def main():
     parser.add_argument("--project_config", type=str, required=True, help="Path to the original project JSON config file.")
     parser.add_argument("--no-plots", action="store_true", help="Skip generating HTML analysis plots.")
     parser.add_argument("--no-report", action="store_true", help="Skip generating visual/quantitative reports.")
+    parser.add_argument("--device", type=str, default=None, help="Override device setting ('cpu', 'cuda', 'mps').")
     args = parser.parse_args()
 
     setup_logging(log_level=logging.INFO, log_file="processing.log")
+
+    plotting_config = PlottingConfig(
+        resolution=(1280, 640),
+        gt_contour_color=(0, 255, 0), # Green
+        pred_contour_color=(255, 0, 255) # Magenta
+    )
 
     # --- 1. Load Study and Best Trial ---
     if not os.path.exists(args.study_db):
@@ -76,14 +51,14 @@ def main():
     logging.info(f"Best trial #{best_trial.number} with score: {best_trial.value:.4f}")
 
     # --- 2. Create Output Directories ---
-    plots_dir = os.path.join("reports", f"{study_name}_analysis_plots")
-    results_dir = os.path.join("reports", f"{study_name}_results")
+    plots_dir = os.path.join("reports", f"{study_name}")
+    results_dir = os.path.join("reports", f"{study_name}")
     if not args.no_plots: os.makedirs(plots_dir, exist_ok=True)
     if not args.no_report: os.makedirs(results_dir, exist_ok=True)
     os.makedirs("configs", exist_ok=True)
 
     # --- 3. Create and Save Best Config ---
-    best_config = config.PipelineConfig()
+    best_config = PipelineConfig()
     try:
         project_cfg_data = json.load(open(args.project_config, 'r'))
         search_space_config_path = project_cfg_data['search_space_config_path']
@@ -132,7 +107,7 @@ def main():
             return
 
         # Initialize model and process images
-        device = get_device(settings.get("device"))
+        device = get_device(cli_device=args.device, config_device=settings.get("device"))
         model = core.initialize_model(best_config.model_name, device)
         runner = core.CellposeRunner(model, best_config, device)
 
@@ -149,7 +124,20 @@ def main():
             stats = calculate_segmentation_stats(ground_truth, pred_mask)
             report_data.append({'image_name': base_name, **stats})
 
-            panel = generate_comparison_panel(image, create_opencv_overlay(image, ground_truth, pred_mask))
+            # Prepare a 2D slice for visualization if data is 3D
+            if image.ndim == 4:
+                display_image = prepare_3d_slice_for_display(image)
+                mid_slice_idx = ground_truth.shape[0] // 2
+                display_gt = ground_truth[mid_slice_idx, :, :]
+                display_pred = pred_mask[mid_slice_idx, :, :]
+            else:
+                display_image = image
+                display_gt = ground_truth
+                display_pred = pred_mask
+
+            # --- Pass the config to the plotting functions ---
+            overlay = create_opencv_overlay(display_image, display_gt, display_pred, plotting_config)
+            panel = generate_comparison_panel(display_image, overlay, plotting_config)
             cv2.imwrite(os.path.join(results_dir, f"{base_name}_report.png"), panel)
 
         # Save stats to CSV

@@ -5,44 +5,14 @@ import os
 import time
 
 import optuna
-import torch
 
 from cellpose_adapt import io
-from cellpose_adapt.logging_config import setup_logging
+from cellpose_adapt.logging_config import setup_logging, get_logging_level
 from cellpose_adapt.optimization import OptunaOptimizer
+from cellpose_adapt.utils import get_device
 
-
-def get_device(device_str: str = None) -> torch.device:
-    """Determines the torch device, either from config or by auto-detection."""
-    if device_str:
-        logging.info(f"Using device specified in config: '{device_str}'")
-        return torch.device(device_str)
-
-    # Auto-detection fallback
-    if torch.cuda.is_available():
-        device = torch.device("cuda")
-    elif hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
-        device = torch.device("mps")
-    else:
-        device = torch.device("cpu")
-    logging.info(f"No device specified, auto-detected: '{device}'")
-    return device
-
-
-def get_logging_level(level_str: str = "INFO") -> int:
-    """Maps a string to a logging level constant."""
-    level_map = {
-        "DEBUG": logging.DEBUG,
-        "INFO": logging.INFO,
-        "WARNING": logging.WARNING,
-        "ERROR": logging.ERROR,
-        "CRITICAL": logging.CRITICAL,
-    }
-    level = level_map.get(level_str.upper(), logging.INFO)
-    if level_str.upper() not in level_map:
-        logging.warning(f"Invalid logging level '{level_str}'. Defaulting to 'INFO'.")
-    return level
-
+logger = logging.getLogger(__name__)
+logger.debug("Starting script to run Cellpose hyperparameter optimization.")
 
 def load_project_config(config_path: str) -> dict:
     """Loads and validates the main project configuration file."""
