@@ -23,5 +23,5 @@
     "suffix": "_membranes-labels.tif",
     "img_suffix": ".tif"
   },
-  "search_space_config_path": "search_spaces/organoid_3d_membranes_search.json"
+  "search_space_config_path": "project_configs/search_spaces/organoid_3d_membranes_search.json"
 }
