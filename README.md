@@ -162,7 +162,7 @@ python scripts/visualize_results.py \
 
 ```plaintext
 cellpose-adapt/
-├── cellpose_refactored/   # The core Python library
+├── cellpose_adapt/   # The core Python library
 │   ├── __init__.py
 │   ├── caching.py
 │   ├── config.py
