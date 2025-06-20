@@ -1,11 +1,11 @@
 {
   "description": "Main configuration for the 2D bacteria segmentation experiment.",
   "project_settings": {
-    "study_name": "bacteria_2d_study_v2",
-    "limit_images_per_source": 3,
     "device": "mps",
+    "limit_images_per_source": 3,
     "logging_level": "ERROR",
-    "n_trials": 200
+    "n_trials": 200,
+    "study_name": "bacteria_2d_study_v2"
   },
   "data_sources": [
     "./data/MG1655/All_images/CIP+ETOH",

@@ -9,7 +9,8 @@
     "tile_norm_smooth3D": 0,
     "tile_norm_blocksize": 0,
     "tile_overlap": 0.1,
-    "z_axis": null
+    "z_axis": null,
+    "channel_to_segment": null
   },
   "search_space": {
     "diameter": [

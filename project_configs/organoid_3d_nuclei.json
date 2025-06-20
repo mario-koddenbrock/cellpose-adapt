@@ -1,11 +1,11 @@
 {
   "description": "An experiment to optimize 3D segmentation of organoid nuclei.",
   "project_settings": {
-    "study_name": "organoid_3d_nuclei_study",
-    "n_trials": 2,
-    "logging_level": "DEBUG",
     "device": "mps",
-    "limit_images_per_source": 2
+    "limit_images_per_source": 2,
+    "logging_level": "DEBUG",
+    "n_trials": 2,
+    "study_name": "organoid_3d_nuclei_study"
   },
   "data_sources": [
     "data/Organoids/20231108_P021N_40xSil_Hoechst_SiRActin/images_cropped_isotropic",
