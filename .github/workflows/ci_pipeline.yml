@@ -26,6 +26,8 @@ jobs:
       # Schritt 1: Code auschecken
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       # Schritt 2: Python-Umgebung einrichten
       - name: Set up Python ${{ matrix.python-version }}
