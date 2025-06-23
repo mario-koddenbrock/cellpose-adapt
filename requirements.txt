@@ -1,5 +1,5 @@
 torch~=2.7.1
-cellpose~=4.0.5.dev23+g15eb3c6
+cellpose==4.0.5.dev23+g15eb3c6
 optuna~=4.4.0
 numpy~=2.2.6
 scipy~=1.15.3
