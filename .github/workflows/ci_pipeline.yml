@@ -1,0 +1,68 @@
+# Name des Workflows, der in der GitHub Actions UI angezeigt wird
+name: Python CI Pipeline
+
+# Trigger: Wann dieser Workflow ausgeführt werden soll
+on:
+  push:
+    branches: [ main, dev ] # Bei jedem Push zu 'main' oder 'develop'
+  pull_request:
+    branches: [ main ] # Bei jedem Pull Request zu 'main'
+
+# Definition der Jobs, die ausgeführt werden sollen
+jobs:
+  build-and-test:
+    # Betriebssystem, auf dem der Job laufen soll
+    # Wir verwenden die neueste Ubuntu-Version
+    runs-on: ubuntu-latest
+
+    # Wir können auf verschiedenen Python-Versionen testen
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [ "3.11" ]
+
+    # Schritte, die in diesem Job ausgeführt werden
+    steps:
+      # Schritt 1: Code auschecken
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Schritt 2: Python-Umgebung einrichten
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # Schritt 3: Caching der Abhängigkeiten für schnellere Builds
+      # Der Cache wird basierend auf dem OS, der Python-Version und dem Hash der requirements.txt-Datei erstellt
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      # Schritt 4: Abhängigkeiten installieren
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 pytest
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      # Schritt 5: Code-Qualität mit Flake8 überprüfen (Linting)
+      # Flake8 prüft auf PEP8-Konformität und häufige Programmierfehler.
+      # --count: Zeigt die Gesamtzahl der Fehler an.
+      # --select=...: Ignoriert bestimmte, oft zu strenge Warnungen (hier: Zeilenlänge und komplexe Importe).
+      # --show-source: Zeigt die fehlerhafte Codezeile an.
+      # --statistics: Zählt die Vorkommen jedes Fehlers.
+      - name: Lint with flake8
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # Exit on --count > 0, aber ignoriere bestimmte Fehler (z.B. Zeilenlänge)
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
+
+      # Schritt 6: Tests mit Pytest ausführen
+      - name: Test with pytest
+        run: |
+          pytest
