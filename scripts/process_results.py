@@ -2,6 +2,7 @@ import argparse
 import json
 import logging
 import os
+import time
 
 import cv2
 import numpy as np
@@ -31,7 +32,8 @@ def main():
     parser.add_argument("--device", type=str, default=None, help="Override device setting ('cpu', 'cuda', 'mps').")
     args = parser.parse_args()
 
-    setup_logging(log_level=logging.INFO, log_file="processing.log")
+    timestamp = time.strftime("%Y%m%d-%H%M%S")
+    setup_logging(log_level=logging.INFO, log_file=f"processing_{timestamp}.log")
 
     plotting_config = PlottingConfig(
         resolution=(1280, 640),
@@ -77,18 +79,7 @@ def main():
     best_config.to_json(output_config_path)
     logging.info(f"Best configuration saved to: {output_config_path}")
 
-    # --- 4. Generate Analysis Plots ---
-    if not args.no_plots:
-        logging.info(f"Generating analysis plots in: {plots_dir}")
-        try:
-            plot_optimization_history(study).write_html(os.path.join(plots_dir, "optimization_history.html"))
-            plot_param_importances(study).write_html(os.path.join(plots_dir, "param_importances.html"))
-            plot_slice(study).write_html(os.path.join(plots_dir, "slice_plot.html"))
-            logging.info("Analysis plots saved successfully.")
-        except (ValueError, ImportError) as e:
-            logging.warning(f"Could not generate plots: {e}")
-
-    # --- 5. Generate Visual and Quantitative Reports ---
+    # --- 4. Generate Visual and Quantitative Reports ---
     if not args.no_report:
         logging.info(f"Generating visual and quantitative reports in: {results_dir}")
 
@@ -110,12 +101,13 @@ def main():
         device = get_device(cli_device=args.device, config_device=settings.get("device"))
         model = core.initialize_model(best_config.model_name, device)
         runner = core.CellposeRunner(model, best_config, device)
+        channel_to_segment = best_config.channel_to_segment
 
         report_data = []
         for image_path, gt_path in data_pairs:
             base_name = os.path.splitext(os.path.basename(image_path))[0]
             logging.info(f"  - Processing image: {base_name}")
-            image, ground_truth, _ = io.load_image_with_gt(image_path, gt_path)
+            image, ground_truth, _ = io.load_image_with_gt(image_path, gt_path, channel_to_segment)
             if image is None or ground_truth is None: continue
 
             pred_mask, _ = runner.run(image)
@@ -147,6 +139,18 @@ def main():
             logging.info(f"Quantitative report saved. Mean F1-score: {report_df['f1_score'].mean():.4f}")
         else:
             logging.warning("No images were processed for the report.")
+
+    # --- 5. Generate Analysis Plots ---
+    if not args.no_plots:
+        logging.info(f"Generating analysis plots in: {plots_dir}")
+        try:
+            plot_optimization_history(study).write_html(os.path.join(plots_dir, "optimization_history.html"))
+            plot_param_importances(study).write_html(os.path.join(plots_dir, "param_importances.html"))
+            plot_slice(study).write_html(os.path.join(plots_dir, "slice_plot.html"))
+            logging.info("Analysis plots saved successfully.")
+        except (ValueError, ImportError) as e:
+            logging.warning(f"Could not generate plots: {e}")
+
 
     logging.info("--- Processing complete. ---")
 
