@@ -1,5 +1,5 @@
 torch~=2.7.1
--e git+https://github.com/MouseLand/cellpose.git@15eb3c6a469a531f8f3c7e7f6e300acb13a7c645#egg=cellpose
+-e git+https://github.com/MouseLand/cellpose.git@main#egg=cellpose
 optuna~=4.4.0
 numpy~=2.2.6
 scipy~=1.15.3
