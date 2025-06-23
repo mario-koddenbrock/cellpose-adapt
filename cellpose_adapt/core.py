@@ -62,6 +62,15 @@ class CellposeRunner:
             "tile_norm_smooth3D": self.config.tile_norm_smooth3D,  # Added
         }
 
+        if self.config.z_axis and self.config.channel_axis:
+            z_axis = (self.config.z_axis - 1) if self.config.z_axis > self.config.channel_axis else self.config.z_axis
+        else:
+            z_axis = self.config.z_axis
+
+        if not self.config.do_3D:
+            z_axis = None
+            logging.debug("2D evaluation detected. Setting z_axis to None for cellpose.eval().")
+
         masks, flows, styles = self.model.eval(
             x=image,
             diameter=self.config.diameter if self.config.diameter > 0 else None,
@@ -70,7 +79,7 @@ class CellposeRunner:
             compute_masks=False,
             tile_overlap=self.config.tile_overlap,
             stitch_threshold=self.config.stitch_threshold,
-            z_axis=(self.config.z_axis - 1) if self.config.z_axis > self.config.channel_axis else self.config.z_axis,
+            z_axis=z_axis,
             resample=True,
             channel_axis=None,  # self.config.channel_axis,
             invert=self.config.invert,
