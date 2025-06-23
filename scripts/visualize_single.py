@@ -2,10 +2,12 @@ import argparse
 import json
 import logging
 import os
+import time
 
 import napari
 
-from cellpose_adapt import io, core, config
+from cellpose_adapt import io, core
+from cellpose_adapt.config.pipeline_config import PipelineConfig
 from cellpose_adapt.logging_config import setup_logging
 from cellpose_adapt.metrics import calculate_segmentation_stats
 from cellpose_adapt.utils import get_device
@@ -39,13 +41,16 @@ def main():
     args = parser.parse_args()
 
     # --- 1. Setup ---
-    setup_logging(log_level=logging.INFO, log_file="visualization.log")
+    timestamp = time.strftime("%Y%m%d-%H%M%S")
+    setup_logging(log_level=logging.INFO, log_file=f"visualization_{timestamp}.log")
+
 
     # --- 2. Load Configurations ---
     if not os.path.exists(args.config_path):
         logging.error(f"Pipeline config file not found at {args.config_path}")
         return
-    pipeline_config = config.PipelineConfig.from_json(args.config_path)
+
+    pipeline_config = PipelineConfig.from_json(args.config_path)
 
     try:
         with open(args.project_config, 'r') as f:
@@ -62,8 +67,8 @@ def main():
 
     # --- Load Data ---
     gt_path = io.find_gt_path(args.image_path, gt_mapping) if gt_mapping else None
-    _, ground_truth, image = io.load_image_with_gt(args.image_path, gt_path)
-    if image is None:
+    image_segment, ground_truth, image = io.load_image_with_gt(args.image_path, gt_path, channel_to_segment=pipeline_config.channel_to_segment)
+    if image_segment is None:
         logging.error(f"Failed to load image from {args.image_path}")
         return
     if gt_path and ground_truth is None:
@@ -76,7 +81,7 @@ def main():
     runner = core.CellposeRunner(model, pipeline_config, device=device)
 
     logging.info("Running segmentation on the image...")
-    masks, duration = runner.run(image)
+    masks, duration = runner.run(image_segment)
     logging.info(f"Segmentation completed in {duration:.2f} seconds.")
 
     # --- 4. Evaluate and Launch Napari Viewer ---
