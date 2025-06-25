@@ -1,0 +1,16 @@
+{
+  "description": "Main configuration for the 2D bacteria segmentation experiment.",
+  "project_settings": {
+    "device": "mps",
+    "limit_images_per_source": 3,
+    "logging_level": "ERROR",
+    "n_trials": 200,
+    "study_name": "mt_2d_study"
+  },
+  "data_sources": [
+    "./data/MT/250123_GLO19_R02_6um HEK PHK10_DMSO _002_cropped_flatfield_registered-1",
+    "./data/MT/250123_GLO19_R03_6um Pf PPF21_DMSO _003_cropped_flatfield_registered-1",
+    "./data/MT/250521_GLO39_R2_15 um PBT04_003_cropped_flatfield_registered_Annotated"
+  ],
+  "search_space_config_path": "project_configs/search_spaces/bacteria_2d_coarse.json"
+}
