@@ -52,7 +52,7 @@ def create_opencv_overlay(
 
     # Draw Ground Truth Contours
     for label in np.unique(gt_mask):
-        if label == 0: continue
+        if label == 0 or label is None: continue
         binary_mask = np.uint8(gt_mask == label)
         contours, _ = cv2.findContours(binary_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         cv2.drawContours(overlay, contours, -1, p_config.gt_contour_color, p_config.gt_contour_thickness)
