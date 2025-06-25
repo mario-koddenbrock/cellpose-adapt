@@ -31,7 +31,7 @@ def load_image_with_gt(
     """
     # Use the cached function for the slow I/O operations
     original_image = _read_image_from_disk(image_path)
-    ground_truth = _read_image_from_disk(ground_truth_path)
+    ground_truth = _read_image_from_disk(ground_truth_path) if ground_truth_path else None
 
     if original_image is None:
         return None, ground_truth, None
@@ -101,7 +101,7 @@ def find_image_gt_pairs(
         List[Tuple[str, str]]: A list of (image_path, ground_truth_path) pairs.
     """
     all_pairs = []
-    img_suffix = gt_mapping.get("img_suffix", ".tif")
+    img_suffix = gt_mapping.get("img_suffix", ".tif") if gt_mapping is not None else ""
 
     if limit_per_source:
         logger.info(
@@ -132,19 +132,17 @@ def find_image_gt_pairs(
 
                 if file.endswith(img_suffix):
                     image_path = os.path.join(root, file)
-                    gt_path = find_gt_path(image_path, gt_mapping)
 
-                    if os.path.exists(gt_path):
+                    gt_path = find_gt_path(image_path, gt_mapping) if gt_mapping else None
+
+                    if gt_mapping and os.path.exists(gt_path):
                         source_pairs.append((image_path, gt_path))
-                        logger.debug(
-                            "Found pair: IMG='%s', GT='%s'", image_path, gt_path
-                        )
+                        logger.debug("Found pair: IMG='%s', GT='%s'", image_path, gt_path)
+                    elif gt_mapping:
+                        logger.debug("Image '%s' found, but corresponding GT '%s' does not exist.",image_path,gt_path)
                     else:
-                        logger.debug(
-                            "Image '%s' found, but corresponding GT '%s' does not exist.",
-                            image_path,
-                            gt_path,
-                        )
+                        source_pairs.append((image_path, None))
+                        logger.debug("Image '%s' found without GT mapping rules.", image_path)
 
             # Break from inner loops if the limit is reached
             if limit_per_source and len(source_pairs) >= limit_per_source:
