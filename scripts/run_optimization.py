@@ -7,7 +7,7 @@ import time
 import optuna
 
 from cellpose_adapt import io
-from cellpose_adapt.logging_config import setup_logging, get_logging_level
+from cellpose_adapt.logging_config import get_logging_level, setup_logging
 from cellpose_adapt.optimization import OptunaOptimizer
 from cellpose_adapt.utils import get_device
 

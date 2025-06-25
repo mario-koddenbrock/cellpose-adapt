@@ -7,7 +7,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 from cellpose_adapt import io
-from cellpose_adapt.core import CellposeRunner, initialize_model
+from cellpose_adapt.core import initialize_model, CellposeRunner
 from cellpose_adapt.metrics import calculate_segmentation_stats
 from cellpose_adapt.plotting.plotting_utils import prepare_3d_slice_for_display, create_opencv_overlay, \
     generate_comparison_panel

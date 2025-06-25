@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cellpose-adapt"
+version = "0.1.0"
+authors = [{ name = "Mario Koddenbrock", email = "mario.koddenbrock@htw-berlin.de" }]
+description = "Adaptation of Cellpose for specific use-cases."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "torch~=2.7.1",
+    "cellpose @ git+https://github.com/MouseLand/cellpose.git@main",
+    "optuna~=4.4.0",
+    "numpy~=2.2.6",
+    "scipy~=1.15.3",
+    "napari[pyqt5]~=0.6.1",
+    "pandas~=2.2.3",
+    "matplotlib~=3.10.0",
+    "tqdm~=4.67.1",
+    "imageio-ffmpeg",
+    "scikit-image~=0.25.0",
+    "pyyaml~=6.0.2",
+    "plotly~=6.1.2",
+    "scikit-learn"
+]
+
+[project.urls]
+repository = "https://github.com/mario-koddenbrock/cellpose-adapt"

@@ -6,7 +6,8 @@ import time
 
 import napari
 
-from cellpose_adapt import io, core
+from cellpose_adapt import core
+from cellpose_adapt import io
 from cellpose_adapt.config.pipeline_config import PipelineConfig
 from cellpose_adapt.logging_config import setup_logging
 from cellpose_adapt.metrics import calculate_segmentation_stats
