@@ -6,7 +6,8 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
-from cellpose_adapt import io, core
+from cellpose_adapt import io
+from cellpose_adapt.core import CellposeRunner, initialize_model
 from cellpose_adapt.metrics import calculate_segmentation_stats
 from cellpose_adapt.plotting.plotting_utils import prepare_3d_slice_for_display, create_opencv_overlay, \
     generate_comparison_panel
@@ -51,8 +52,8 @@ def generate_visual_and_quantitative_report(
         return
 
     # Initialize model and process images
-    model = core.initialize_model(pipeline_config.model_name, device)
-    runner = core.CellposeRunner(model, pipeline_config, device)
+    model = initialize_model(pipeline_config.model_name, device)
+    runner = CellposeRunner(model, pipeline_config, device)
     channel_to_segment = pipeline_config.channel_to_segment
 
     report_data = []
@@ -93,7 +94,8 @@ def generate_visual_and_quantitative_report(
         # Save the panel to disk
         cv2.imwrite(os.path.join(results_dir, f"{base_name}_report.png"), panel)
 
-        # --- NEW: Display the panel if requested ---
+        # ---
+        # Display the panel if requested ---
         if show_panels:
             num_instances = np.unique(display_pred).size - 1
             plt.imshow(panel)
