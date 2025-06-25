@@ -27,11 +27,7 @@ def main():
     timestamp = time.strftime("%Y%m%d-%H%M%S")
     setup_logging(log_level=logging.INFO, log_file=f"testing_{timestamp}.log")
 
-    plotting_config = PlottingConfig(
-        resolution=(1280, 640),
-        gt_contour_color=(0, 255, 0),  # Green
-        pred_contour_color=(255, 0, 255)  # Magenta
-    )
+    plotting_config = PlottingConfig()
 
     # --- 1. Load Configs ---
     try:

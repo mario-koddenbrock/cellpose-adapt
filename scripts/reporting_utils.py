@@ -95,8 +95,10 @@ def generate_visual_and_quantitative_report(
 
         # --- NEW: Display the panel if requested ---
         if show_panels:
+            num_instances = np.unique(display_pred).size - 1
             plt.imshow(panel)
             plt.axis('off')
+            plt.title(f"{base_name} - {num_instances} instances")
             plt.show()
 
     # --- Clean up windows after the loop ---
