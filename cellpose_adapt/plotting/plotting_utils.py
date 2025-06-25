@@ -59,7 +59,7 @@ def create_opencv_overlay(
 
     # Draw Prediction Contours
     for label in np.unique(pred_mask):
-        if label == 0: continue
+        if label == 0 or label is None: continue
         binary_mask = np.uint8(pred_mask == label)
         contours, _ = cv2.findContours(binary_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         cv2.drawContours(overlay, contours, -1, p_config.pred_contour_color, p_config.pred_contour_thickness)
@@ -75,9 +75,13 @@ def generate_comparison_panel(
     """Stitches the original image and the overlay side-by-side, resizing if needed."""
     image_display = normalize_to_uint8(display_image)
 
+    h, w = image_display.shape[:2]
+    h_sep = 50
+
     # Add text labels
-    cv2.putText(image_display, 'Original Image', (10, 30), p_config.font_face, p_config.font_scale, p_config.font_color, p_config.font_thickness)
-    cv2.putText(overlay, 'GT (Green) vs Pred (Red)', (10, 30), p_config.font_face, p_config.font_scale, p_config.font_color, p_config.font_thickness)
+    cv2.putText(image_display, 'Original Image', (30, h - h_sep), p_config.font_face, p_config.font_scale, p_config.font_color, p_config.font_thickness)
+    cv2.putText(overlay, 'CellposeSAM', (30, h - h_sep), p_config.font_face, p_config.font_scale, p_config.pred_contour_color, p_config.font_thickness)
+    cv2.putText(overlay, 'GT', (30, h - h_sep-30), p_config.font_face, p_config.font_scale, p_config.gt_contour_color, p_config.font_thickness)
 
     # Stack images
     panel = np.hstack((image_display, overlay))
