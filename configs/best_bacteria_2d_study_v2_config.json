@@ -1,6 +1,7 @@
 {
     "model_name": "cpsam",
     "diameter": 15.4819066503063,
+    "channel_to_segment": null,
     "invert": true,
     "normalize": true,
     "norm3D": false,
@@ -12,13 +13,13 @@
     "flow_threshold": 0.4163426317179897,
     "cellprob_threshold": 0.7069147668130625,
     "min_size": 16,
+    "max_size_fraction": 2.587711645933444,
     "niter": 133,
     "tile": true,
     "tile_overlap": 0.1,
     "stitch_threshold": 0.0,
     "tile_norm_blocksize": 0,
     "tile_norm_smooth3D": 0,
-    "max_size_fraction": 2.587711645933444,
     "channel_axis": 2,
     "z_axis": null
 }
