@@ -23,7 +23,8 @@ dependencies = [
     "scikit-image~=0.25.0",
     "pyyaml~=6.0.2",
     "plotly~=6.1.2",
-    "scikit-learn"
+    "scikit-learn",
+    "tifffile"
 ]
 
 [project.urls]
