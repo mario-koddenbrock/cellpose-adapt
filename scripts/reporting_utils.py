@@ -77,12 +77,10 @@ def generate_visual_and_quantitative_report(
             report_data.append({'image_name': base_name, **stats})
 
         # Prepare a 2D slice for visualization if data is 3D
-        if image.ndim == 4:
+        if image.ndim == 4 or (image.ndim == 3 and np.min(image.shape) > 3):
             display_image = prepare_3d_slice_for_display(image)
-            # Ensure GT/Pred are also sliced if they exist
-            mid_slice_idx = (ground_truth.shape[0] // 2) if ground_truth is not None else (pred_mask.shape[0] // 2)
-            display_gt = ground_truth[mid_slice_idx, :, :] if ground_truth is not None else None
-            display_pred = pred_mask[mid_slice_idx, :, :]
+            display_gt = prepare_3d_slice_for_display(ground_truth, True)
+            display_pred = prepare_3d_slice_for_display(pred_mask, True)
         else:
             display_image = image
             display_gt = ground_truth
