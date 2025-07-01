@@ -1,5 +1,3 @@
-import logging
-
 import cv2
 import numpy as np
 
@@ -20,24 +18,36 @@ def normalize_to_uint8(img: np.ndarray) -> np.ndarray:
         img_norm = cv2.cvtColor(img_norm, cv2.COLOR_GRAY2BGR)
     return img_norm
 
-def prepare_3d_slice_for_display(image_3d: np.ndarray) -> np.ndarray:
+def prepare_3d_slice_for_display(image_3d: np.ndarray, is_mask:bool = False) -> np.ndarray:
     """
     Takes a 3D image (Z, C, Y, X), extracts the middle Z-slice,
     and maps the first two channels to an RGB image for display.
     """
-    if image_3d.ndim != 4 or image_3d.shape[1] < 2:
-        logging.warning("Expected 3D image with shape (Z, C, Y, X) and at least 2 channels. Returning black image.")
-        return np.zeros((image_3d.shape[2], image_3d.shape[3], 3), dtype=np.uint8)
+    # if image_3d.ndim != 4 or image_3d.shape[1] < 2:
+    #     logging.warning("Expected 3D image with shape (Z, C, Y, X) and at least 2 channels. Returning black image.")
+    #     return np.zeros((image_3d.shape[2], image_3d.shape[3], 3), dtype=np.uint8)
 
-    mid_slice_idx = image_3d.shape[0] // 2
-    img_slice = image_3d[mid_slice_idx, :, :, :]
+    if image_3d.ndim == 4:
+        mid_slice_idx = image_3d.shape[0] // 2
+        img_slice = image_3d[mid_slice_idx, :, :, :]
 
-    ch1 = cv2.normalize(img_slice[0], None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
-    ch2 = cv2.normalize(img_slice[1], None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
-    ch_blue = np.zeros_like(ch1, dtype=np.uint8)
+        ch1 = cv2.normalize(img_slice[0], None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
+        ch2 = cv2.normalize(img_slice[1], None, 0, 255, cv2.NORM_MINMAX, cv2.CV_8U)
+        ch_blue = np.zeros_like(ch1, dtype=np.uint8)
 
-    # Merge channels: Ch1 (e.g., nuclei) -> Red, Ch2 (e.g., membrane) -> Green
-    return cv2.merge([ch_blue, ch2, ch1])
+        # Merge channels: Ch1 (e.g., nuclei) -> Red, Ch2 (e.g., membrane) -> Green
+        return cv2.merge([ch_blue, ch2, ch1])
+
+    elif image_3d.ndim == 3:
+        mid_slice_idx = image_3d.shape[0] // 2
+        img_slice = image_3d[mid_slice_idx, :, :]
+        if is_mask:
+            return img_slice
+        else:
+            return cv2.cvtColor(img_slice, cv2.COLOR_GRAY2RGB)
+
+    else:
+        raise ValueError(f"Unsupported image shape: {image_3d.shape}. Expected 3D or 4D image.")
 
 
 def create_opencv_overlay(
@@ -79,9 +89,21 @@ def generate_comparison_panel(
     h_sep = 50
 
     # Add text labels
-    cv2.putText(image_display, 'Original Image', (30, h - h_sep), p_config.font_face, p_config.font_scale, p_config.font_color, p_config.font_thickness)
-    cv2.putText(overlay, 'CellposeSAM', (30, h - h_sep), p_config.font_face, p_config.font_scale, p_config.pred_contour_color, p_config.font_thickness)
-    cv2.putText(overlay, 'GT', (30, h - h_sep-30), p_config.font_face, p_config.font_scale, p_config.gt_contour_color, p_config.font_thickness)
+    min_dim = min(h, w)
+    if min_dim > 500:
+        font_scale = p_config.font_scale
+    elif min_dim > 400:
+        font_scale = p_config.font_scale * 0.8
+    elif min_dim > 300:
+        font_scale = p_config.font_scale * 0.7
+    elif min_dim > 200:
+        font_scale = p_config.font_scale * 0.6
+    else:
+        font_scale = p_config.font_scale * 0.5
+
+    cv2.putText(image_display, 'Original Image', (30, h - h_sep), p_config.font_face, font_scale, p_config.font_color, p_config.font_thickness)
+    cv2.putText(overlay, 'CellposeSAM', (30, h - h_sep), p_config.font_face, font_scale, p_config.pred_contour_color, p_config.font_thickness)
+    cv2.putText(overlay, 'GT', (30, h - h_sep-30), p_config.font_face, font_scale, p_config.gt_contour_color, p_config.font_thickness)
 
     # Stack images
     panel = np.hstack((image_display, overlay))
