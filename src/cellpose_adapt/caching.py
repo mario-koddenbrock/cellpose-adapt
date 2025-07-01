@@ -5,7 +5,7 @@ import os
 
 import numpy as np
 
-from .config.pipeline_config import PipelineConfig
+from cellpose_adapt.config.pipeline_config import PipelineConfig
 
 logger = logging.getLogger(__name__)
 CACHE_DIR = ".cache"

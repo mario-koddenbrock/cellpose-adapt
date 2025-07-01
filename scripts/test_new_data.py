@@ -31,10 +31,10 @@ def main():
 
     # --- 1. Load Configs ---
     try:
-        pipeline_cfg = PipelineConfig.from_json(args.config)
+        cfg = PipelineConfig.from_json(args.config)
         with open(args.project_config, 'r') as f:
-            project_cfg_data = json.load(f)
-        project_settings = project_cfg_data["project_settings"]
+            project_cfg = json.load(f)
+        project_settings = project_cfg["project_settings"]
         study_name = project_settings.get('study_name')
         if not study_name:
             # Fallback to a name based on the config file if study_name is not in project settings
@@ -56,8 +56,8 @@ def main():
         device = get_device(cli_device=args.device, config_device=project_settings.get("device"))
 
         generate_visual_and_quantitative_report(
-            pipeline_config=pipeline_cfg,
-            project_config_data=project_cfg_data,
+            cfg=cfg,
+            project_cfg=project_cfg,
             plotting_config=plotting_config,
             results_dir=results_dir,
             device=device,

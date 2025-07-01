@@ -16,8 +16,8 @@ logger = logging.getLogger(__name__)
 
 
 def generate_visual_and_quantitative_report(
-        pipeline_config,
-        project_config_data,
+        cfg,
+        project_cfg,
         plotting_config,
         results_dir,
         device,
@@ -28,8 +28,8 @@ def generate_visual_and_quantitative_report(
     Generates visual and quantitative reports for a given configuration.
 
     Args:
-        pipeline_config (PipelineConfig): The configuration for the Cellpose model.
-        project_config_data (dict): The loaded project configuration JSON data.
+        cfg (PipelineConfig): The configuration for the Cellpose model.
+        project_cfg (dict): The loaded project configuration JSON data.
         plotting_config (PlottingConfig): The configuration for visual outputs.
         results_dir (str): The directory to save the report files.
         device (torch.device): The device to run the model on.
@@ -39,22 +39,22 @@ def generate_visual_and_quantitative_report(
     logging.info(f"Generating visual and quantitative reports in: {results_dir}")
 
     # Save a copy of the config inside the results folder for full reproducibility
-    pipeline_config.to_json(os.path.join(results_dir, config_filename))
+    cfg.to_json(os.path.join(results_dir, config_filename))
 
     # Load data
     data_pairs = io.find_image_gt_pairs(
-        project_config_data['data_sources'],
-        project_config_data.get('gt_mapping', None),
-        project_config_data['project_settings'].get('limit_images_per_source', None)
+        project_cfg['data_sources'],
+        project_cfg.get('gt_mapping', None),
+        project_cfg['project_settings'].get('limit_images_per_source', None)
     )
     if not data_pairs:
         logging.error("No data pairs found. Cannot generate report.")
         return
 
     # Initialize model and process images
-    model = initialize_model(pipeline_config.model_name, device)
-    runner = CellposeRunner(model, pipeline_config, device)
-    channel_to_segment = pipeline_config.channel_to_segment
+    model = initialize_model(cfg.model_name, device)
+    runner = CellposeRunner(model, cfg, device)
+    channel_to_segment = cfg.channel_to_segment
 
     report_data = []
     for image_path, gt_path in data_pairs:

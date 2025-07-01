@@ -42,10 +42,10 @@ def main():
 
     try:
         with open(args.project_config, 'r') as f:
-            project_cfg_data = json.load(f)
-        with open(project_cfg_data['search_space_config_path'], 'r') as f:
+            project_cfg = json.load(f)
+        with open(project_cfg['search_space_config_path'], 'r') as f:
             search_space_config = json.load(f)
-        project_settings = project_cfg_data["project_settings"]
+        project_settings = project_cfg["project_settings"]
         study_name = project_settings.get('study_name', study.study_name)
     except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
         logging.error(f"Failed to load project or search space config: {e}")
@@ -73,8 +73,8 @@ def main():
         os.makedirs(results_dir, exist_ok=True)
         device = get_device(cli_device=args.device, config_device=project_settings.get("device"))
         generate_visual_and_quantitative_report(
-            pipeline_config=best_config,
-            project_config_data=project_cfg_data,
+            cfg=best_config,
+            project_cfg=project_cfg,
             plotting_config=plotting_config,
             results_dir=results_dir,
             device=device,

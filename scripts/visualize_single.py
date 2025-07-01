@@ -51,13 +51,13 @@ def main():
         logging.error(f"Pipeline config file not found at {args.config_path}")
         return
 
-    pipeline_config = PipelineConfig.from_json(args.config_path)
+    cfg = PipelineConfig.from_json(args.config_path)
 
     try:
         with open(args.project_config, 'r') as f:
-            project_cfg_data = json.load(f)
-        gt_mapping = project_cfg_data.get('gt_mapping')
-        config_device = project_cfg_data.get('project_settings', {}).get('device')
+            project_cfg = json.load(f)
+        gt_mapping = project_cfg.get('gt_mapping')
+        config_device = project_cfg.get('project_settings', {}).get('device')
     except (FileNotFoundError, json.JSONDecodeError) as e:
         logging.warning(f"Could not load project config: {e}. GT/Device settings may be unavailable.")
         gt_mapping = None
@@ -68,7 +68,7 @@ def main():
 
     # --- Load Data ---
     gt_path = io.find_gt_path(args.image_path, gt_mapping) if gt_mapping else None
-    image_segment, ground_truth, image = io.load_image_with_gt(args.image_path, gt_path, channel_to_segment=pipeline_config.channel_to_segment)
+    image_segment, ground_truth, image = io.load_image_with_gt(args.image_path, gt_path, channel_to_segment=cfg.channel_to_segment)
     if image_segment is None:
         logging.error(f"Failed to load image from {args.image_path}")
         return
@@ -76,10 +76,10 @@ def main():
         logging.warning(f"Ground truth was not found at the inferred path: {gt_path}")
 
     # --- 3. Initialize Model and Run Pipeline ---
-    logging.info(f"Initializing model '{pipeline_config.model_name}' on device '{device}'...")
-    model = core.initialize_model(pipeline_config.model_name, device=device)
+    logging.info(f"Initializing model '{cfg.model_name}' on device '{device}'...")
+    model = core.initialize_model(cfg.model_name, device=device)
 
-    runner = core.CellposeRunner(model, pipeline_config, device=device)
+    runner = core.CellposeRunner(model, cfg, device=device)
 
     logging.info("Running segmentation on the image...")
     masks, duration = runner.run(image_segment)
