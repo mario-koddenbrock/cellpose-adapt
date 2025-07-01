@@ -75,7 +75,7 @@ class CellposeRunner:
             x=image,
             diameter=self.config.diameter if self.config.diameter > 0 else None,
             do_3D=self.config.do_3D,
-            normalize=normalization_params,  # Pass the full dictionary
+            normalize=normalization_params,
             compute_masks=False,
             tile_overlap=self.config.tile_overlap,
             stitch_threshold=self.config.stitch_threshold,
