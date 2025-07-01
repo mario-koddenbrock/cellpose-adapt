@@ -17,19 +17,19 @@ jobs:
         python-version: [ "3.11" ]
 
     steps:
-      # 1. Checkout des Repositories
+      # Checkout des Repositories
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      # 2. Set up Python
+      # Set up Python
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
-      # 3. Cache pip dependencies
+      # Cache pip dependencies
       - name: Cache pip dependencies
         uses: actions/cache@v3
         with:
@@ -38,15 +38,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      # 4. Install dependencies
+      # Install dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          pip install pytest
+          pip install pytest-mock
           pip install setuptools wheel cython
-          pip install flake8 pytest
+          pip install flake8
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install .
 
-      # 5. Linting mit flake8
+      # Linting mit flake8
       # Flake8 prüft auf PEP8-Konformität und häufige Programmierfehler.
       # --count: Zeigt die Gesamtzahl der Fehler an.
       # --select=...: Ignoriert bestimmte, oft zu strenge Warnungen (hier: Zeilenlänge und komplexe Importe).
@@ -58,7 +61,6 @@ jobs:
       #          # Exit on --count > 0, aber ignoriere bestimmte Fehler (z.B. Zeilenlänge)
       #          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
 
-      # 6. Run tests with pytest
-      - name: Test with pytest
+      - name: Run tests
         run: |
-          pytest
+          python -m pytest
