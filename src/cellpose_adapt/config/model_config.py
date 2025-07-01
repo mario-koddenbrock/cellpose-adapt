@@ -4,7 +4,7 @@ from typing import Optional
 
 
 @dataclass
-class PipelineConfig:
+class ModelConfig:
     """Configuration for the Cellpose segmentation pipeline."""
 
     # Model parameters

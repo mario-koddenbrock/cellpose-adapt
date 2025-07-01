@@ -8,7 +8,7 @@ import napari
 
 from cellpose_adapt import core
 from cellpose_adapt import io
-from cellpose_adapt.config.pipeline_config import PipelineConfig
+from cellpose_adapt.config.model_config import ModelConfig
 from cellpose_adapt.logging_config import setup_logging
 from cellpose_adapt.metrics import calculate_segmentation_stats
 from cellpose_adapt.utils import get_device
@@ -25,7 +25,7 @@ def main():
         "--config_path",
         type=str,
         required=True,
-        help="Path to the final pipeline configuration JSON file (e.g., best_config.json)."
+        help="Path to the final pipeline configuration JSON file (e.g., best_cfg.json)."
     )
     parser.add_argument(
         "--project_config",
@@ -51,7 +51,8 @@ def main():
         logging.error(f"Pipeline config file not found at {args.config_path}")
         return
 
-    cfg = PipelineConfig.from_json(args.config_path)
+    cfg = ModelConfig.from_json(args.config_path)
+    # print(f"Loaded configuration from {args.config_path}:\n{cfg}")
 
     try:
         with open(args.project_config, 'r') as f:

@@ -28,7 +28,7 @@ def generate_visual_and_quantitative_report(
     Generates visual and quantitative reports for a given configuration.
 
     Args:
-        cfg (PipelineConfig): The configuration for the Cellpose model.
+        cfg (ModelConfig): The configuration for the Cellpose model.
         project_cfg (dict): The loaded project configuration JSON data.
         plotting_config (PlottingConfig): The configuration for visual outputs.
         results_dir (str): The directory to save the report files.

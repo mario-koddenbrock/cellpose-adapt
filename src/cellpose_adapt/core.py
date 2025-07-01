@@ -7,7 +7,7 @@ from cellpose.dynamics import compute_masks
 from cellpose.models import CellposeModel
 
 from . import caching
-from .config.pipeline_config import PipelineConfig
+from .config.model_config import ModelConfig
 
 logger = logging.getLogger(__name__)
 logger.debug("Cellpose core module loaded.")
@@ -28,7 +28,7 @@ def initialize_model(model_name: str, device: torch.device) -> CellposeModel:
 
 class CellposeRunner:
     """Encapsulates the Cellpose evaluation logic for a given config and preloaded model."""
-    def __init__(self, model: CellposeModel, config: PipelineConfig, device: torch.device):
+    def __init__(self, model: CellposeModel, config: ModelConfig, device: torch.device):
         self.model = model
         self.config = config
         self.device = device

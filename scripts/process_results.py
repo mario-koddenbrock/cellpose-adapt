@@ -7,9 +7,10 @@ import time
 import optuna
 from optuna.visualization import plot_optimization_history, plot_param_importances, plot_slice
 
-from cellpose_adapt.config.pipeline_config import PipelineConfig
+from cellpose_adapt.config.model_config import ModelConfig
 from cellpose_adapt.config.plotting_config import PlottingConfig
 from cellpose_adapt.logging_config import setup_logging
+from cellpose_adapt.optimization import OptunaOptimizer
 from cellpose_adapt.utils import get_device
 from reporting_utils import generate_visual_and_quantitative_report
 
@@ -55,30 +56,28 @@ def main():
     logging.info(f"Best trial #{best_trial.number} with score: {best_trial.value:.4f}")
 
     # --- 2. Create and Save Best Config ---
-    best_config = PipelineConfig()
-    final_params = search_space_config.get("fixed_params", {})
-    final_params.update(best_trial.params)
-    for key, value in final_params.items():
-        if hasattr(best_config, key):
-            setattr(best_config, key, value)
+    device = get_device(cli_device=args.device, config_device=project_settings.get("device"))
+    optimizer = OptunaOptimizer(None, search_space_config, device=device)
+    # best_cfg:ModelConfig = optimizer.create_config_from_trial(best_trial)
+    best_cfg = ModelConfig.from_json("configs/manual_organoid_3d_nuclei_study_config.json")
 
     os.makedirs("configs", exist_ok=True)
     output_config_path = os.path.join("configs", f"best_{study_name}_config.json")
-    best_config.to_json(output_config_path)
+    best_cfg.to_json(output_config_path)
     logging.info(f"Best configuration saved to: {output_config_path}")
 
     # --- 3. Generate Visual and Quantitative Reports ---
     if not args.no_report:
         results_dir = os.path.join("reports", study_name)
         os.makedirs(results_dir, exist_ok=True)
-        device = get_device(cli_device=args.device, config_device=project_settings.get("device"))
+
         generate_visual_and_quantitative_report(
-            cfg=best_config,
+            cfg=best_cfg,
             project_cfg=project_cfg,
             plotting_config=plotting_config,
             results_dir=results_dir,
             device=device,
-            config_filename="best_config.json",
+            config_filename="best_cfg.json",
             show_panels=args.show_panels
         )
 

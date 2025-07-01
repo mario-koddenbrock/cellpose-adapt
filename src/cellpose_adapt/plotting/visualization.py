@@ -375,11 +375,11 @@ def plot_best_scores_barplot(
         return
 
     # Find the best configuration per image_name and type based on the metric
-    best_configs = df.loc[df.groupby(["image_name", "type"])[metric].idxmax()]
+    best_cfgs = df.loc[df.groupby(["image_name", "type"])[metric].idxmax()]
 
     # Prepare data for plotting
     grouped = (
-        best_configs.groupby(["image_name", "type"])[metric].max().unstack(fill_value=0)
+        best_cfgs.groupby(["image_name", "type"])[metric].max().unstack(fill_value=0)
     )
 
     grouped.plot(kind="bar", figsize=(12, 6), alpha=0.8, edgecolor="black")

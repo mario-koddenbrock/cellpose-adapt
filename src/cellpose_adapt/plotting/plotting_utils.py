@@ -92,18 +92,21 @@ def generate_comparison_panel(
     min_dim = min(h, w)
     if min_dim > 500:
         font_scale = p_config.font_scale
+        font_thickness = p_config.font_thickness
     elif min_dim > 400:
         font_scale = p_config.font_scale * 0.8
+        font_thickness = p_config.font_thickness - 1
     elif min_dim > 300:
-        font_scale = p_config.font_scale * 0.7
-    elif min_dim > 200:
         font_scale = p_config.font_scale * 0.6
+        font_thickness = p_config.font_thickness - 1
     else:
-        font_scale = p_config.font_scale * 0.5
+        font_scale = p_config.font_scale * 0.4
+        font_thickness = p_config.font_thickness - 1
 
-    cv2.putText(image_display, 'Original Image', (30, h - h_sep), p_config.font_face, font_scale, p_config.font_color, p_config.font_thickness)
-    cv2.putText(overlay, 'CellposeSAM', (30, h - h_sep), p_config.font_face, font_scale, p_config.pred_contour_color, p_config.font_thickness)
-    cv2.putText(overlay, 'GT', (30, h - h_sep-30), p_config.font_face, font_scale, p_config.gt_contour_color, p_config.font_thickness)
+
+    cv2.putText(image_display, 'Original Image', (30, h - h_sep), p_config.font_face, font_scale, p_config.font_color, font_thickness)
+    cv2.putText(overlay, 'CellposeSAM', (30, h - h_sep), p_config.font_face, font_scale, p_config.pred_contour_color, font_thickness)
+    cv2.putText(overlay, 'GT', (30, h - h_sep-30), p_config.font_face, font_scale, p_config.gt_contour_color, font_thickness)
 
     # Stack images
     panel = np.hstack((image_display, overlay))

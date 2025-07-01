@@ -1,7 +1,7 @@
 import pytest
 import torch
 
-from cellpose_adapt.config.pipeline_config import PipelineConfig
+from cellpose_adapt.config.model_config import ModelConfig
 from cellpose_adapt.core import initialize_model
 from .test_utils import create_synthetic_data  # Import the helper
 
@@ -21,9 +21,9 @@ def device():
 
 @pytest.fixture(scope="session")
 def simple_config():
-    """Provides a simple PipelineConfig suitable for the synthetic data."""
+    """Provides a simple ModelConfig suitable for the synthetic data."""
     # The area of the smaller circle is > 2000 pixels, so min_size=500 is safe.
-    return PipelineConfig(diameter=60, do_3D=False, min_size=500)
+    return ModelConfig(diameter=60, do_3D=False, min_size=500)
 
 @pytest.fixture(scope="session")
 def cellpose_model(device):

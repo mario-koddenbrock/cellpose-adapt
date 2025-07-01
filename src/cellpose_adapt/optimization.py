@@ -6,7 +6,7 @@ import torch
 from tqdm import tqdm
 
 from . import core, io
-from .config.pipeline_config import PipelineConfig
+from .config.model_config import ModelConfig
 from .metrics import calculate_segmentation_stats
 
 logger = logging.getLogger(__name__)
@@ -29,8 +29,8 @@ class OptunaOptimizer:
             self.loaded_models[model_name] = core.initialize_model(model_name, device=self.device)
         return self.loaded_models[model_name]
 
-    def _create_config_from_trial(self, trial: optuna.Trial) -> PipelineConfig:
-        """Builds a PipelineConfig from a combination of fixed and suggested parameters."""
+    def create_config_from_trial(self, trial: optuna.Trial) -> ModelConfig:
+        """Builds a ModelConfig from a combination of fixed and suggested parameters."""
 
         # Start with fixed parameters
         params = self.fixed_params.copy()
@@ -59,7 +59,7 @@ class OptunaOptimizer:
                     f"Unknown suggestion type '{s_type}' for parameter '{name}'"
                 )
 
-        return PipelineConfig(**params)
+        return ModelConfig(**params)
 
     def objective(self, trial: optuna.Trial) -> float:
         """
@@ -67,7 +67,7 @@ class OptunaOptimizer:
         and returns the mean Jaccard score.
         """
         try:
-            trial_params = self._create_config_from_trial(trial)
+            trial_params = self.create_config_from_trial(trial)
         except Exception as e:
             logger.error("Error creating config from trial: %s", e)
             raise optuna.exceptions.TrialPruned(f"Config creation failed: {e}")

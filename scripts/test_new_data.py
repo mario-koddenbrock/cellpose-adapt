@@ -4,7 +4,7 @@ import logging
 import os
 import time
 
-from cellpose_adapt.config.pipeline_config import PipelineConfig
+from cellpose_adapt.config.model_config import ModelConfig
 from cellpose_adapt.config.plotting_config import PlottingConfig
 from cellpose_adapt.logging_config import setup_logging
 from cellpose_adapt.utils import get_device
@@ -31,7 +31,7 @@ def main():
 
     # --- 1. Load Configs ---
     try:
-        cfg = PipelineConfig.from_json(args.config)
+        cfg = ModelConfig.from_json(args.config)
         with open(args.project_config, 'r') as f:
             project_cfg = json.load(f)
         project_settings = project_cfg["project_settings"]

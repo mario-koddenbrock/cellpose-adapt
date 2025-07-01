@@ -5,7 +5,7 @@ import os
 
 import numpy as np
 
-from cellpose_adapt.config.pipeline_config import PipelineConfig
+from cellpose_adapt.config.model_config import ModelConfig
 
 logger = logging.getLogger(__name__)
 CACHE_DIR = ".cache"
@@ -15,7 +15,7 @@ if not os.path.exists(CACHE_DIR):
 logger.debug("Using cache directory: %s", CACHE_DIR)
 
 
-def get_model_eval_params(config: PipelineConfig) -> dict:
+def get_model_eval_params(config: ModelConfig) -> dict:
     """
     Filters the config to get only parameters that affect the raw model.eval output.
     This is crucial for caching, as it ignores post-processing parameters.
