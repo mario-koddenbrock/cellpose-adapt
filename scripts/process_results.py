@@ -20,11 +20,11 @@ logger.debug("Starting script to process results from an Optuna study and genera
 
 def main():
     parser = argparse.ArgumentParser(description="Analyze a study and generate all reports.")
-    parser.add_argument("--study_db", type=str, required=True, help="Path to the Optuna study SQLite DB.")
-    parser.add_argument("--project_config", type=str, required=True, help="Path to the original project JSON config file.")
+    exclusive_group = parser.add_mutually_exclusive_group(required=True)
+    exclusive_group.add_argument("--study_db", type=str, help="Path to the Optuna study SQLite DB.")
+    exclusive_group.add_argument("--project_config", type=str, help="Path to the original project JSON config file.")
     parser.add_argument("--no-plots", action="store_true", help="Skip generating HTML analysis plots.")
     parser.add_argument("--no-report", action="store_true", help="Skip generating visual/quantitative reports.")
-    # --- NEW ARGUMENT ---
     parser.add_argument("--show-panels", action="store_true", help="Display generated report panels on screen.")
     parser.add_argument("--device", type=str, default=None, help="Override device setting ('cpu', 'cuda', 'mps').")
     args = parser.parse_args()
@@ -34,32 +34,45 @@ def main():
 
     plotting_config = PlottingConfig()
 
-    # --- 1. Load Study, Configs, and Best Trial ---
-    if not os.path.exists(args.study_db):
-        logging.error("Study database not found at %s", args.study_db)
-        return
-    study = optuna.load_study(study_name=None, storage=f"sqlite:///{args.study_db}")
-    best_trial = study.best_trial
+    if args.study_db:
+        # --- 1. Load Study, Configs, and Best Trial ---
+        if not os.path.exists(args.study_db):
+            logging.error("Study database not found at %s", args.study_db)
+            return
+        study = optuna.load_study(study_name=None, storage=f"sqlite:///{args.study_db}")
+        best_trial = study.best_trial
 
-    try:
-        with open(args.project_config, 'r') as f:
-            project_cfg = json.load(f)
-        with open(project_cfg['search_space_config_path'], 'r') as f:
-            search_space_config = json.load(f)
-        project_settings = project_cfg["project_settings"]
-        study_name = project_settings.get('study_name', study.study_name)
-    except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
-        logging.error(f"Failed to load project or search space config: {e}")
-        return
+        try:
+            with open(args.project_config, 'r') as f:
+                project_cfg = json.load(f)
+            with open(project_cfg['search_space_config_path'], 'r') as f:
+                search_space_config = json.load(f)
+            project_settings = project_cfg["project_settings"]
+            study_name = project_settings.get('study_name', study.study_name)
+        except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
+            logging.error(f"Failed to load project or search space config: {e}")
+            return
+        
+        logging.info(f"--- Processing results for study: {study_name} ---")
+        logging.info(f"Best trial #{best_trial.number} with score: {best_trial.value:.4f}")
 
-    logging.info(f"--- Processing results for study: {study_name} ---")
-    logging.info(f"Best trial #{best_trial.number} with score: {best_trial.value:.4f}")
+        # --- 2. Create and Save Best Config ---
+        device = get_device(cli_device=args.device, config_device=project_settings.get("device"))
+        optimizer = OptunaOptimizer(None, search_space_config, device=device)
+        # best_cfg:ModelConfig = optimizer.create_config_from_trial(best_trial)
+        best_cfg = ModelConfig.from_json("configs/manual_organoid_3d_nuclei_study_config.json")
 
-    # --- 2. Create and Save Best Config ---
-    device = get_device(cli_device=args.device, config_device=project_settings.get("device"))
-    optimizer = OptunaOptimizer(None, search_space_config, device=device)
-    # best_cfg:ModelConfig = optimizer.create_config_from_trial(best_trial)
-    best_cfg = ModelConfig.from_json("configs/manual_organoid_3d_nuclei_study_config.json")
+    else:
+        # --- 1. Load Project Config and Search Space ---
+        if not os.path.exists(args.project_config):
+            logging.error("Project config file not found at %s", args.project_config)
+            return
+        study = optuna.create_study(study_name=None, storage=f"sqlite:///{args.project_config}")
+        best_trial = study.best_trial
+
+
+
+
 
     os.makedirs("configs", exist_ok=True)
     output_config_path = os.path.join("configs", f"best_{study_name}_config.json")
