@@ -3,6 +3,7 @@
   "fixed_params": {
     "channel_axis": 1,
     "channel_to_segment": 0,
+    "diameter": null,
     "do_3D": true,
     "invert": false,
     "max_size_fraction": 0.5,
@@ -13,15 +14,10 @@
     "tile_norm_blocksize": 0,
     "tile_norm_smooth3D": 1,
     "tile_overlap": 0.1,
+    "niter": 100,
     "z_axis": 0
   },
   "search_space": {
-    "diameter": [
-      "suggest_float",
-      10.0,
-      150.0,
-      "log"
-    ],
     "flow_threshold": [
       "suggest_float",
       0.2,
@@ -30,17 +26,12 @@
     "cellprob_threshold": [
       "suggest_float",
       -2.0,
-      4.0
+      10.0
     ],
     "min_size": [
       "suggest_int",
-      1000,
+      500,
       50000
-    ],
-    "niter": [
-      "suggest_int",
-      100,
-      500
     ],
     "stitch_threshold": [
       "suggest_float",
@@ -49,7 +40,7 @@
     ],
     "percentile_max": [
       "suggest_float",
-      0.9,
+      0.95,
       1.0
     ],
     "percentile_min": [
@@ -58,6 +49,11 @@
       0.25
     ],
     "smooth_radius": [
+      "suggest_float",
+      0.0,
+      5.0
+    ],
+    "sharpen_radius": [
       "suggest_float",
       0.0,
       5.0
