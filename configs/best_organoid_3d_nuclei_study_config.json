@@ -14,7 +14,7 @@
     "cellprob_threshold": 5.0,
     "min_size": 5000,
     "max_size_fraction": 0.5,
-    "niter": 100,
+    "niter": 250,
     "tile": true,
     "tile_overlap": 0.1,
     "stitch_threshold": 0.75,
