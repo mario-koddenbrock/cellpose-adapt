@@ -1,0 +1,65 @@
+{
+  "description": "A search space for optimizing 3D organoid nuclei segmentation. Focuses on larger diameters, 3D-specific parameters, and post-processing.",
+  "fixed_params": {
+    "channel_axis": 1,
+    "channel_to_segment": 0,
+    "do_3D": true,
+    "invert": false,
+    "max_size_fraction": 0.5,
+    "model_name": "cpsam",
+    "norm3D": true,
+    "normalize": true,
+    "tile": true,
+    "tile_norm_blocksize": 0,
+    "tile_norm_smooth3D": 1,
+    "tile_overlap": 0.1,
+    "z_axis": 0
+  },
+  "search_space": {
+    "diameter": [
+      "suggest_float",
+      10.0,
+      150.0
+    ],
+    "flow_threshold": [
+      "suggest_float",
+      0.2,
+      0.8
+    ],
+    "cellprob_threshold": [
+      "suggest_float",
+      -2.0,
+      4.0
+    ],
+    "min_size": [
+      "suggest_int",
+      1000,
+      50000
+    ],
+    "niter": [
+      "suggest_int",
+      100,
+      500
+    ],
+    "stitch_threshold": [
+      "suggest_float",
+      0.5,
+      1.0
+    ],
+    "percentile_max": [
+      "suggest_float",
+      0.9,
+      1.0
+    ],
+    "percentile_min": [
+      "suggest_float",
+      0.0,
+      0.25
+    ],
+    "smooth_radius": [
+      "suggest_float",
+      0.0,
+      5.0
+    ]
+  }
+}

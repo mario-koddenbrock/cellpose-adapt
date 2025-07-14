@@ -26,7 +26,7 @@
       </ENTRIES>
     </EXTENSION>
     <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scripts/process_results.py" />
-    <option name="PARAMETERS" value="--project_config &quot;project_configs/organoid_3d_nuclei.json&quot;" />
+    <option name="PARAMETERS" value="--project_config &quot;configs/project_configs/organoid_3d_nuclei.json&quot;" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />
     <option name="MODULE_MODE" value="false" />

@@ -71,9 +71,10 @@ class CellposeRunner:
             z_axis = None
             logging.debug("2D evaluation detected. Setting z_axis to None for cellpose.eval().")
 
+        diameter = self.config.diameter if (self.config.diameter and (self.config.diameter > 0)) else None
         masks, flows, styles = self.model.eval(
             x=image,
-            diameter=self.config.diameter if self.config.diameter > 0 else None,
+            diameter=diameter,
             do_3D=self.config.do_3D,
             normalize=normalization_params,
             compute_masks=False,

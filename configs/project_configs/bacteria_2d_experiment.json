@@ -24,5 +24,5 @@
     "suffix": ".tif",
     "img_suffix": ".tif"
   },
-  "search_space_config_path": "project_configs/search_spaces/bacteria_2d_coarse.json"
+  "search_space_config_path": "configs/search_spaces/bacteria_2d_coarse.json"
 }

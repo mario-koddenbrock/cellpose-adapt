@@ -25,7 +25,7 @@
       </ENTRIES>
     </EXTENSION>
     <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scripts/test_new_data.py" />
-    <option name="PARAMETERS" value="--config &quot;configs/mt_2d_config.json&quot; --project_config &quot;project_configs/mt_2d_experiment.json&quot; --show-panels" />
+    <option name="PARAMETERS" value="--config &quot;configs/mt_2d_config.json&quot; --project_config &quot;configs/project_configs/mt_2d_experiment.json&quot; --show-panels" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />
     <option name="MODULE_MODE" value="false" />

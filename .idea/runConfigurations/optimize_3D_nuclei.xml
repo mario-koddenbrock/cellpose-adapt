@@ -25,7 +25,7 @@
       </ENTRIES>
     </EXTENSION>
     <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scripts/run_optimization.py" />
-    <option name="PARAMETERS" value="project_configs/organoid_3d_nuclei.json" />
+    <option name="PARAMETERS" value="configs/project_configs/organoid_3d_nuclei.json" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />
     <option name="MODULE_MODE" value="false" />

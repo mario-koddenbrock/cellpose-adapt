@@ -25,7 +25,7 @@
       </ENTRIES>
     </EXTENSION>
     <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scripts/visualize_single.py" />
-    <option name="PARAMETERS" value="--image_path &quot;data/Organoids/20240305_P013T_40xSil_Hoechst_SiRActin/images_cropped_isotropic/20240305_P013T_A001_cropped_isotropic.tif&quot; --config_path &quot;configs/manual_organoid_3d_nuclei_study_config.json&quot; --project_config &quot;project_configs/organoid_3d_nuclei.json&quot;" />
+    <option name="PARAMETERS" value="--image_path &quot;data/Organoids/20240305_P013T_40xSil_Hoechst_SiRActin/images_cropped_isotropic/20240305_P013T_A001_cropped_isotropic.tif&quot; --config_path &quot;configs/manual_organoid_3d_nuclei_study_config.json&quot; --project_config &quot;configs/project_configs/organoid_3d_nuclei.json&quot;" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />
     <option name="MODULE_MODE" value="false" />
