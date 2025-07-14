@@ -80,7 +80,9 @@ def create_opencv_overlay(
 def generate_comparison_panel(
         display_image: np.ndarray,
         overlay: np.ndarray,
-        p_config: PlottingConfig
+        p_config: PlottingConfig,
+        num_instances_gt: int,
+        num_instances_pred: int,
 ) -> np.ndarray:
     """Stitches the original image and the overlay side-by-side, resizing if needed."""
     image_display = normalize_to_uint8(display_image)
@@ -105,8 +107,8 @@ def generate_comparison_panel(
 
 
     cv2.putText(image_display, 'Original Image', (30, h - h_sep), p_config.font_face, font_scale, p_config.font_color, font_thickness)
-    cv2.putText(overlay, 'CellposeSAM', (30, h - h_sep), p_config.font_face, font_scale, p_config.pred_contour_color, font_thickness)
-    cv2.putText(overlay, 'GT', (30, h - h_sep-30), p_config.font_face, font_scale, p_config.gt_contour_color, font_thickness)
+    cv2.putText(overlay, f'CellposeSAM ({num_instances_pred})', (30, h - h_sep), p_config.font_face, font_scale, p_config.pred_contour_color, font_thickness)
+    cv2.putText(overlay, f'GT ({num_instances_gt})', (30, h - h_sep-30), p_config.font_face, font_scale, p_config.gt_contour_color, font_thickness)
 
     # Stack images
     panel = np.hstack((image_display, overlay))

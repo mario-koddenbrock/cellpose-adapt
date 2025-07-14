@@ -76,6 +76,9 @@ def generate_visual_and_quantitative_report(
             stats = calculate_segmentation_stats(ground_truth, pred_mask)
             report_data.append({'image_name': base_name, **stats})
 
+        num_instances_gt = np.unique(ground_truth).size - 1 if ground_truth is not None else 0
+        num_instances_pred = np.unique(pred_mask).size - 1
+
         # Prepare a 2D slice for visualization if data is 3D
         if image.ndim == 4 or (image.ndim == 3 and np.min(image.shape) > 3):
             display_image = prepare_3d_slice_for_display(image)
@@ -87,7 +90,7 @@ def generate_visual_and_quantitative_report(
             display_pred = pred_mask
 
         overlay = create_opencv_overlay(display_image, display_gt, display_pred, plotting_config)
-        panel = generate_comparison_panel(display_image, overlay, plotting_config)
+        panel = generate_comparison_panel(display_image, overlay, plotting_config, num_instances_gt, num_instances_pred)
 
         # Save the panel to disk
         cv2.imwrite(os.path.join(results_dir, f"{base_name}_report.png"), panel)
@@ -109,7 +112,7 @@ def generate_visual_and_quantitative_report(
     # Save stats to CSV
     if report_data:
         report_df = pd.DataFrame(report_data)
-        report_df.to_csv(os.path.join(results_dir, '_report_summary.csv'), index=False, float_format='%.4f')
+        report_df.to_csv(os.path.join(results_dir, 'report_summary.csv'), index=False, float_format='%.4f')
         logging.info(f"Quantitative report saved. Mean F1-score: {report_df['f1_score'].mean():.4f}")
     else:
         logging.warning("No images with ground truth were processed for the quantitative report.")
