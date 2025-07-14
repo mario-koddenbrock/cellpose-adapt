@@ -1,7 +1,7 @@
 {
   "description": "An experiment to optimize 3D segmentation of organoid nuclei.",
   "project_settings": {
-    "device": "mps",
+    "device": null,
     "limit_images_per_source": 2,
     "logging_level": "DEBUG",
     "n_trials": 2,
