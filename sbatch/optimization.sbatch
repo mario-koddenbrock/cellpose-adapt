@@ -31,7 +31,7 @@ conda activate cellpose-adapt
 which python
 
 # Run the evaluation script
-python scripts/run_optimization.py project_configs/organoid_3d_nuclei.json
+python scripts/run_optimization.py configs/project_configs/organoid_3d_nuclei.json
 
 # Log completion time
 echo "Job finished at $(date)"
