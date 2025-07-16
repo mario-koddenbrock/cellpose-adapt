@@ -1,15 +1,16 @@
 #!/bin/bash
 
 #SBATCH --job-name=cellpose
-#SBATCH --gres=gpu:1               # Request 4 GPUs
+#SBATCH --gres=gpu:1
 #SBATCH --nodes=1
-#SBATCH --ntasks=1                 # Number of tasks (1 task that uses multiple GPUs)
-#SBATCH --cpus-per-task=64         # Adjust CPUs per task based on the total available cores
-#SBATCH --mem=256G                  # Total memory for the job
-#SBATCH --time=02-16:00:00       # Time limit (2 days, 16 hours)
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=64
+#SBATCH --mem=256G
+#SBATCH --time=05-16:00:00
 #SBATCH --qos=normal
 #SBATCH --output=%j_cp-out.log
 #SBATCH --error=%j_cp-err.log
+#SBATCH --mail-type=ALL
 
 # Log SLURM environment variables
 echo "SLURM Job ID: $SLURM_JOB_ID"
@@ -31,7 +32,10 @@ conda activate cellpose-adapt
 which python
 
 # Run the evaluation script
-python scripts/run_optimization.py configs/project_configs/organoid_3d_nuclei.json
+#python scripts/run_optimization.py configs/project_configs/organoid_3d_nuclei_20231108.json
+#python scripts/run_optimization.py configs/project_configs/organoid_3d_nuclei_20240220.json
+#python scripts/run_optimization.py configs/project_configs/organoid_3d_nuclei_20240305.json
+python scripts/run_optimization.py configs/project_configs/organoid_3d_nuclei_20240701.json
 
 # Log completion time
 echo "Job finished at $(date)"
