@@ -4,14 +4,11 @@
     "device": null,
     "limit_images_per_source": null,
     "logging_level": "INFO",
-    "n_trials": 200,
-    "study_name": "organoid_3d_membranes_study"
+    "n_trials": 1000,
+    "study_name": "organoid_3d_membranes_20240701"
   },
   "data_sources": [
-    "data/Organoids/20231108_P021N_40xSil_Hoechst_SiRActin/images_cropped_isotropic",
-    "data/Organoids/20240220_P013T_40xSil_Hoechst_SiRActin/images_cropped_isotropic",
-    "data/Organoids/20240305_P013T_40xSil_Hoechst_SiRActin/images_cropped_isotropic",
-    "data/Organoids/20240701_P013T_60xOil_Hoechst_SiRActin/images_cropped_isotropic"
+    "/scratch/koddenbrock/Organoids/20240701_P013T_60xOil_Hoechst_SiRActin/images_cropped_isotropic"
   ],
   "gt_mapping": {
     "replace": [
