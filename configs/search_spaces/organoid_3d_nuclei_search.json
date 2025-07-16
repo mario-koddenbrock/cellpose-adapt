@@ -30,8 +30,8 @@
     ],
     "min_size": [
       "suggest_int",
-      500,
-      50000
+      100,
+      20000
     ],
     "stitch_threshold": [
       "suggest_float",
