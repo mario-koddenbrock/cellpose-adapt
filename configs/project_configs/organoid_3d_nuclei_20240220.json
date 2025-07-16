@@ -2,7 +2,7 @@
   "description": "An experiment to optimize 3D segmentation of organoid nuclei.",
   "project_settings": {
     "device": null,
-    "limit_images_per_source": 2,
+    "limit_images_per_source": null,
     "logging_level": "INFO",
     "n_trials": 1000,
     "study_name": "organoid_3d_nuclei_20240220",
