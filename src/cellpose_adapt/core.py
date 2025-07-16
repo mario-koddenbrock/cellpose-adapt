@@ -28,10 +28,19 @@ def initialize_model(model_name: str, device: torch.device) -> CellposeModel:
 
 class CellposeRunner:
     """Encapsulates the Cellpose evaluation logic for a given config and preloaded model."""
-    def __init__(self, model: CellposeModel, config: ModelConfig, device: torch.device):
+    def __init__(self, model: CellposeModel, config: ModelConfig, device: torch.device, cache_dir: str = ".cache"):
+        """ Initializes the CellposeRunner with a preloaded model and configuration.
+        Args:
+            model (CellposeModel): Preloaded Cellpose model instance.
+            config (ModelConfig): Configuration object with parameters for evaluation.
+            device (torch.device): Device to run the model on (CPU or GPU).
+            cache_dir (str): Directory for caching model outputs.
+        """
+        
         self.model = model
         self.config = config
         self.device = device
+        self.cache_dir = cache_dir
 
     def _get_raw_output(self, image: np.ndarray) -> (list, np.ndarray):
         """
@@ -42,7 +51,7 @@ class CellposeRunner:
         cache_key = caching.compute_hash(image, model_params)
 
         # Try to load from cache first
-        cached_flows, cached_styles = caching.load_from_cache(cache_key)
+        cached_flows, cached_styles = caching.load_from_cache(cache_key, self.cache_dir)
         if cached_flows is not None:
             logger.info("CACHE HIT for model prediction.")
             return cached_flows, cached_styles

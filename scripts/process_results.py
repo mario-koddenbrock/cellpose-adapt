@@ -61,7 +61,8 @@ def main():
 
     # --- 2. Create and Save Best Config ---
     device = get_device(cli_device=args.device, config_device=project_settings.get("device"))
-    optimizer = OptunaOptimizer(None, search_space_config, device=device)
+    cache_dir = project_settings.get("cache_dir", ".cache")
+    optimizer = OptunaOptimizer(None, search_space_config, device=device, cache_dir =cache_dir)
     best_cfg:ModelConfig = optimizer.create_config_from_trial(best_trial)
     # best_cfg = ModelConfig.from_json("configs/manual_organoid_3d_nuclei_study_config.json")
 

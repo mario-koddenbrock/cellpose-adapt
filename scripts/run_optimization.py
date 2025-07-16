@@ -49,20 +49,21 @@ def main():
     if not project_config:
         return
 
-    settings = project_config['project_settings']
+    project_settings = project_config['project_settings']
 
     # --- Setup ---
     timestamp = time.strftime("%Y%m%d-%H%M%S")
-    log_level = get_logging_level(settings.get("logging_level", "INFO"))
+    log_level = get_logging_level(project_settings.get("logging_level", "INFO"))
     setup_logging(log_level=log_level, log_file=f"optimization_{timestamp}.log")
 
 
-    # Extract settings from the config
-    settings = project_config["project_settings"]
-    study_name = settings["study_name"]
-    device = get_device(settings.get("device"))
-    n_trials = settings["n_trials"]
-    limit_per_source = settings.get("limit_images_per_source")
+    # Extract project_settings from the config
+    project_settings = project_config["project_settings"]
+    study_name = project_settings["study_name"]
+    device = get_device(project_settings.get("device"))
+    n_trials = project_settings["n_trials"]
+    limit_per_source = project_settings.get("limit_images_per_source")
+    cache_dir = project_settings.get("cache_dir", ".cache")
 
     data_sources = project_config["data_sources"]
     gt_mapping = project_config["gt_mapping"]
@@ -91,7 +92,7 @@ def main():
         return
 
     # --- Initialize and Run Optimizer ---
-    optimizer = OptunaOptimizer(data_pairs, search_space_config, device=device)
+    optimizer = OptunaOptimizer(data_pairs, search_space_config, device=device, cache_dir=cache_dir)
 
     storage_url = f"sqlite:///studies/{study_name}.db"
     study = optuna.create_study(
