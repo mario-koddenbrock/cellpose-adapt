@@ -54,15 +54,13 @@ def main():
     cfg = ModelConfig.from_json(args.config_path)
     # print(f"Loaded configuration from {args.config_path}:\n{cfg}")
 
-    try:
-        with open(args.project_config, 'r') as f:
-            project_cfg = json.load(f)
-        gt_mapping = project_cfg.get('gt_mapping')
-        config_device = project_cfg.get('project_settings', {}).get('device')
-    except (FileNotFoundError, json.JSONDecodeError) as e:
-        logging.warning(f"Could not load project config: {e}. GT/Device settings may be unavailable.")
-        gt_mapping = None
-        config_device = None
+    with open(args.project_config, 'r') as f:
+        project_cfg = json.load(f)
+
+    gt_mapping = project_cfg.get('gt_mapping')
+    project_settings = project_cfg.get('project_settings', {})
+    config_device = project_settings.get('device')
+    cache_dir = project_settings.get('cache_dir')
 
     # --- Determine Device ---
     device = get_device(cli_device=args.device, config_device=config_device)
@@ -80,7 +78,7 @@ def main():
     logging.info(f"Initializing model '{cfg.model_name}' on device '{device}'...")
     model = core.initialize_model(cfg.model_name, device=device)
 
-    runner = core.CellposeRunner(model, cfg, device=device)
+    runner = core.CellposeRunner(model, cfg, device=device, cache_dir=cache_dir)
 
     logging.info("Running segmentation on the image...")
     masks, duration = runner.run(image_segment)

@@ -15,10 +15,12 @@ logger.debug("Optuna optimizer module loaded. Version: %s", optuna.__version__)
 class OptunaOptimizer:
     """Manages the Optuna hyperparameter optimization process."""
 
-    def __init__(self, data_pairs: list, search_space_config: dict, device: torch.device):
+    def __init__(self, data_pairs: list, search_space_config: dict, device: torch.device, cache_dir: str = ".cache"):
         self.data_pairs = data_pairs
         self.search_space_config = search_space_config
         self.device = device
+        self.cache_dir = cache_dir
+
         self.fixed_params = self.search_space_config.get("fixed_params", {})
         self.search_space = self.search_space_config.get("search_space", {})
         self.loaded_models = {}
@@ -67,17 +69,17 @@ class OptunaOptimizer:
         and returns the mean Jaccard score.
         """
         try:
-            trial_params = self.create_config_from_trial(trial)
+            trial_cfg = self.create_config_from_trial(trial)
         except Exception as e:
             logger.error("Error creating config from trial: %s", e)
             raise optuna.exceptions.TrialPruned(f"Config creation failed: {e}")
 
         # Get the appropriate model, loading it only if necessary
-        model = self._get_model(trial_params.model_name)
+        model = self._get_model(trial_cfg.model_name)
 
         # Create a lightweight runner with the preloaded model
-        runner = core.CellposeRunner(model, trial_params, device=self.device)
-        channel_to_segment = trial_params.channel_to_segment
+        runner = core.CellposeRunner(model, trial_cfg, device=self.device, cache_dir=self.cache_dir)
+        channel_to_segment = trial_cfg.channel_to_segment
         
         scores = []
         pbar = tqdm(self.data_pairs, desc=f"Trial {trial.number}", leave=False)

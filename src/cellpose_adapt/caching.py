@@ -8,11 +8,18 @@ import numpy as np
 from cellpose_adapt.config.model_config import ModelConfig
 
 logger = logging.getLogger(__name__)
-CACHE_DIR = ".cache"
-# Ensure the cache directory exists
-if not os.path.exists(CACHE_DIR):
-    os.makedirs(CACHE_DIR, exist_ok=True)
-logger.debug("Using cache directory: %s", CACHE_DIR)
+
+
+def get_cache_dir(cfg) -> str:
+
+    cache_dir = cfg.get("cache_dir", ".cache")
+
+    # Ensure the cache directory exists
+    if not os.path.exists(cache_dir):
+        os.makedirs(cache_dir, exist_ok=True)
+    logger.debug("Using cache directory: %s", cache_dir)
+    return cache_dir
+
 
 
 def get_model_eval_params(config: ModelConfig) -> dict:
@@ -47,9 +54,9 @@ def compute_hash(image: np.ndarray, params: dict) -> str:
     return f"{image_hash}_{param_hash}"
 
 
-def save_to_cache(cache_key: str, flows: list, styles: np.ndarray):
+def save_to_cache(cache_key: str, flows: list, styles: np.ndarray, cache_dir: str = ".cache"):
     """Saves the raw output of model.eval to the on-disk cache."""
-    cache_key_dir = os.path.join(CACHE_DIR, cache_key)
+    cache_key_dir = os.path.join(cache_dir, cache_key)
     os.makedirs(cache_key_dir, exist_ok=True)
 
     try:
@@ -72,9 +79,9 @@ def save_to_cache(cache_key: str, flows: list, styles: np.ndarray):
         logger.error("Failed to save to cache: %s", e)
 
 
-def load_from_cache(cache_key: str) -> (list, np.ndarray):
+def load_from_cache(cache_key: str, cache_dir: str = ".cache") -> (list, np.ndarray):
     """Loads raw model output from the on-disk cache if it exists."""
-    cache_key_dir = os.path.join(CACHE_DIR, cache_key)
+    cache_key_dir = os.path.join(cache_dir, cache_key)
     if not os.path.exists(cache_key_dir):
         return None, None
 
