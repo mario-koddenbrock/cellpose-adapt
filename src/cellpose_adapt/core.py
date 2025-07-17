@@ -106,7 +106,7 @@ class CellposeRunner:
         )
 
         # Save the new result to the cache
-        caching.save_to_cache(cache_key, flows, styles)
+        caching.save_to_cache(cache_key, flows, styles, self.cache_dir)
 
         return flows, styles
 
