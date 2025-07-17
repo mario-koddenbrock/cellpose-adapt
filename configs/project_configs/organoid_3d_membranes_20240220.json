@@ -5,7 +5,8 @@
     "limit_images_per_source": null,
     "logging_level": "INFO",
     "n_trials": 1000,
-    "study_name": "organoid_3d_membranes_20240220"
+    "study_name": "organoid_3d_membranes_20240220",
+    "cache_dir": "/scratch/koddenbrock/cellpose-adapt/.cache"
   },
   "data_sources": [
     "/scratch/koddenbrock/Organoids/20240220_P013T_40xSil_Hoechst_SiRActin/images_cropped_isotropic"
