@@ -2,7 +2,7 @@
   "description": "An experiment to optimize 3D segmentation of organoid membranes.",
   "project_settings": {
     "device": null,
-    "limit_images_per_source": null,
+    "limit_images_per_source": 2,
     "logging_level": "INFO",
     "n_trials": 1000,
     "study_name": "organoid_3d_membranes_20231108",
