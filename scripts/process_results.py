@@ -7,6 +7,7 @@ import time
 import optuna
 from optuna.visualization import plot_optimization_history, plot_param_importances, plot_slice
 
+from cellpose_adapt import caching
 from cellpose_adapt.config.model_config import ModelConfig
 from cellpose_adapt.config.plotting_config import PlottingConfig
 from cellpose_adapt.logging_config import setup_logging
@@ -61,8 +62,9 @@ def main():
 
     # --- 2. Create and Save Best Config ---
     device = get_device(cli_device=args.device, config_device=project_settings.get("device"))
-    cache_dir = project_settings.get("cache_dir", ".cache")
-    optimizer = OptunaOptimizer(None, search_space_config, device=device, cache_dir =cache_dir)
+    cache_dir = caching.get_cache_dir(project_settings)
+
+    optimizer = OptunaOptimizer(None, search_space_config, device=device, cache_dir=cache_dir)
     best_cfg:ModelConfig = optimizer.create_config_from_trial(best_trial)
     # best_cfg = ModelConfig.from_json("configs/manual_organoid_3d_nuclei_study_config.json")
 

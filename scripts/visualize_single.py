@@ -6,7 +6,7 @@ import time
 
 import napari
 
-from cellpose_adapt import core
+from cellpose_adapt import core, caching
 from cellpose_adapt import io
 from cellpose_adapt.config.model_config import ModelConfig
 from cellpose_adapt.logging_config import setup_logging
@@ -60,7 +60,7 @@ def main():
     gt_mapping = project_cfg.get('gt_mapping')
     project_settings = project_cfg.get('project_settings', {})
     config_device = project_settings.get('device')
-    cache_dir = project_settings.get('cache_dir')
+    cache_dir = caching.get_cache_dir(project_settings)
 
     # --- Determine Device ---
     device = get_device(cli_device=args.device, config_device=config_device)

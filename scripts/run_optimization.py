@@ -6,7 +6,7 @@ import time
 
 import optuna
 
-from cellpose_adapt import io
+from cellpose_adapt import io, caching
 from cellpose_adapt.logging_config import get_logging_level, setup_logging
 from cellpose_adapt.optimization import OptunaOptimizer
 from cellpose_adapt.utils import get_device
@@ -63,7 +63,7 @@ def main():
     device = get_device(project_settings.get("device"))
     n_trials = project_settings["n_trials"]
     limit_per_source = project_settings.get("limit_images_per_source")
-    cache_dir = project_settings.get("cache_dir", ".cache")
+    cache_dir = caching.get_cache_dir(project_settings)
 
     data_sources = project_config["data_sources"]
     gt_mapping = project_config["gt_mapping"]
