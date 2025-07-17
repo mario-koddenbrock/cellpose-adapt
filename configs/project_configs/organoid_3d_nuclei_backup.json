@@ -5,7 +5,8 @@
     "limit_images_per_source": null,
     "logging_level": "DEBUG",
     "n_trials": 2,
-    "study_name": "organoid_3d_nuclei_study"
+    "study_name": "organoid_3d_nuclei_study",
+    "cache_dir": ".cache"
   },
   "data_sources": [
     "data/Organoids/20231108_P021N_40xSil_Hoechst_SiRActin/images_cropped_isotropic",
