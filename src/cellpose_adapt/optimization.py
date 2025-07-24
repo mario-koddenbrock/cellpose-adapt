@@ -93,7 +93,7 @@ class OptunaOptimizer:
                 scores.append(0.0)  # Penalize failures
                 continue
 
-            metrics = calculate_segmentation_stats(ground_truth, masks)
+            metrics = calculate_segmentation_stats(ground_truth, masks, iou_threshold=0.75)
             score = metrics["f1_score"]
             scores.append(score)
             pbar.set_postfix({"last_score": f"{score:.3f}"})
