@@ -49,7 +49,7 @@ def load_image_with_gt(
             channel_axis = 0
 
         if channel_axis != -1 and original_image.shape[channel_axis] > channel_to_segment:
-            logger.info(f"Selecting channel {channel_to_segment} from image with shape {original_image.shape}.")
+            logger.debug(f"Selecting channel {channel_to_segment} from image with shape {original_image.shape}.")
             # Use np.take to select the slice along the correct axis
             image_for_segmentation = np.take(original_image, indices=channel_to_segment, axis=channel_axis)
         elif original_image.ndim > 2:
