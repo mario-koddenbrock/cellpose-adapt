@@ -1,10 +1,10 @@
 #!/bin/bash
 
 CONFIGS=(
-  "configs/project_configs/organoid_3d_nuclei_20231108.json"
-  "configs/project_configs/organoid_3d_nuclei_20240220.json"
-  "configs/project_configs/organoid_3d_nuclei_20240305.json"
-  "configs/project_configs/organoid_3d_nuclei_20240701.json"
+  "configs/project_configs/organoid_3d_membranes_20231108.json"
+  "configs/project_configs/organoid_3d_membranes_20240220.json"
+  "configs/project_configs/organoid_3d_membranes_20240305.json"
+  "configs/project_configs/organoid_3d_membranes_20240701.json"
 )
 
 for config in "${CONFIGS[@]}"; do
@@ -15,7 +15,7 @@ for config in "${CONFIGS[@]}"; do
     --job-name="opt_${shortname}" \
     --output="logs/${shortname}_%j.out" \
     --error="logs/${shortname}_%j.err" \
-    sbatch/optimization.sbatch "$config"
+    cluster/optimization.sbatch "$config"
 done
 
-echo "All nuclei optimization jobs submitted."
+echo "All membrane optimization jobs submitted."
