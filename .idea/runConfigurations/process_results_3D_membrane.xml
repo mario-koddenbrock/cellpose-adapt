@@ -25,7 +25,7 @@
       </ENTRIES>
     </EXTENSION>
     <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scripts/process_results.py" />
-    <option name="PARAMETERS" value="--study_db &quot;studies/organoid_3d_membrane_study.db&quot; --project_config &quot;configs/project_configs/organoid_3d_membrane.json&quot;" />
+    <option name="PARAMETERS" value="--project_config &quot;configs/project_configs/organoid_3d_membranes_20231108.json&quot;" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />
     <option name="MODULE_MODE" value="false" />
