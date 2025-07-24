@@ -4,6 +4,8 @@ import logging
 import os
 import time
 
+os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1'
+
 import optuna
 from optuna.visualization import plot_optimization_history, plot_param_importances, plot_slice
 
@@ -15,8 +17,8 @@ from cellpose_adapt.optimization import OptunaOptimizer
 from cellpose_adapt.utils import get_device
 from reporting_utils import generate_visual_and_quantitative_report
 
-logger = logging.getLogger(__name__)
-logger.debug("Starting script to process results from an Optuna study and generate reports.")
+
+
 
 
 def main():
@@ -30,9 +32,10 @@ def main():
 
     timestamp = time.strftime("%Y%m%d-%H%M%S")
     setup_logging(log_level=logging.INFO, log_file=f"processing_{timestamp}.log")
+    logger = logging.getLogger(__name__)
+    logger.debug("Starting script to process results from an Optuna study and generate reports.")
 
     plotting_config = PlottingConfig()
-
 
 
     if not os.path.exists(args.project_config):
