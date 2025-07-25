@@ -4,6 +4,9 @@ import logging
 import os
 import time
 
+from cellpose_adapt.logger import setup_logging
+from scripts.utils.report import generate_visual_and_quantitative_report
+
 os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1'
 
 import optuna
@@ -12,10 +15,8 @@ from optuna.visualization import plot_optimization_history, plot_param_importanc
 from cellpose_adapt import caching
 from cellpose_adapt.config.model_config import ModelConfig
 from cellpose_adapt.config.plotting_config import PlottingConfig
-from cellpose_adapt.logging_config import setup_logging
 from cellpose_adapt.optimization import OptunaOptimizer
 from cellpose_adapt.utils import get_device
-from reporting_utils import generate_visual_and_quantitative_report
 
 
 

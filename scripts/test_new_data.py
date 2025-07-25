@@ -6,9 +6,9 @@ import time
 
 from cellpose_adapt.config.model_config import ModelConfig
 from cellpose_adapt.config.plotting_config import PlottingConfig
-from cellpose_adapt.logging_config import setup_logging
+from cellpose_adapt.logger import setup_logging
 from cellpose_adapt.utils import get_device
-from reporting_utils import generate_visual_and_quantitative_report
+from scripts.utils.report import generate_visual_and_quantitative_report
 
 logger = logging.getLogger(__name__)
 logger.debug("Starting script to test given config on new data.")
