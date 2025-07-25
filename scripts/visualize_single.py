@@ -9,10 +9,11 @@ from cellpose_adapt.logger import setup_logging
 from cellpose_adapt.metrics import calculate_segmentation_stats
 from cellpose_adapt.plotting.napari_utils import show_napari
 from cellpose_adapt.utils import get_device
+from scripts.utils.cli import arg_parse
 
 
 def main():
-    args = arg_parse()
+    args = arg_parse("Run and visualize Cellpose results for a single image.")
 
     # --- 1. Setup ---
     timestamp = time.strftime("%Y%m%d-%H%M%S")
@@ -20,7 +21,7 @@ def main():
 
 
     # --- 2. Load Configurations ---
-    cfg = ModelConfig.from_json(args.config_path)
+    cfg = ModelConfig.from_json(args.config)
 
     with open(args.project_config, 'r') as f:
         project_cfg = json.load(f)

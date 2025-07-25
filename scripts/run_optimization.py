@@ -1,4 +1,3 @@
-import argparse
 import json
 import logging
 import os
@@ -10,64 +9,37 @@ from cellpose_adapt import io, caching
 from cellpose_adapt.logger import get_logging_level, setup_logging
 from cellpose_adapt.optimization import OptunaOptimizer
 from cellpose_adapt.utils import get_device
+from scripts.utils.cli import load_project_config, arg_parse
 
 logger = logging.getLogger(__name__)
 logger.debug("Starting script to run Cellpose hyperparameter optimization.")
 
-def load_project_config(config_path: str) -> dict:
-    """Loads and validates the main project configuration file."""
-    try:
-        with open(config_path, "r") as f:
-            config = json.load(f)
-        logging.info("Loaded project configuration from %s", config_path)
-
-        # Basic validation
-        if (
-            "project_settings" not in config
-            or "search_space_config_path" not in config
-            or "data_sources" not in config
-            or "gt_mapping" not in config
-        ):
-            raise KeyError(
-                "Config must contain 'project_settings', 'search_space_config_path', 'data_sources' and 'gt_mapping' keys."
-            )
-
-        return config
-    except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
-        logging.error(
-            "Failed to load or validate project config file %s: %s", config_path, e
-        )
-        return None
-
 
 def main():
-    parser = argparse.ArgumentParser(description="Run Cellpose Hyperparameter Optimization.")
-    parser.add_argument("project_config_path", type=str, help="Path to the JSON project config.")
-    args = parser.parse_args()
+    args = arg_parse("Run Cellpose Hyperparameter Optimization.")
 
-    project_config = load_project_config(args.project_config_path)
-    if not project_config:
+    project_cfg = load_project_config(args.project_config)
+    if not project_cfg:
         return
 
-    project_settings = project_config['project_settings']
+    project_settings = project_cfg['project_settings']
 
     # --- Setup ---
     timestamp = time.strftime("%Y%m%d-%H%M%S")
-    log_level = get_logging_level(project_settings.get("logging_level", "INFO"))
+    log_level = get_logging_level(project_settings.get("logging_level", logging.INFO))
     setup_logging(log_level=log_level, log_file=f"optimization_{timestamp}.log")
 
-
     # Extract project_settings from the config
-    project_settings = project_config["project_settings"]
+    project_settings = project_cfg["project_settings"]
     study_name = project_settings["study_name"]
     device = get_device(project_settings.get("device"))
     n_trials = project_settings["n_trials"]
     limit_per_source = project_settings.get("limit_images_per_source")
     cache_dir = caching.get_cache_dir(project_settings)
 
-    data_sources = project_config["data_sources"]
-    gt_mapping = project_config["gt_mapping"]
-    search_config_path = project_config["search_space_config_path"]
+    data_sources = project_cfg["data_sources"]
+    gt_mapping = project_cfg["gt_mapping"]
+    search_config_path = project_cfg["search_space_config_path"]
 
     os.makedirs("studies", exist_ok=True)
     os.makedirs("configs", exist_ok=True)
@@ -76,9 +48,7 @@ def main():
     # Pass the limit to the find_image_gt_pairs function
     data_pairs = io.find_image_gt_pairs(data_sources, gt_mapping, limit_per_source)
     if not data_pairs:
-        logging.error(
-            "No data pairs found based on the provided configuration. Exiting."
-        )
+        logging.error("No data pairs found based on the provided configuration. Exiting.")
         return
 
     try:
@@ -86,9 +56,7 @@ def main():
             search_space_config = json.load(f)
         logging.info("Loaded search space from %s", search_config_path)
     except (FileNotFoundError, json.JSONDecodeError) as e:
-        logging.error(
-            "Failed to load or parse search config file %s: %s", search_config_path, e
-        )
+        logging.error("Failed to load or parse search config file %s: %s", search_config_path, e)
         return
 
     # --- Initialize and Run Optimizer ---
