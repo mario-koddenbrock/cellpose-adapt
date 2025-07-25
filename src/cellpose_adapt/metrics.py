@@ -5,9 +5,9 @@ from cellpose.metrics import average_precision
 from scipy.optimize import linear_sum_assignment
 
 logger = logging.getLogger(__name__)
-logger.debug("Metrics module loaded. Using cellpose's average_precision for segmentation metrics.")
 
-# Jaccard index (IoU) calculation - unchanged
+
+# Jaccard index (IoU) calculation
 def jaccard_index_3d(gt_mask, pred_mask):
     """Computes Jaccard index (IoU) for two 3D binary masks."""
     intersection = np.logical_and(gt_mask, pred_mask).sum()

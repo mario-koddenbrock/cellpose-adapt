@@ -15,14 +15,11 @@ from scripts.utils.cli import arg_parse
 def main():
     args = arg_parse("Run and visualize Cellpose results for a single image.")
 
-    # --- 1. Setup ---
     timestamp = time.strftime("%Y%m%d-%H%M%S")
     setup_logging(log_level=logging.INFO, log_file=f"visualization_{timestamp}.log")
 
-
-    # --- 2. Load Configurations ---
+    # --- Load Configurations ---
     cfg = ModelConfig.from_json(args.config)
-
     with open(args.project_config, 'r') as f:
         project_cfg = json.load(f)
 
@@ -34,23 +31,21 @@ def main():
 
     # --- Load Data ---
     gt_path = io.find_gt_path(args.image_path, gt_mapping) if gt_mapping else None
-    image_segment, ground_truth, image = io.load_image_with_gt(args.image_path, gt_path, channel_to_segment=cfg.channel_to_segment)
+    image_segment, gt_nuclei, image = io.load_image_with_gt(args.image_path, gt_path, channel_to_segment=cfg.channel_to_segment)
 
-    # --- 3. Initialize Model and Run Pipeline ---
+    # --- Initialize Model and Run Pipeline ---
     logging.info(f"Initializing model '{cfg.model_name}' on device '{device}'...")
     model = core.initialize_model(cfg.model_name, device=device)
-
     runner = core.CellposeRunner(model, cfg, device=device, cache_dir=cache_dir)
-    masks, duration = runner.run(image_segment)
+    mask_nuclei, duration = runner.run(image_segment)
 
-    # --- 4. Evaluate and Launch Napari Viewer ---
-    metrics = {}
-    if ground_truth is not None and masks is not None:
-        metrics = calculate_segmentation_stats(ground_truth, masks)
-        logging.info(f"Performance (full data): F1={metrics.get('f1_score', 0):.3f}, Jaccard={metrics.get('jaccard', 0):.3f}, ")
+    # --- Evaluate and Launch Napari Viewer ---
+    metrics_nuclei = {}
+    if gt_nuclei is not None and mask_nuclei is not None:
+        metrics_nuclei = calculate_segmentation_stats(gt_nuclei, mask_nuclei)
+        logging.info(f"Performance (full data): F1={metrics_nuclei.get('f1_score', 0):.3f}, Jaccard={metrics_nuclei.get('jaccard', 0):.3f}, ")
 
-    show_napari(image, ground_truth, masks, metrics)
-
+    show_napari(image, mask_nuclei, None, gt_nuclei, None, metrics_nuclei, None)
 
 
 
