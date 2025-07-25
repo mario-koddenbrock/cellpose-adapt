@@ -88,7 +88,7 @@ def main():
     metrics = {}
     if ground_truth is not None and masks is not None:
         metrics = calculate_segmentation_stats(ground_truth, masks)
-        logging.info(f"Performance (full data): F1={metrics.get('f1_score', 0):.3f}, P={metrics.get('precision', 0):.3f}, R={metrics.get('recall', 0):.3f}")
+        logging.info(f"Performance (full data): F1={metrics.get('f1_score', 0):.3f}, Jaccard={metrics.get('jaccard', 0):.3f}, ")
     viewer = napari.Viewer(title="Cellpose Single Image Visualization")
     is_3d = image.ndim == 4
     if is_3d:

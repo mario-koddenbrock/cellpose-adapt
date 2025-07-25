@@ -47,6 +47,7 @@ def calculate_segmentation_stats(true_masks, pred_masks, iou_threshold=0.5):
     # The first return value (ap) is not what we need, but tp, fp, fn are.
     # It returns these values for a range of IoU thresholds. We'll use the one for our desired threshold.
     ap, tp, fp, fn = average_precision(true_masks, pred_masks, threshold=[iou_threshold])
+    jaccard_val = jaccard(true_masks, pred_masks)
 
     # The results are arrays, but since we use a single threshold, we take the first element.
     true_positives = tp[0]
@@ -81,4 +82,5 @@ def calculate_segmentation_stats(true_masks, pred_masks, iou_threshold=0.5):
         'fn': false_negatives,
         'n_instances_true': n_instances_true,
         'n_instances_pred': n_instances_pred,
+        'jaccard': jaccard_val,
     }
