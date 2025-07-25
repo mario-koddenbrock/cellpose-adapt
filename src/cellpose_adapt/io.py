@@ -33,7 +33,11 @@ def load_image_with_gt(
     original_image = _read_image_from_disk(image_path)
     ground_truth = _read_image_from_disk(ground_truth_path) if ground_truth_path else None
 
+    if ground_truth_path and ground_truth is None:
+        logging.error(f"Ground truth was not found at the inferred path: {ground_truth_path}")
+
     if original_image is None:
+        logging.error(f"Failed to load image from {image_path}")
         return None, ground_truth, None
 
     # --- Fast Processing: Channel Selection ---

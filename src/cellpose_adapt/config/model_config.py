@@ -1,4 +1,6 @@
 import json
+import logging
+import os
 from dataclasses import dataclass, asdict
 from typing import Optional
 
@@ -48,6 +50,11 @@ class ModelConfig:
     @classmethod
     def from_json(cls, file_path: str):
         """Loads a configuration from a JSON file."""
+
+        if not os.path.exists(file_path):
+            logging.error(f"Model config file not found at {file_path}")
+            return cls()  # Return default config if file not found
+
         with open(file_path, "r") as f:
             data = json.load(f)
         return cls(**data)
