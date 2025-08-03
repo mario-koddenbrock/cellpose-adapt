@@ -4,12 +4,15 @@
     "device": null,
     "limit_images_per_source": null,
     "logging_level": "INFO",
-    "n_trials": 1000,
+    "n_trials": 2,
     "study_name": "organoid_3d_nuclei_20240701",
-    "cache_dir": "/scratch/koddenbrock/cellpose-adapt/.cache"
+    "cache_dir": ".cache"
   },
   "data_sources": [
-    "/scratch/koddenbrock/Organoids/20240701_P013T_60xOil_Hoechst_SiRActin/images_cropped_isotropic"
+    "data/Organoids/20231108_P021N_40xSil_Hoechst_SiRActin/images_cropped_isotropic",
+    "data/Organoids/20240220_P013T_40xSil_Hoechst_SiRActin/images_cropped_isotropic",
+    "data/Organoids/20240305_P013T_40xSil_Hoechst_SiRActin/images_cropped_isotropic",
+    "data/Organoids/20240701_P013T_60xOil_Hoechst_SiRActin/images_cropped_isotropic"
   ],
   "gt_mapping": {
     "replace": [

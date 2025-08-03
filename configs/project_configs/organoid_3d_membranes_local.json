@@ -1,11 +1,11 @@
 {
-  "description": "An experiment to optimize 3D segmentation of organoid nuclei.",
+  "description": "An experiment to optimize 3D segmentation of organoid membranes.",
   "project_settings": {
     "device": null,
     "limit_images_per_source": null,
-    "logging_level": "DEBUG",
-    "n_trials": 2,
-    "study_name": "organoid_3d_nuclei_study",
+    "logging_level": "INFO",
+    "n_trials": 200,
+    "study_name": "organoid_3d_membranes_study",
     "cache_dir": ".cache"
   },
   "data_sources": [
@@ -18,11 +18,11 @@
     "replace": [
       [
         "images_cropped_isotropic",
-        "labelmaps/Nuclei"
+        "labelmaps/Membranes"
       ]
     ],
-    "suffix": "_nuclei-labels.tif",
+    "suffix": "_membranes-labels.tif",
     "img_suffix": ".tif"
   },
-  "search_space_config_path": "configs/search_spaces/organoid_3d_nuclei_search.json"
+  "search_space_config_path": "configs/search_spaces/organoid_3d_membranes_search.json"
 }
