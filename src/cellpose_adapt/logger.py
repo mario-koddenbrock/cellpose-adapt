@@ -1,7 +1,6 @@
 import logging
 import os
 import sys
-from logging.handlers import TimedRotatingFileHandler
 
 LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 LOG_DIR = "logs"
@@ -9,7 +8,7 @@ LOG_DIR = "logs"
 
 def setup_logging(log_level=logging.INFO, log_file="app.log"):
     """
-    Configures logging to both console and a rotating file.
+    Configures logging to both console and a single file.
     """
     if not os.path.exists(LOG_DIR):
         os.makedirs(LOG_DIR)
@@ -29,8 +28,8 @@ def setup_logging(log_level=logging.INFO, log_file="app.log"):
     stdout_handler.setFormatter(logging.Formatter(LOG_FORMAT))
     logger.addHandler(stdout_handler)
 
-    # File Handler (rotates daily)
-    file_handler = TimedRotatingFileHandler(log_path, when="midnight", backupCount=5)
+    # File Handler
+    file_handler = logging.FileHandler(log_path)
     file_handler.setLevel(log_level)
     file_handler.setFormatter(logging.Formatter(LOG_FORMAT))
     logger.addHandler(file_handler)
