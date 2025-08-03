@@ -8,6 +8,7 @@
 #SBATCH --time=05-16:00:00
 #SBATCH --qos=normal
 #SBATCH --mail-type=ALL
+#SBATCH --mail-user=koddenb@htw-berlin.de
 
 # Log SLURM environment variables
 echo "SLURM Job ID: $SLURM_JOB_ID"
