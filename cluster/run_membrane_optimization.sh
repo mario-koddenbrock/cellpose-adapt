@@ -1,10 +1,10 @@
 #!/bin/bash
 
 CONFIGS=(
-  "configs/project_configs/organoid_3d_membranes_20231108.json"
-  "configs/project_configs/organoid_3d_membranes_20240220.json"
-  "configs/project_configs/organoid_3d_membranes_20240305.json"
-  "configs/project_configs/organoid_3d_membranes_20240701.json"
+  "configs/project_configs/organoid_3d_nuclei_20231108_cluster.json"
+  "configs/project_configs/organoid_3d_nuclei_20240220_cluster.json"
+  "configs/project_configs/organoid_3d_nuclei_20240305_cluster.json"
+  "configs/project_configs/organoid_3d_nuclei_20240701_cluster.json"
 )
 
 for config in "${CONFIGS[@]}"; do
