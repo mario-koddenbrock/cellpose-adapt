@@ -93,7 +93,7 @@ class OptunaOptimizer:
                 scores.append(0.0)  # Penalize failures
                 continue
 
-            metrics = calculate_segmentation_stats(ground_truth, masks, iou_threshold=0.75)
+            metrics = calculate_segmentation_stats(ground_truth, masks, iou_threshold=0.5)
             score = metrics["f1_score"]
             scores.append(score)
             pbar.set_postfix({"last_score": f"{score:.3f}"})
@@ -104,8 +104,6 @@ class OptunaOptimizer:
 
         mean_score = float(np.mean(scores))
         trial.set_user_attr("mean_score", mean_score)
-        logger.info(
-            "Trial %d finished. Mean F1 Score: %.4f", trial.number, mean_score
-        )
-
+        logger.info("Trial %d finished. Score: %.4f", trial.number, mean_score)
+        logger.info(f"Best score so far: {trial.study.best_value:.4f} (Trial {trial.study.best_trial.number})")
         return mean_score
