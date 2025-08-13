@@ -1,0 +1,87 @@
+{
+  "description": "A coarse-grained hyperparameter search for 2D bacterial images. This search explores a wide range of parameters to find a good starting point for segmentation.",
+  "fixed_params": {
+    "do_3D": false,
+    "norm3D": false,
+    "model_name": "cpsam",
+    "stitch_threshold": 0.0,
+    "channel_axis": 2,
+    "tile_norm_smooth3D": 0,
+    "tile_norm_blocksize": 0,
+    "tile_overlap": 0.1,
+    "z_axis": null,
+    "channel_to_segment": null
+  },
+  "search_space": {
+    "diameter": [
+      "suggest_float",
+      1.0,
+      40.0
+    ],
+    "flow_threshold": [
+      "suggest_float",
+      0.01,
+      0.8
+    ],
+    "cellprob_threshold": [
+      "suggest_float",
+      -4.0,
+      4.0
+    ],
+    "min_size": [
+      "suggest_int",
+      1,
+      30
+    ],
+    "niter": [
+      "suggest_int",
+      100,
+      200
+    ],
+    "normalize": [
+      "suggest_categorical",
+      [
+        true
+      ]
+    ],
+    "tile": [
+      "suggest_categorical",
+      [
+        true,
+        false
+      ]
+    ],
+    "invert": [
+      "suggest_categorical",
+      [
+        true,
+        false
+      ]
+    ],
+    "percentile_min": [
+      "suggest_float",
+      0.01,
+      10.0
+    ],
+    "percentile_max": [
+      "suggest_float",
+      75.0,
+      99.9
+    ],
+    "sharpen_radius": [
+      "suggest_float",
+      0.0,
+      2.0
+    ],
+    "smooth_radius": [
+      "suggest_float",
+      0.0,
+      2.0
+    ],
+    "max_size_fraction": [
+      "suggest_float",
+      1.0,
+      3.0
+    ]
+  }
+}
