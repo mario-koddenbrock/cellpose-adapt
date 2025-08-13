@@ -105,5 +105,8 @@ class OptunaOptimizer:
         mean_score = float(np.mean(scores))
         trial.set_user_attr("mean_score", mean_score)
         logger.info("Trial %d finished. Score: %.4f", trial.number, mean_score)
-        logger.info(f"Best score so far: {trial.study.best_value:.4f} (Trial {trial.study.best_trial.number})")
+        try:
+            logger.info(f"Best score so far: {trial.study.best_value:.4f} (Trial {trial.study.best_trial.number})")
+        except ValueError:
+            logger.info("No best trial found yet.")
         return mean_score
