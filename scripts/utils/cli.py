@@ -8,12 +8,12 @@ def arg_parse(description):
         description=description
     )
     parser.add_argument(
-        "--image_path", type=str, required=True, help="Path to the input image."
+        "--image_path", type=str, required=False, help="Path to the input image."
     )
     parser.add_argument(
         "--config",
         type=str,
-        required=True,
+        required=False,
         help="Path to the final pipeline configuration JSON file (e.g., best_cfg.json)."
     )
     parser.add_argument(
