@@ -2,7 +2,7 @@
   "description": "Main configuration for the 2D bacteria segmentation experiment.",
   "project_settings": {
     "device": "mps",
-    "limit_images_per_source": 3,
+    "limit_images_per_source": 10,
     "logging_level": "INFO",
     "n_trials": 200,
     "study_name": "mt_2d_study"
