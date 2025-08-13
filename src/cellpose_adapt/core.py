@@ -14,7 +14,7 @@ logger.debug("Cellpose core module loaded.")
 
 def initialize_model(model_name: str, device: torch.device) -> CellposeModel:
     """Initializes and returns a CellposeModel instance on a specific device."""
-    logger.info("Initializing Cellpose model '%s' on device '%s'", model_name, device)
+    logger.debug("Initializing Cellpose model '%s' on device '%s'", model_name, device)
     try:
         model = CellposeModel(
             gpu=device.type != 'cpu',
@@ -53,11 +53,11 @@ class CellposeRunner:
         # Try to load from cache first
         cached_flows, cached_styles = caching.load_from_cache(cache_key, self.cache_dir)
         if cached_flows is not None:
-            logger.info("CACHE HIT for model prediction.")
+            logger.debug("CACHE HIT for model prediction.")
             return cached_flows, cached_styles
 
         # If not in cache, run the model
-        logger.info("CACHE MISS. Running model.eval() to get raw flows.")
+        logger.debug("CACHE MISS. Running model.eval() to get raw flows.")
 
         # Build the full normalization dictionary
         normalization_params = {
@@ -83,26 +83,26 @@ class CellposeRunner:
         diameter = self.config.diameter if (self.config.diameter and (self.config.diameter > 0)) else None
         masks, flows, styles = self.model.eval(
             x=image,
-            diameter=diameter,
-            do_3D=self.config.do_3D,
-            normalize=normalization_params,
-            compute_masks=False,
-            tile_overlap=self.config.tile_overlap,
-            stitch_threshold=self.config.stitch_threshold,
-            z_axis=z_axis,
-            resample=True,
-            channel_axis=None,  # self.config.channel_axis,
-            invert=self.config.invert,
-            rescale=None,
-            flow_threshold=self.config.flow_threshold,
-            cellprob_threshold=self.config.cellprob_threshold,
             anisotropy=None,
-            flow3D_smooth=0,
-            min_size=self.config.min_size,
-            max_size_fraction=self.config.max_size_fraction,
-            niter=self.config.niter,
             augment=False,
             bsize=256,
+            cellprob_threshold=self.config.cellprob_threshold,
+            channel_axis=None,  # self.config.channel_axis,
+            compute_masks=False,
+            diameter=diameter,
+            do_3D=self.config.do_3D,
+            flow3D_smooth=0,
+            flow_threshold=self.config.flow_threshold,
+            invert=self.config.invert,
+            max_size_fraction=self.config.max_size_fraction,
+            min_size=self.config.min_size,
+            niter=self.config.niter,
+            normalize=normalization_params,
+            resample=True,
+            rescale=None,
+            stitch_threshold=self.config.stitch_threshold,
+            tile_overlap=self.config.tile_overlap,
+            z_axis=z_axis,
         )
 
         # Save the new result to the cache
@@ -144,7 +144,7 @@ class CellposeRunner:
             )
 
             duration = time.time() - t0
-            logger.info(
+            logger.debug(
                 "Segmentation finished in %.2f seconds. Found %d masks.",
                 duration,
                 len(np.unique(masks)) - 1,
