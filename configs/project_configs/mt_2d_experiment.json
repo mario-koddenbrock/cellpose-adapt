@@ -4,7 +4,7 @@
     "device": "mps",
     "limit_images_per_source": 10,
     "logging_level": "INFO",
-    "n_trials": 200,
+    "n_trials": 1000,
     "study_name": "mt_2d_study"
   },
   "data_sources": [
