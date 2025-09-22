@@ -1,20 +1,20 @@
 {
-  "description": "Main configuration for the 2D bacteria segmentation experiment.",
+  "description": "SynMT 2D microtubule tracking experiment",
   "project_settings": {
     "device": "mps",
-    "limit_images_per_source": 10,
+    "limit_images_per_source": 100,
     "logging_level": "INFO",
     "n_trials": 1000,
-    "study_name": "mt_2d_study"
+    "study_name": "mt_2d_real_study"
   },
   "data_sources": [
-    "data/SynMT/synthetic/full/images"
+    "/Users/koddenbrock/Repository/microtubule_tracking/data/SynMT/real/small/single_frame"
   ],
   "gt_mapping": {
     "replace": [
       [
-        "images",
-        "image_masks"
+        "single_frame",
+        "single_frame_masks/mk"
       ]
     ],
     "suffix": ".png",
