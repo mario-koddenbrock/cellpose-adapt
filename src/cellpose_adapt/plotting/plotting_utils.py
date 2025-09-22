@@ -83,6 +83,7 @@ def generate_comparison_panel(
         p_config: PlottingConfig,
         num_instances_gt: int,
         num_instances_pred: int,
+        plot_original_image: bool = False
 ) -> np.ndarray:
     """Stitches the original image and the overlay side-by-side, resizing if needed."""
     image_display = normalize_to_uint8(display_image)
@@ -111,10 +112,17 @@ def generate_comparison_panel(
     cv2.putText(overlay, f'GT ({num_instances_gt})', (30, h - h_sep-30), p_config.font_face, font_scale, p_config.gt_contour_color, font_thickness)
 
     # Stack images
-    panel = np.hstack((image_display, overlay))
+    if plot_original_image:
+        panel = np.hstack((image_display, overlay))
+    else:
+        panel = overlay
 
     # Resize the final panel if a resolution is specified
     if p_config.resolution:
-        panel = resize_image(panel, p_config.resolution)
+        if plot_original_image:
+            panel = resize_image(panel, p_config.resolution)
+        else:
+            res = (p_config.resolution[0] // 2, p_config.resolution[1])
+            panel = resize_image(panel, res)
 
     return panel

@@ -36,7 +36,7 @@ def _process_single_image_and_get_masks(image_path, gt_path, runner, channel_to_
     return base_name, image, ground_truth, pred_mask
 
 
-def _generate_and_save_visual_panel(image, ground_truth, pred_mask, plotting_config, base_name, results_dir, show_panels):
+def _generate_and_save_visual_panel(image, ground_truth, pred_mask, plotting_config, base_name, results_dir, show_panels, plot_original_image=False):
     """Generates and saves the visual comparison panel for a single image."""
     num_instances_gt = np.unique(ground_truth).size - 1 if ground_truth is not None else 0
     num_instances_pred = np.unique(pred_mask).size - 1
@@ -48,7 +48,7 @@ def _generate_and_save_visual_panel(image, ground_truth, pred_mask, plotting_con
     display_pred = prepare_3d_slice_for_display(pred_mask, is_mask=True) if is_3d else pred_mask
 
     overlay = create_opencv_overlay(display_image, display_gt, display_pred, plotting_config)
-    panel = generate_comparison_panel(display_image, overlay, plotting_config, num_instances_gt, num_instances_pred)
+    panel = generate_comparison_panel(display_image, overlay, plotting_config, num_instances_gt, num_instances_pred, plot_original_image)
 
     cv2.imwrite(os.path.join(results_dir, f"{base_name}_report.png"), panel)
 
@@ -97,6 +97,7 @@ def generate_visual_and_quantitative_report(
         config_filename="config.json",
         show_panels=False,
         export_video=False,
+        plot_original_image=False
 ):
     """
     Generates visual and quantitative reports for a given configuration.
@@ -110,6 +111,7 @@ def generate_visual_and_quantitative_report(
         config_filename (str): The name for the config file saved in the results dir.
         show_panels (bool): If True, displays each generated panel in an OpenCV window.
         export_video (bool): If True, exports a 3D video for 3D images.
+        plot_original_image (bool): If True, plots the original image next to the overlay.
     """
     logging.info(f"Generating visual and quantitative reports in: {results_dir}")
     cfg.to_json(os.path.join(results_dir, config_filename))
@@ -140,7 +142,7 @@ def generate_visual_and_quantitative_report(
             report_data.append({'image_name': base_name, **stats})
 
         _generate_and_save_visual_panel(
-            image, ground_truth, pred_mask, plotting_config, base_name, results_dir, show_panels
+            image, ground_truth, pred_mask, plotting_config, base_name, results_dir, show_panels, plot_original_image
         )
 
         if export_video:
