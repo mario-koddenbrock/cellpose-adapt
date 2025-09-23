@@ -13,7 +13,7 @@ dependencies = [
     "torch~=2.7.1",
     "cellpose~=4.0.6",
     "optuna~=4.4.0",
-    "numpy~=2.2.6",
+    "numpy",
     "scipy~=1.15.3",
     "napari[pyqt5]~=0.6.1",
     "pandas~=2.2.3",
