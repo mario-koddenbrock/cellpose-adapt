@@ -8,13 +8,14 @@
     "study_name": "mt_2d_real_study"
   },
   "data_sources": [
-    "/Users/koddenbrock/Repository/microtubule_tracking/data/SynMT/real/small/single_frame"
+    //    "/Users/koddenbrock/Repository/microtubule_tracking/data/SynMT/real/small/single_frame"
+    "/scratch/koddenbrock/mt/SynMT/real/small/single_frame"
   ],
   "gt_mapping": {
     "replace": [
       [
         "single_frame",
-        "single_frame_masks/mk"
+        "single_frame_masks/agreed_instances"
       ]
     ],
     "suffix": ".png",
