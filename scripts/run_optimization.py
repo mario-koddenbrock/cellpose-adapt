@@ -9,7 +9,7 @@ from cellpose_adapt import io, caching
 from cellpose_adapt.logger import get_logging_level, setup_logging
 from cellpose_adapt.optimization import OptunaOptimizer
 from cellpose_adapt.utils import get_device
-from ..utils.cli import load_project_config, arg_parse
+from scripts.utils.cli import load_project_config, arg_parse
 
 logger = logging.getLogger(__name__)
 logger.debug("Starting script to run Cellpose hyperparameter optimization.")
