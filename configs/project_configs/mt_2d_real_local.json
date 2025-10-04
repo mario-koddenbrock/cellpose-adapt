@@ -1,14 +1,14 @@
 {
   "description": "SynMT 2D microtubule tracking experiment",
   "project_settings": {
-    "device": "cuda",
+    "device": "mps",
     "limit_images_per_source": 100,
     "logging_level": "INFO",
     "n_trials": 1000,
     "study_name": "mt_2d_real_study"
   },
   "data_sources": [
-    "/scratch/koddenbrock/mt/SynMT/real/small/single_frame"
+    "/Users/koddenbrock/Repository/microtubule_tracking/data/SynMT/real/small/single_frame"
   ],
   "gt_mapping": {
     "replace": [

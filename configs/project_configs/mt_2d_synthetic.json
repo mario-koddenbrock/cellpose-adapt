@@ -1,7 +1,7 @@
 {
   "description": "SynMT 2D microtubule tracking experiment",
   "project_settings": {
-    "device": "mps",
+    "device": "cuda",
     "limit_images_per_source": 10,
     "logging_level": "INFO",
     "n_trials": 5000,
