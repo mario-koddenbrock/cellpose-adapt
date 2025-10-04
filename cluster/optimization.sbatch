@@ -27,8 +27,8 @@ source ~/.bashrc
 conda activate cellpose-adapt
 
 # Run the python script with the provided config file
-#python scripts/run_optimization.py "$1"
-python -m scripts.run_optimization "$1"
+# python scripts/run_optimization.py "$1"
+python -m scripts.run_optimization --project_config "$1"
 
 # Log completion time
 echo "Job finished at $(date)"
