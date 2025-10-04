@@ -8,7 +8,6 @@
     "study_name": "mt_2d_synthetic_study"
   },
   "data_sources": [
-    //    "/Users/koddenbrock/Repository/microtubule_tracking/data/SynMT/synthetic/validation/images",
     "/scratch/koddenbrock/mt/SynMT/synthetic/validation/images"
   ],
   "gt_mapping": {
