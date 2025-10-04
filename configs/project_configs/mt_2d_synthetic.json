@@ -2,9 +2,9 @@
   "description": "SynMT 2D microtubule tracking experiment",
   "project_settings": {
     "device": "mps",
-    "limit_images_per_source": 100,
+    "limit_images_per_source": 10,
     "logging_level": "INFO",
-    "n_trials": 1000,
+    "n_trials": 5000,
     "study_name": "mt_2d_synthetic_study"
   },
   "data_sources": [
@@ -14,7 +14,7 @@
     "replace": [
       [
         "images",
-        "images_masks"
+        "image_masks"
       ]
     ],
     "suffix": ".png",
