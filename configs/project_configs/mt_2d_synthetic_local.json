@@ -1,6 +1,7 @@
 {
   "description": "SynMT 2D microtubule tracking experiment",
   "project_settings": {
+    "iou_threshold": 0.3,
     "device": "mps",
     "limit_images_per_source": 10,
     "logging_level": "INFO",

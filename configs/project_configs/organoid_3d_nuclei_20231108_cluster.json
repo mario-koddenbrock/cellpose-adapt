@@ -1,6 +1,7 @@
 {
   "description": "An experiment to optimize 3D segmentation of organoid nuclei.",
   "project_settings": {
+    "iou_threshold": 0.7,
     "device": null,
     "limit_images_per_source": null,
     "logging_level": "INFO",
