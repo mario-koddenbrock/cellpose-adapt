@@ -15,11 +15,18 @@ logger.debug("Optuna optimizer module loaded. Version: %s", optuna.__version__)
 class OptunaOptimizer:
     """Manages the Optuna hyperparameter optimization process."""
 
-    def __init__(self, data_pairs: list, search_space_config: dict, device: torch.device, cache_dir: str = ".cache"):
+    def __init__(self,
+                 data_pairs: list,
+                 search_space_config: dict,
+                 device: torch.device,
+                 iou_threshold:float = 0.5,
+                 cache_dir: str = ".cache",
+                 ):
         self.data_pairs = data_pairs
         self.search_space_config = search_space_config
         self.device = device
         self.cache_dir = cache_dir
+        self.iou_threshold = iou_threshold
 
         self.fixed_params = self.search_space_config.get("fixed_params", {})
         self.search_space = self.search_space_config.get("search_space", {})
@@ -93,7 +100,7 @@ class OptunaOptimizer:
                 scores.append(0.0)  # Penalize failures
                 continue
 
-            metrics = calculate_segmentation_stats(ground_truth, masks, iou_threshold=0.5)
+            metrics = calculate_segmentation_stats(ground_truth, masks, iou_threshold=self.iou_threshold)
             score = metrics["f1_score"]
             scores.append(score)
             pbar.set_postfix({"last_score": f"{score:.3f}"})

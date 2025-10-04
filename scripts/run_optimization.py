@@ -36,6 +36,7 @@ def main():
     n_trials = project_settings["n_trials"]
     limit_per_source = project_settings.get("limit_images_per_source")
     cache_dir = caching.get_cache_dir(project_settings)
+    iou_threshold = project_settings.get("iou_threshold")
 
     data_sources = project_cfg["data_sources"]
     gt_mapping = project_cfg["gt_mapping"]
@@ -60,7 +61,13 @@ def main():
         return
 
     # --- Initialize and Run Optimizer ---
-    optimizer = OptunaOptimizer(data_pairs, search_space_config, device=device, cache_dir=cache_dir)
+    optimizer = OptunaOptimizer(
+        data_pairs,
+        search_space_config,
+        device=device,
+        cache_dir=cache_dir,
+        iou_threshold=iou_threshold,
+    )
 
     storage_url = f"sqlite:///studies/{study_name}.db"
     study = optuna.create_study(
