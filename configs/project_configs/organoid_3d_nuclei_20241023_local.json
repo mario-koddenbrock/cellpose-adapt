@@ -6,8 +6,8 @@
     "limit_images_per_source": null,
     "logging_level": "INFO",
     "n_trials": 1000,
-    "study_name": "organoid_3d_nuclei_20231108",
-    "output_dir": "/Users/koddenbrock/Repository/organoid_segmentation/data/Organoids/segmentation_study_outputs/organoid_3d_nuclei_20231108",
+    "study_name": "organoid_3d_nuclei_20241023",
+    "output_dir": "/Users/koddenbrock/Repository/organoid_segmentation/data/Organoids/segmentation_study_outputs/organoid_3d_nuclei_20241023",
     "cache_dir": ".cache"
   },
   "data_sources": [
