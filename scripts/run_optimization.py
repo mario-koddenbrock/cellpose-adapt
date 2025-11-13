@@ -4,6 +4,7 @@ import os
 import time
 
 import optuna
+from optuna.trial import TrialState
 
 from cellpose_adapt import io, caching
 from cellpose_adapt.logger import get_logging_level, setup_logging
@@ -78,13 +79,12 @@ def main():
         sampler = optuna.samplers.TPESampler(seed=42),
     )
 
-    logging.info(
-        "Starting/resuming optimization for study '%s' with %d trials.",
-        study_name,
-        n_trials,
-    )
+    n_existing_trials = len(study.get_trials(states=[TrialState.COMPLETE]))
+    n_trials_to_run = n_trials - n_existing_trials
 
-    study.optimize(optimizer.objective, n_trials=n_trials, n_jobs=1)
+    logging.info(f"Starting optimization study '{study_name}' with {n_trials_to_run} new trials (total requested: {n_trials}, existing: {n_existing_trials}).")
+    if n_trials_to_run > 0:
+        study.optimize(optimizer.objective, n_trials=n_trials, n_jobs=1)
 
     # --- Log Final Results ---
     logging.info("Optimization finished.")
