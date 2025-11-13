@@ -4,6 +4,7 @@ import os
 import cv2
 import numpy as np
 import pandas as pd
+import tifffile as tiff
 from matplotlib import pyplot as plt
 
 from cellpose_adapt import io
@@ -26,6 +27,8 @@ def _process_single_image_and_get_masks(image_path, gt_path, runner, channel_to_
         return base_name, None, None, None
 
     pred_mask, _ = runner.run(image)
+    # pred_mask = np.zeros(image.shape, dtype=np.uint16)
+
     if pred_mask is None:
         if ground_truth is not None:
             pred_mask = np.zeros_like(ground_truth)  # Create empty mask for stats
@@ -89,16 +92,17 @@ def _export_3d_video_report(image, ground_truth, pred_mask, base_name, results_d
 
 
 def generate_visual_and_quantitative_report(
-        cfg,
-        project_cfg,
-        plotting_config,
-        results_dir,
-        device,
-        config_filename="config.json",
-        show_panels=False,
-        export_video=False,
-        plot_original_image=False
-):
+         cfg,
+         project_cfg,
+         plotting_config,
+         results_dir,
+         device,
+         config_filename="config.json",
+         show_panels=False,
+         export_video=False,
+         plot_original_image=False,
+         export_predicted_masks=False
+ ):
     """
     Generates visual and quantitative reports for a given configuration.
 
@@ -129,6 +133,16 @@ def generate_visual_and_quantitative_report(
     runner = CellposeRunner(model, cfg, device)
     report_data = []
 
+    # Prepare predicted masks output directory (if requested)
+    predicted_masks_outdir = None
+    if export_predicted_masks:
+        predicted_masks_outdir = project_cfg['project_settings'].get('output_dir')
+        if predicted_masks_outdir:
+            os.makedirs(predicted_masks_outdir, exist_ok=True)
+            logging.info(f"Predicted masks will be exported to: {predicted_masks_outdir}")
+        else:
+            logging.warning("export_predicted_masks=True but no 'output_dir' set in project_cfg['project_settings']; skipping mask export")
+
     for image_path, gt_path in data_pairs:
         base_name, image, ground_truth, pred_mask = _process_single_image_and_get_masks(
             image_path, gt_path, runner, cfg.channel_to_segment
@@ -144,6 +158,16 @@ def generate_visual_and_quantitative_report(
         _generate_and_save_visual_panel(
             image, ground_truth, pred_mask, plotting_config, base_name, results_dir, show_panels, plot_original_image
         )
+
+        # Export predicted mask to the project's output_dir if requested
+        if export_predicted_masks and predicted_masks_outdir and pred_mask is not None:
+            mask_path = os.path.join(predicted_masks_outdir, f"{base_name}_cellpose_mask.tif")
+            try:
+                # Use tifffile for robust multi-page/3D tiff writing
+                tiff.imwrite(mask_path, np.asarray(pred_mask).astype(np.uint16))
+                logging.debug(f"Saved predicted mask: {mask_path}")
+            except Exception as e:
+                logging.warning(f"Failed to save predicted mask for {base_name}: {e}")
 
         if export_video:
             _export_3d_video_report(image, ground_truth, pred_mask, base_name, results_dir)
