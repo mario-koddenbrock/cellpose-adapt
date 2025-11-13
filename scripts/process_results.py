@@ -19,9 +19,6 @@ from cellpose_adapt.optimization import OptunaOptimizer
 from cellpose_adapt.utils import get_device
 
 
-
-
-
 def main():
     parser = argparse.ArgumentParser(description="Analyze a study and generate all reports.")
     parser.add_argument("--project_config", type=str, help="Path to the original project JSON config file.")
