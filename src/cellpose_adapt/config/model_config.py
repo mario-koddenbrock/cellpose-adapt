@@ -32,6 +32,7 @@ class ModelConfig:
     niter: int = 0
 
     # Tiling and stitching
+    tile: bool = False
     tile_overlap: float = 0.1
     stitch_threshold: float = 0.0
     tile_norm_blocksize: int = 0  # Added
