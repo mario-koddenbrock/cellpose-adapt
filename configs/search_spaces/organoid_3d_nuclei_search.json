@@ -10,7 +10,6 @@
     "model_name": "cpsam",
     "norm3D": true,
     "normalize": true,
-    "tile": true,
     "tile_norm_blocksize": 0,
     "tile_norm_smooth3D": 1,
     "tile_overlap": 0.1,
