@@ -74,13 +74,13 @@ def calculate_segmentation_stats(true_masks, pred_masks, iou_threshold=0.5):
     n_instances_pred = np.unique(pred_masks[pred_masks > 0]).size
 
     return {
-        'precision': precision,
-        'recall': recall,
-        'f1_score': f1_score,
-        'tp': true_positives,
-        'fp': false_positives,
-        'fn': false_negatives,
+        'jaccard': jaccard_val,
+        f'f1@{iou_threshold:.2f}': f1_score,
+        # 'precision': precision,
+        # 'recall': recall,
+        # 'tp': true_positives,
+        # 'fp': false_positives,
+        # 'fn': false_negatives,
         'n_instances_true': n_instances_true,
         'n_instances_pred': n_instances_pred,
-        'jaccard': jaccard_val,
     }
