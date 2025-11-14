@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 def _process_single_image_and_get_masks(image_path, gt_path, runner, channel_to_segment):
     """Loads image/gt, runs prediction, and returns the original image and masks."""
     base_name = os.path.splitext(os.path.basename(image_path))[0]
-    logging.info(f"  - Processing image: {base_name}")
+    logging.debug(f"  - Processing image: {base_name}")
     image, ground_truth, _ = io.load_image_with_gt(image_path, gt_path, channel_to_segment)
 
     if image is None:
@@ -70,7 +70,7 @@ def _save_quantitative_report(report_data, results_dir):
 
     report_df = pd.DataFrame(report_data)
     report_df.to_csv(os.path.join(results_dir, 'report_summary.csv'), index=False, float_format='%.4f')
-    logging.info(f"Quantitative report saved. Mean F1-score: {report_df['f1_score'].mean():.4f}")
+    logging.info(f"Quantitative report saved. Mean Jaccard: {report_df['jaccard'].mean():.4f}")
 
 
 def _export_3d_video_report(image, ground_truth, pred_mask, base_name, results_dir):
@@ -144,6 +144,10 @@ def generate_visual_and_quantitative_report(
             logging.warning("export_predicted_masks=True but no 'output_dir' set in project_cfg['project_settings']; skipping mask export")
 
     for image_path, gt_path in data_pairs:
+
+        if "20241023_P021N_A004_cropped_isotropic" in image_path:
+            cfg.channel_to_segment = 1
+
         base_name, image, ground_truth, pred_mask = _process_single_image_and_get_masks(
             image_path, gt_path, runner, cfg.channel_to_segment
         )
@@ -152,8 +156,11 @@ def generate_visual_and_quantitative_report(
             continue
 
         if ground_truth is not None:
-            stats = calculate_segmentation_stats(ground_truth, pred_mask)
+            stats = calculate_segmentation_stats(ground_truth, pred_mask, iou_threshold=project_cfg['project_settings'].get('iou_threshold'))
             report_data.append({'image_name': base_name, **stats})
+            logging.info(f"  - Processing image: {base_name} | Jaccard: {stats['jaccard']:.4f}")
+        else:
+            logging.info(f"  - Processing image: {base_name} | No ground truth available for quantitative metrics.")
 
         _generate_and_save_visual_panel(
             image, ground_truth, pred_mask, plotting_config, base_name, results_dir, show_panels, plot_original_image
@@ -166,6 +173,12 @@ def generate_visual_and_quantitative_report(
                 # Use tifffile for robust multi-page/3D tiff writing
                 tiff.imwrite(mask_path, np.asarray(pred_mask).astype(np.uint16))
                 logging.debug(f"Saved predicted mask: {mask_path}")
+
+                # # read the saved mask back to verify
+                # reloaded_mask = tiff.imread(mask_path)
+                # if not np.array_equal(reloaded_mask, pred_mask):
+                #     logging.warning(f"Verification failed: reloaded mask does not match the original for {base_name}")
+
             except Exception as e:
                 logging.warning(f"Failed to save predicted mask for {base_name}: {e}")
 
