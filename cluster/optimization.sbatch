@@ -2,11 +2,11 @@
 #SBATCH --gres=gpu:1
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=64
-#SBATCH --mem=256G
-#SBATCH --time=05-16:00:00
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=40G
+#SBATCH --time=10-16:00:00
 #SBATCH --qos=normal
-#SBATCH --mail-type=ALL
+#SBATCH --mail-type=FAIL
 #SBATCH --mail-user=koddenb@htw-berlin.de
 
 # Log SLURM environment variables
