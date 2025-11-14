@@ -15,7 +15,7 @@
     "min_size": 10122,
     "max_size_fraction": 0.5,
     "niter": 100,
-    "tile": true,
+    "tile": false,
     "tile_overlap": 0.1,
     "stitch_threshold": 0.6953080052400019,
     "tile_norm_blocksize": 0,
