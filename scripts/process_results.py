@@ -3,10 +3,10 @@ import logging
 import os
 import time
 
+os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1'
+
 from cellpose_adapt.logger import setup_logging
 from scripts.utils.report import generate_visual_and_quantitative_report
-
-os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1'
 
 import optuna
 from optuna.visualization.matplotlib import plot_optimization_history
