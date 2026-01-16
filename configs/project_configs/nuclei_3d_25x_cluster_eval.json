@@ -1,0 +1,28 @@
+{
+  "description": "An experiment to optimize 3D segmentation of organoid nuclei.",
+  "project_settings": {
+    "iou_threshold": 0.5,
+    "device": null,
+    "limit_images_per_source": null,
+    "logging_level": "INFO",
+    "n_trials": 1000,
+    "study_name": "organoid_3d_nuclei_25x",
+    "cache_dir": "/scratch/koddenbrock/cellpose-adapt/.cache",
+    "output_dir": "/scratch/koddenbrock/cellpose-adapt/eval_25x"
+  },
+  "data_sources": [
+    "/scratch/koddenbrock/Organoids/20241023_P021N_25xSil_Hoechst_SirActin/images_cropped_isotropic",
+    "/scratch/koddenbrock/Organoids/unlabeled/20241023_Organoids_P021N/cropped_isotropic_images"
+  ],
+  "gt_mapping": {
+    "replace": [
+      [
+        "images_cropped_isotropic",
+        "labelmaps/Nuclei"
+      ]
+    ],
+    "suffix": "_nuclei-labels.tif",
+    "img_suffix": ".tif"
+  },
+  "search_space_config_path": "configs/search_spaces/organoid_3d_nuclei_search.json"
+}
