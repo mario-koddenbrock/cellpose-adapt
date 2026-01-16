@@ -61,11 +61,12 @@ def create_opencv_overlay(
     overlay = np.ascontiguousarray(overlay, dtype=np.uint8)
 
     # Draw Ground Truth Contours
-    for label in np.unique(gt_mask):
-        if label == 0 or label is None: continue
-        binary_mask = np.uint8(gt_mask == label)
-        contours, _ = cv2.findContours(binary_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        cv2.drawContours(overlay, contours, -1, p_config.gt_contour_color, p_config.gt_contour_thickness)
+    if gt_mask is not None:
+        for label in np.unique(gt_mask):
+            if label == 0 or label is None: continue
+            binary_mask = np.uint8(gt_mask == label)
+            contours, _ = cv2.findContours(binary_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            cv2.drawContours(overlay, contours, -1, p_config.gt_contour_color, p_config.gt_contour_thickness)
 
     # Draw Prediction Contours
     for label in np.unique(pred_mask):

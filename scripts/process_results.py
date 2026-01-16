@@ -27,10 +27,8 @@ DEVICE = None
 PLOT_ORIGINAL_IMAGE = False
 EXPORT_PREDICTED_MASKS = True
 CONFIGS = [
-    "configs/project_configs/organoid_3d_nuclei_20231108_local.json",
-    "configs/project_configs/organoid_3d_nuclei_20240220_local.json",
-    "configs/project_configs/organoid_3d_nuclei_20240305_local.json",
-    # add/remove entries here as you like
+    # "configs/project_configs/nuclei_3d_25x_cluster_eval.json",
+    "configs/project_configs/nuclei_3d_40x_cluster_eval.json"
 ]
 
 

@@ -31,10 +31,14 @@ def load_image_with_gt(
     """
     # Use the cached function for the slow I/O operations
     original_image = _read_image_from_disk(image_path)
-    ground_truth = _read_image_from_disk(ground_truth_path) if ground_truth_path else None
+
+    if ground_truth_path is not None:
+        ground_truth = _read_image_from_disk(ground_truth_path) if ground_truth_path else None
+    else:
+        ground_truth = None
 
     if ground_truth_path and ground_truth is None:
-        logging.error(f"Ground truth was not found at the inferred path: {ground_truth_path}")
+        logging.warning(f"Ground truth was not found at the inferred path: {ground_truth_path}")
 
     if original_image is None:
         logging.error(f"Failed to load image from {image_path}")
@@ -143,7 +147,8 @@ def find_image_gt_pairs(
                         source_pairs.append((image_path, gt_path))
                         logger.debug("Found pair: IMG='%s', GT='%s'", image_path, gt_path)
                     elif gt_mapping:
-                        logger.debug("Image '%s' found, but corresponding GT '%s' does not exist.",image_path,gt_path)
+                        source_pairs.append((image_path, None))
+                        logger.info("Image '%s' found, but corresponding GT '%s' does not exist.",image_path,gt_path)
                     else:
                         source_pairs.append((image_path, None))
                         logger.debug("Image '%s' found without GT mapping rules.", image_path)

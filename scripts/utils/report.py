@@ -34,7 +34,7 @@ def _process_single_image_and_get_masks(image_path, gt_path, runner, channel_to_
             pred_mask = np.zeros_like(ground_truth)  # Create empty mask for stats
         else:
             logging.warning(f"Prediction failed and no ground truth available for image {base_name}")
-            return base_name, image, ground_truth, None
+            return base_name, image, ground_truth, np.zeros_like(image, dtype=np.uint16)
 
     return base_name, image, ground_truth, pred_mask
 
@@ -47,7 +47,10 @@ def _generate_and_save_visual_panel(image, ground_truth, pred_mask, plotting_con
     # Prepare a 2D slice for visualization if data is 3D
     is_3d = image.ndim == 4 or (image.ndim == 3 and np.min(image.shape) > 3)
     display_image = prepare_3d_slice_for_display(image) if is_3d else image
-    display_gt = prepare_3d_slice_for_display(ground_truth, is_mask=True) if is_3d else ground_truth
+    if ground_truth is not None:
+        display_gt = prepare_3d_slice_for_display(ground_truth, is_mask=True) if is_3d else ground_truth
+    else:
+        display_gt = None
     display_pred = prepare_3d_slice_for_display(pred_mask, is_mask=True) if is_3d else pred_mask
 
     overlay = create_opencv_overlay(display_image, display_gt, display_pred, plotting_config)
@@ -145,8 +148,8 @@ def generate_visual_and_quantitative_report(
 
     for image_path, gt_path in data_pairs:
 
-        if "20241023_P021N_A004_cropped_isotropic" in image_path:
-            cfg.channel_to_segment = 1
+        # if "20241023_P021N_A004_cropped_isotropic" in image_path:
+        #     cfg.channel_to_segment = 1
 
         base_name, image, ground_truth, pred_mask = _process_single_image_and_get_masks(
             image_path, gt_path, runner, cfg.channel_to_segment
