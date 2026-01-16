@@ -19,7 +19,7 @@
   "search_space": {
     "flow_threshold": [
       "suggest_float",
-      0.2,
+      0.0,
       0.8
     ],
     "cellprob_threshold": [
