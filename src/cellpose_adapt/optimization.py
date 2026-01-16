@@ -102,6 +102,7 @@ class OptunaOptimizer:
 
             metrics = calculate_segmentation_stats(ground_truth, masks, iou_threshold=self.iou_threshold)
             score = metrics[f'f1@{self.iou_threshold:.2f}']
+            # score = metrics['jaccard']
             scores.append(score)
             pbar.set_postfix({"last_score": f"{score:.3f}"})
 
