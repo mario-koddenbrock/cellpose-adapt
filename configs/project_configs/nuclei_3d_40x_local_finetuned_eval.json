@@ -1,0 +1,36 @@
+{
+  "description": "An experiment to optimize 3D segmentation of organoid nuclei.",
+  "project_settings": {
+    "model_name": "/Users/koddenbrock/Repository/organoid_segmentation/models/cpsam_nuclei_finetuned",
+    "iou_threshold": 0.5,
+    "device": null,
+    "limit_images_per_source": null,
+    "logging_level": "INFO",
+    "n_trials": 1000,
+    "study_name": "organoid_3d_nuclei_40x_finetuned",
+    "cache_dir": ".cache_finetuned",
+    "output_dir": "results/eval_40x_finetuned"
+  },
+  "data_sources": [
+    "/Users/koddenbrock/Repository/organoid_segmentation/data/Organoids/20231108_P021N_40xSil_Hoechst_SiRActin/images_cropped_isotropic",
+    "/Users/koddenbrock/Repository/organoid_segmentation/data/Organoids/20240220_P013T_40xSil_Hoechst_SiRActin/images_cropped_isotropic",
+    "/Users/koddenbrock/Repository/organoid_segmentation/data/Organoids/20240305_P013T_40xSil_Hoechst_SiRActin/images_cropped_isotropic",
+    "/Users/koddenbrock/Repository/organoid_segmentation/data/Organoids/20241009_P013T_40xSil_Hoechst_SiRActin/images_cropped_isotropic",
+    "/Users/koddenbrock/Repository/organoid_segmentation/data/Organoids/20241023_P021N_25xSil_Hoechst_SirActin/images_cropped_isotropic",
+    "/Users/koddenbrock/Repository/organoid_segmentation/data/Organoids/unlabeled/20231108_Organoids_P021N",
+    "/Users/koddenbrock/Repository/organoid_segmentation/data/Organoids/unlabeled/20240220_Organoids_P013/cropped_isotropic_images",
+    "/Users/koddenbrock/Repository/organoid_segmentation/data/Organoids/unlabeled/20240305_Organoids_P013T/cropped_isotropic_images",
+    "/Users/koddenbrock/Repository/organoid_segmentation/data/Organoids/unlabeled/20241009_Organoids_P013T/cropped_isotropic_images"
+  ],
+  "gt_mapping": {
+    "replace": [
+      [
+        "images_cropped_isotropic",
+        "labelmaps/Nuclei"
+      ]
+    ],
+    "suffix": "_nuclei-labels.tif",
+    "img_suffix": ".tif"
+  },
+  "search_space_config_path": "configs/search_spaces/organoid_3d_nuclei_search.json"
+}
