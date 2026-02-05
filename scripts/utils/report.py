@@ -7,7 +7,7 @@ import pandas as pd
 import tifffile as tiff
 from matplotlib import pyplot as plt
 
-from cellpose_adapt import io
+from cellpose_adapt import caching, io
 from cellpose_adapt.core import initialize_model, CellposeRunner
 from cellpose_adapt.metrics import calculate_segmentation_stats
 from cellpose_adapt.plotting.plotting_utils import prepare_3d_slice_for_display, create_opencv_overlay, \
@@ -132,8 +132,9 @@ def generate_visual_and_quantitative_report(
         logging.error("No data pairs found. Cannot generate report.")
         return
 
+    cache_dir = caching.get_cache_dir(project_cfg['project_settings'])
     model = initialize_model(cfg.model_name, device)
-    runner = CellposeRunner(model, cfg, device)
+    runner = CellposeRunner(model, cfg, device, cache_dir=cache_dir)
     report_data = []
 
     # Prepare predicted masks output directory (if requested)
