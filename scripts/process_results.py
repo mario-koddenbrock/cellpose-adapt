@@ -44,6 +44,7 @@ def process_project(project_config_path: str):
 
         project_settings = project_cfg["project_settings"]
         study_name = project_settings["study_name"]
+        model_name = project_settings["model_name"]
         study = optuna.create_study(study_name=study_name, storage=f"sqlite:///studies/{study_name}.db", load_if_exists=True)
         best_trial = study.best_trial
 
@@ -56,6 +57,7 @@ def process_project(project_config_path: str):
 
     logger.info(f"--- Processing results for study: {study_name} ---")
     logger.info(f"Best trial #{best_trial.number} with score: {best_trial.value:.4f}")
+    logger.info(f"Using model: {model_name}")
 
     device = get_device(config_device=project_settings.get("device"), cli_device=DEVICE)
     cache_dir = caching.get_cache_dir(project_settings)
@@ -63,6 +65,7 @@ def process_project(project_config_path: str):
     # pass an empty data_pairs list here since we only need the optimizer to build a config from a trial
     optimizer = OptunaOptimizer([], search_space_config, device=device, cache_dir=cache_dir)
     best_cfg: ModelConfig = optimizer.create_config_from_trial(best_trial)
+    best_cfg.model_name = model_name # Override model name if specified in project settings
 
     os.makedirs("configs", exist_ok=True)
     config_filename = f"best_{study_name}_config.json"
