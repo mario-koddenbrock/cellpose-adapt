@@ -8,7 +8,7 @@
 #  "configs/project_configs/organoid_3d_nuclei_20241023_cluster.json"
 #)
 CONFIGS=(
-#  "configs/project_configs/nuclei_3d_25x_cluster.json"
+  "configs/project_configs/nuclei_3d_25x_cluster.json"
   "configs/project_configs/nuclei_3d_40x_cluster.json"
 )
 
