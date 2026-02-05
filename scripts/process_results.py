@@ -63,8 +63,10 @@ def process_project(project_config_path: str):
     cache_dir = caching.get_cache_dir(project_settings)
 
     # pass an empty data_pairs list here since we only need the optimizer to build a config from a trial
-    optimizer = OptunaOptimizer([], search_space_config, device=device, cache_dir=cache_dir)
+    optimizer = OptunaOptimizer([], search_space_config, device=device, model_name=model_name, cache_dir=cache_dir)
     best_cfg: ModelConfig = optimizer.create_config_from_trial(best_trial)
+
+    # TODO: is this override necessary? The model name should already be set correctly in the config created from the trial, but we want to ensure it matches the project settings
     best_cfg.model_name = model_name # Override model name if specified in project settings
 
     os.makedirs("configs", exist_ok=True)

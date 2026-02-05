@@ -32,6 +32,7 @@ def main():
 
     # Extract project_settings from the config
     project_settings = project_cfg["project_settings"]
+    model_name = project_settings["model_name"]
     study_name = project_settings["study_name"]
     device = get_device(project_settings.get("device"))
     n_trials = project_settings["n_trials"]
@@ -66,6 +67,7 @@ def main():
         data_pairs,
         search_space_config,
         device=device,
+        model_name=model_name,
         cache_dir=cache_dir,
         iou_threshold=iou_threshold,
     )

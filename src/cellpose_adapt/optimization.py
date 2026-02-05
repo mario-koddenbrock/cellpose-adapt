@@ -19,12 +19,14 @@ class OptunaOptimizer:
                  data_pairs: list,
                  search_space_config: dict,
                  device: torch.device,
+                 model_name: str,
                  iou_threshold:float = 0.5,
                  cache_dir: str = ".cache",
                  ):
         self.data_pairs = data_pairs
         self.search_space_config = search_space_config
         self.device = device
+        self.model_name = model_name
         self.cache_dir = cache_dir
         self.iou_threshold = iou_threshold
 
@@ -68,6 +70,7 @@ class OptunaOptimizer:
                     f"Unknown suggestion type '{s_type}' for parameter '{name}'"
                 )
 
+        params["model_name"] = self.model_name
         return ModelConfig(**params)
 
     def objective(self, trial: optuna.Trial) -> float:
