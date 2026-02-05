@@ -1,6 +1,7 @@
 {
   "description": "An experiment to optimize 3D segmentation of organoid nuclei.",
   "project_settings": {
+    "model_name": "cpsam",
     "iou_threshold": 0.5,
     "device": null,
     "limit_images_per_source": null,

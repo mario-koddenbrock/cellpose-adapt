@@ -1,6 +1,7 @@
 {
   "description": "Main configuration for the 2D bacteria segmentation experiment.",
   "project_settings": {
+    "model_name": "cpsam",
     "iou_threshold": 0.3,
     "device": "mps",
     "limit_images_per_source": 3,
