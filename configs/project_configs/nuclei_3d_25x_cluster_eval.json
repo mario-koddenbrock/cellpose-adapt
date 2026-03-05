@@ -2,11 +2,11 @@
   "description": "An experiment to optimize 3D segmentation of organoid nuclei.",
   "project_settings": {
     "model_name": "cpsam",
-    "iou_threshold": 0.5,
+    "metric": "jaccard",
     "device": null,
     "limit_images_per_source": null,
     "logging_level": "INFO",
-    "n_trials": 1000,
+    "n_trials": 200,
     "study_name": "organoid_3d_nuclei_25x",
     "cache_dir": "/scratch/koddenbrock/cellpose-adapt/.cache",
     "output_dir": "/scratch/koddenbrock/cellpose-adapt/eval_25x"

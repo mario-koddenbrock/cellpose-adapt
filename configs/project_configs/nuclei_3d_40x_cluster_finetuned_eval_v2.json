@@ -8,8 +8,8 @@
     "logging_level": "INFO",
     "n_trials": 200,
     "study_name": "organoid_3d_nuclei_40x_finetuned",
-    "cache_dir": "/scratch/koddenbrock/cellpose-adapt/.cache_finetuned",
-    "output_dir": "/scratch/koddenbrock/cellpose-adapt/eval_40x_finetuned"
+    "cache_dir": "/scratch/koddenbrock/cellpose-adapt/.cache_finetuned_v2",
+    "output_dir": "/scratch/koddenbrock/cellpose-adapt/eval_40x_finetuned_v2"
   },
   "data_sources": [
     "/scratch/koddenbrock/Organoids/20231108_P021N_40xSil_Hoechst_SiRActin/images_cropped_isotropic",

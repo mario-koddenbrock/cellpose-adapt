@@ -2,11 +2,11 @@
   "description": "An experiment to optimize 3D segmentation of organoid nuclei.",
   "project_settings": {
     "model_name": "/Users/koddenbrock/Repository/organoid_segmentation/models/cpsam_nuclei_finetuned",
-    "iou_threshold": 0.5,
+    "metric": "jaccard",
     "device": null,
     "limit_images_per_source": null,
     "logging_level": "INFO",
-    "n_trials": 1000,
+    "n_trials": 200,
     "study_name": "organoid_3d_nuclei_40x_finetuned",
     "cache_dir": ".cache_finetuned",
     "output_dir": "results/eval_40x_finetuned"
