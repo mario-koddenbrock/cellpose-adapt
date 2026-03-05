@@ -38,7 +38,7 @@ def main():
     n_trials = project_settings["n_trials"]
     limit_per_source = project_settings.get("limit_images_per_source")
     cache_dir = caching.get_cache_dir(project_settings)
-    iou_threshold = project_settings.get("iou_threshold")
+    metric = project_settings.get("metric")
 
     data_sources = project_cfg["data_sources"]
     gt_mapping = project_cfg["gt_mapping"]
@@ -69,7 +69,7 @@ def main():
         device=device,
         model_name=model_name,
         cache_dir=cache_dir,
-        iou_threshold=iou_threshold,
+        metric=metric,
     )
 
     storage_url = f"sqlite:///studies/{study_name}.db"
