@@ -28,7 +28,9 @@ PLOT_ORIGINAL_IMAGE = False
 EXPORT_PREDICTED_MASKS = True
 CONFIGS = [
     # "configs/project_configs/nuclei_3d_25x_cluster_eval.json",
-    "configs/project_configs/nuclei_3d_40x_cluster_eval.json"
+    "configs/project_configs/nuclei_3d_40x_cluster_finetuned_eval_v2.json",
+    "configs/project_configs/nuclei_3d_40x_cluster_finetuned_eval.json",
+    "configs/project_configs/nuclei_3d_40x_cluster_eval.json",
 ]
 
 
