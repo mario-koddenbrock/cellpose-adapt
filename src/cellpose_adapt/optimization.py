@@ -20,7 +20,7 @@ class OptunaOptimizer:
                  search_space_config: dict,
                  device: torch.device,
                  model_name: str,
-                 iou_threshold:float = 0.5,
+                 metric:str = "jaccard",
                  cache_dir: str = ".cache",
                  ):
         self.data_pairs = data_pairs
@@ -28,7 +28,14 @@ class OptunaOptimizer:
         self.device = device
         self.model_name = model_name
         self.cache_dir = cache_dir
-        self.iou_threshold = iou_threshold
+
+        # TODO: test this
+        if "@" in metric:
+            self.metric = metric.split("@")[0]
+            self.iou_threshold = float(metric.split("@")[1])
+        else:
+            self.metric = metric
+            self.iou_threshold = 0.5
 
         self.fixed_params = self.search_space_config.get("fixed_params", {})
         self.search_space = self.search_space_config.get("search_space", {})
@@ -104,8 +111,11 @@ class OptunaOptimizer:
                 continue
 
             metrics = calculate_segmentation_stats(ground_truth, masks, iou_threshold=self.iou_threshold)
-            # score = metrics[f'f1@{self.iou_threshold:.2f}']
-            score = metrics['jaccard']
+            if "f1" in metrics:
+                score = metrics[f'f1@{self.iou_threshold:.2f}']
+            else:
+                score = metrics[self.metric]
+
             scores.append(score)
             pbar.set_postfix({"last_score": f"{score:.3f}"})
 
